@@ -1,0 +1,8 @@
+# Ignore temporary / system files
+error_log
+*.log
+.DS_Store
+Thumbs.db
+
+# Optional: ignore the backups folder if you don’t want it in Git
+'Backups and troubleshooting'/

@@ -7,140 +7,175 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg: #e6ebf3;
+      --text: #1b2a4a;
+      --muted: #4d5d7a;
+      --red: #c41e3a;
+      --navy: #002868;
+      --shadow-dark: #c5ccd8;
+      --shadow-light: #ffffff;
+    }
+
     body {
       font-family: Arial, Helvetica, sans-serif;
-      background: #001433;
-      color: #111;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
     }
 
     .page {
       min-height: 100vh;
-      background:
-        radial-gradient(circle at 15% 20%, rgba(196, 30, 58, 0.35), transparent 32%),
-        radial-gradient(circle at 85% 80%, rgba(255, 255, 255, 0.12), transparent 28%),
-        radial-gradient(circle at 70% 15%, rgba(0, 40, 104, 0.9), transparent 40%),
-        #001433;
+      padding-bottom: 80px;
     }
 
-    .glass {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+    .neo {
+      background: var(--bg);
+      border: none;
+      box-shadow:
+        10px 10px 20px var(--shadow-dark),
+        -10px -10px 20px var(--shadow-light);
+    }
+
+    .neo-inset {
+      background: var(--bg);
+      box-shadow:
+        inset 8px 8px 16px var(--shadow-dark),
+        inset -8px -8px 16px var(--shadow-light);
     }
 
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin: 16px;
-      padding: 16px 24px;
-      border-radius: 16px;
+      margin: 20px;
+      padding: 18px 28px;
+      border-radius: 24px;
     }
 
     .logo {
       font-family: Georgia, "Times New Roman", serif;
       font-weight: 700;
       font-size: 28px;
-      color: #ff4d6d;
+      color: var(--red);
       text-decoration: none;
     }
 
     nav {
       display: flex;
-      gap: 28px;
+      gap: 12px;
     }
 
     nav a {
       text-decoration: none;
-      color: #f4f7ff;
-      font-size: 14px;
+      color: var(--navy);
+      font-size: 13px;
       letter-spacing: 0.08em;
-      font-weight: 600;
+      font-weight: 700;
+      padding: 10px 16px;
+      border-radius: 14px;
+      background: var(--bg);
+      box-shadow:
+        5px 5px 10px var(--shadow-dark),
+        -5px -5px 10px var(--shadow-light);
+    }
+
+    nav a:hover {
+      box-shadow:
+        inset 4px 4px 8px var(--shadow-dark),
+        inset -4px -4px 8px var(--shadow-light);
     }
 
     .hero {
-      min-height: calc(100vh - 120px);
+      min-height: calc(100vh - 140px);
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      color: #fff;
       padding: 24px;
     }
 
     .hero-inner {
       width: min(760px, 100%);
-      padding: 48px 32px;
-      border-radius: 24px;
+      padding: 56px 36px;
+      border-radius: 32px;
     }
 
     .subtitle {
       font-size: 16px;
-      color: #f4f7ff;
+      color: var(--muted);
       margin-bottom: 22px;
     }
 
     h1 {
       font-family: Georgia, "Times New Roman", serif;
       font-size: 36px;
-      color: #ff4d6d;
-      margin-bottom: 28px;
+      color: var(--red);
+      margin-bottom: 32px;
     }
 
     .buttons {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
     }
 
     .btn {
       display: inline-block;
-      background: rgba(0, 40, 104, 0.45);
-      color: #fff;
+      background: var(--bg);
+      color: var(--navy);
       text-decoration: none;
-      padding: 12px 28px;
-      border-radius: 12px;
+      padding: 14px 32px;
+      border-radius: 16px;
       font-size: 14px;
-      letter-spacing: 0.04em;
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      border: none;
+      box-shadow:
+        8px 8px 16px var(--shadow-dark),
+        -8px -8px 16px var(--shadow-light);
     }
 
     .btn.primary {
-      background: rgba(196, 30, 58, 0.55);
+      color: var(--red);
     }
 
     .btn.disabled {
-      opacity: 0.7;
+      color: var(--muted);
+      box-shadow:
+        inset 6px 6px 12px var(--shadow-dark),
+        inset -6px -6px 12px var(--shadow-light);
       pointer-events: none;
       cursor: not-allowed;
+    }
+
+    .btn:not(.disabled):hover {
+      box-shadow:
+        inset 6px 6px 12px var(--shadow-dark),
+        inset -6px -6px 12px var(--shadow-light);
     }
 
     #online-counter {
       position: fixed;
       bottom: 20px;
       left: 20px;
-      color: #fff;
-      padding: 10px 16px;
-      border-radius: 12px;
+      color: var(--navy);
+      padding: 12px 18px;
+      border-radius: 16px;
       font-size: 14px;
+      font-weight: 700;
       z-index: 9998;
     }
 
     @media (max-width: 800px) {
       header {
         flex-direction: column;
-        gap: 14px;
+        gap: 16px;
       }
       nav {
         flex-wrap: wrap;
         justify-content: center;
-        gap: 16px;
       }
       h1 { font-size: 28px; }
     }
@@ -148,7 +183,7 @@
 </head>
 <body>
   <div class="page">
-    <header class="glass">
+    <header class="neo">
       <a class="logo" href="#home">afirstflag.com</a>
       <nav>
         <a href="#home">HOME</a>
@@ -160,7 +195,7 @@
     </header>
 
     <section class="hero" id="home">
-      <div class="hero-inner glass">
+      <div class="hero-inner neo">
         <p class="subtitle">Your home for America's finest collector flags, coins, and community with bipolar AI</p>
         <h1>Welcome to afirstflag.com</h1>
         <div class="buttons" id="shop">
@@ -171,7 +206,7 @@
     </section>
   </div>
 
-  <div id="online-counter" class="glass">Loading patriots online...</div>
+  <div id="online-counter" class="neo">Loading patriots online...</div>
 
   <script>
     (function () {

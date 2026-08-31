@@ -9,67 +9,84 @@
 
     body {
       font-family: Arial, Helvetica, sans-serif;
-      background: #fff;
+      background: #001433;
       color: #111;
+      min-height: 100vh;
+    }
+
+    .page {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(196, 30, 58, 0.35), transparent 32%),
+        radial-gradient(circle at 85% 80%, rgba(255, 255, 255, 0.12), transparent 28%),
+        radial-gradient(circle at 70% 15%, rgba(0, 40, 104, 0.9), transparent 40%),
+        #001433;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
 
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 18px 28px;
-      background: #fff;
+      margin: 16px;
+      padding: 16px 24px;
+      border-radius: 16px;
     }
 
     .logo {
       font-family: Georgia, "Times New Roman", serif;
       font-weight: 700;
       font-size: 28px;
-      color: #c41e3a;
+      color: #ff4d6d;
       text-decoration: none;
     }
 
     nav {
       display: flex;
-      gap: 36px;
+      gap: 28px;
     }
 
     nav a {
       text-decoration: none;
-      color: #111;
+      color: #f4f7ff;
       font-size: 14px;
       letter-spacing: 0.08em;
       font-weight: 600;
     }
 
     .hero {
-      position: relative;
-      min-height: calc(100vh - 72px);
-      background: #002868;
+      min-height: calc(100vh - 120px);
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
       color: #fff;
+      padding: 24px;
     }
 
     .hero-inner {
-      position: relative;
-      z-index: 1;
-      padding: 40px 20px;
-      max-width: 900px;
+      width: min(760px, 100%);
+      padding: 48px 32px;
+      border-radius: 24px;
     }
 
     .subtitle {
       font-size: 16px;
-      color: #fdf9f9;
+      color: #f4f7ff;
       margin-bottom: 22px;
     }
 
     h1 {
       font-family: Georgia, "Times New Roman", serif;
       font-size: 36px;
-      color: #c41e3a;
+      color: #ff4d6d;
       margin-bottom: 28px;
     }
 
@@ -82,18 +99,24 @@
 
     .btn {
       display: inline-block;
-      background: #002868;
+      background: rgba(0, 40, 104, 0.45);
       color: #fff;
       text-decoration: none;
       padding: 12px 28px;
-      border-radius: 6px;
+      border-radius: 12px;
       font-size: 14px;
       letter-spacing: 0.04em;
-      border: 1px solid rgba(255, 255, 255, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .btn.primary {
+      background: rgba(196, 30, 58, 0.55);
     }
 
     .btn.disabled {
-      opacity: 0.75;
+      opacity: 0.7;
       pointer-events: none;
       cursor: not-allowed;
     }
@@ -102,12 +125,10 @@
       position: fixed;
       bottom: 20px;
       left: 20px;
-      background: #002868;
       color: #fff;
       padding: 10px 16px;
-      border-radius: 8px;
+      border-radius: 12px;
       font-size: 14px;
-      border: 2px solid #c41e3a;
       z-index: 9998;
     }
 
@@ -126,29 +147,31 @@
   </style>
 </head>
 <body>
-  <header>
-    <a class="logo" href="#home">afirstflag.com</a>
-    <nav>
-      <a href="#home">HOME</a>
-      <a href="#shop">SHOP</a>
-      <a href="#reviews">REVIEWS</a>
-      <a href="#gallery">GALLERY</a>
-      <a href="https://chat.afirstflag.com/" target="_blank" rel="noopener">CONTACT</a>
-    </nav>
-  </header>
+  <div class="page">
+    <header class="glass">
+      <a class="logo" href="#home">afirstflag.com</a>
+      <nav>
+        <a href="#home">HOME</a>
+        <a href="#shop">SHOP</a>
+        <a href="#reviews">REVIEWS</a>
+        <a href="#gallery">GALLERY</a>
+        <a href="https://chat.afirstflag.com/" target="_blank" rel="noopener">CONTACT</a>
+      </nav>
+    </header>
 
-  <section class="hero" id="home">
-    <div class="hero-inner">
-      <p class="subtitle">Your home for America's finest collector flags, coins, and community with bipolar AI</p>
-      <h1>Welcome to afirstflag.com</h1>
-      <div class="buttons" id="shop">
-        <a class="btn" href="https://buy.stripe.com/3cI3cu9aq45JbmO2Fl2sM01" target="_blank" rel="noopener">BUY FLAG NOW</a>
-        <a class="btn disabled" href="#" aria-disabled="true">BUY COIN NOW - COMING SOON</a>
+    <section class="hero" id="home">
+      <div class="hero-inner glass">
+        <p class="subtitle">Your home for America's finest collector flags, coins, and community with bipolar AI</p>
+        <h1>Welcome to afirstflag.com</h1>
+        <div class="buttons" id="shop">
+          <a class="btn primary" href="https://buy.stripe.com/3cI3cu9aq45JbmO2Fl2sM01" target="_blank" rel="noopener">BUY FLAG NOW</a>
+          <a class="btn disabled" href="#" aria-disabled="true">BUY COIN NOW - COMING SOON</a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
-  <div id="online-counter">Loading patriots online...</div>
+  <div id="online-counter" class="glass">Loading patriots online...</div>
 
   <script>
     (function () {

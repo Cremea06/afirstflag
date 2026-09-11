@@ -12,7 +12,7 @@
       background: #001433;
       color: #111;
       min-height: 100vh;
-      overflow: hidden; /* keep role bar above the fold on typical desktop */
+      overflow: hidden;
     }
 
     .page {
@@ -48,17 +48,13 @@
     }
 
     .logo {
-      font-family: Arial, Helvetica, sans-serif;
       font-weight: 700;
       font-size: 26px;
       color: #ff4d6d;
       text-decoration: none;
     }
 
-    nav {
-      display: flex;
-      gap: 24px;
-    }
+    nav { display: flex; gap: 24px; }
 
     nav a {
       text-decoration: none;
@@ -68,69 +64,182 @@
       font-weight: 600;
     }
 
-    .hero {
+    /* Three main windows — equal size (match tallest/middle), space above/below */
+    .windows {
       flex: 1 1 auto;
       min-height: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: #fff;
-      padding: 12px 24px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      align-content: center;   /* empty space above & below the equal row */
+      align-items: stretch;    /* all windows = height of tallest (middle) */
+      justify-items: stretch;  /* equal widths */
+      padding: 28px 20px;
+      width: 100%;
     }
 
-    .hero-inner {
-      width: min(720px, 100%);
-      padding: 28px 28px 24px;
-      border-radius: 24px;
-    }
-
-    .subtitle {
-      font-size: 15px;
-      color: #f4f7ff;
-      margin-bottom: 16px;
-    }
-
-    h1 {
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: clamp(26px, 4vw, 34px);
-      font-weight: 700;
-      color: #ff4d6d;
-      margin-bottom: 20px;
-    }
-
-    .buttons {
+    .window {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 10px;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 18px 16px;
+      border-radius: 18px;
+      color: #f4f7ff;
+      background: rgba(30, 90, 180, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      height: 100%;
+      min-height: 100%;
+      width: 100%;
+      text-align: left;
+    }
+
+    .window-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1 1 auto;
+    }
+
+    /* Red · White · Blue — higher transparency so eagle shows through */
+    .window.red {
+      background: linear-gradient(160deg, rgba(196, 30, 58, 0.42), rgba(140, 20, 40, 0.32));
+      border-color: rgba(255, 180, 190, 0.4);
+      color: #fff;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .window.red .window-lines { color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.45); }
+    .window.red .btn.primary {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.4);
+      color: #fff;
+    }
+
+    .window.white {
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.38), rgba(235, 240, 250, 0.28));
+      border-color: rgba(255, 255, 255, 0.55);
+      color: #f4f7ff;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .window.white .window-lines {
+      color: #f4f7ff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.45);
+    }
+    .window.white .btn {
+      background: rgba(0, 40, 104, 0.55);
+      border-color: rgba(255, 255, 255, 0.4);
+      color: #fff;
+    }
+
+    .window.blue {
+      background: linear-gradient(160deg, rgba(0, 40, 104, 0.42), rgba(0, 20, 51, 0.32));
+      border-color: rgba(120, 170, 255, 0.4);
+      color: #f4f7ff;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .window.blue .window-lines { color: #f4f7ff; text-shadow: 0 1px 2px rgba(0,0,0,0.45); }
+    .window.blue .search-row input[type="search"] {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: #fff;
+    }
+    .window.blue .search-note { color: rgba(244, 247, 255, 0.7); }
+    .window.blue .btn {
+      background: rgba(196, 30, 58, 0.45);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .window-lines {
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      font-size: clamp(13px, 1.35vw, 16px);
+      line-height: 1.35;
+      font-weight: 600;
+      color: #f4f7ff;
+    }
+
+    .window-lines li {
+      padding-left: 0;
+    }
+
+    .window-cta {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+      margin-top: auto;
     }
 
     .btn {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
       background: rgba(0, 40, 104, 0.45);
       color: #fff;
       text-decoration: none;
-      padding: 11px 26px;
+      padding: 12px 14px;
       border-radius: 12px;
-      font-size: 14px;
+      font-size: clamp(14px, 1.5vw, 18px);
+      font-weight: 800;
       letter-spacing: 0.04em;
       border: 1px solid rgba(255, 255, 255, 0.28);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+      cursor: pointer;
+      font-family: inherit;
     }
 
     .btn.primary {
       background: rgba(196, 30, 58, 0.55);
     }
 
-    .btn.disabled {
-      opacity: 0.7;
-      pointer-events: none;
-      cursor: not-allowed;
+    .btn:hover { filter: brightness(1.08); }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      width: 100%;
     }
 
-    /* Role expectation — pinned above the fold at bottom of viewport */
+    .search-row input[type="search"] {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.28);
+      color: #f4f7ff;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .search-row input::placeholder { color: rgba(244, 247, 255, 0.55); }
+
+    .search-row .btn {
+      width: auto;
+      padding-left: 18px;
+      padding-right: 18px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .search-note {
+      font-size: 11px;
+      color: rgba(244, 247, 255, 0.65);
+      line-height: 1.35;
+    }
+
+    /* Role expectation */
     .role-bar {
       flex-shrink: 0;
       margin: 0 16px 12px;
@@ -139,13 +248,30 @@
       color: #f4f7ff;
     }
 
+    .role-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
     .role-bar .label {
       font-size: 11px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: rgba(244, 247, 255, 0.7);
-      margin-bottom: 8px;
       font-weight: 700;
+    }
+
+    .online-chip {
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 11px;
+      white-space: nowrap;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.18);
     }
 
     .role-sentence {
@@ -200,27 +326,13 @@
       color: rgba(244, 247, 255, 0.55);
     }
 
-    .role-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-
-    .online-chip {
-      color: #fff;
-      padding: 6px 10px;
-      border-radius: 10px;
-      font-size: 11px;
-      white-space: nowrap;
-      background: rgba(0, 0, 0, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-    }
-
-    @media (max-width: 800px) {
+    @media (max-width: 900px) {
       body { overflow: auto; }
       .page { max-height: none; min-height: 100vh; }
+      .windows {
+        grid-template-columns: 1fr;
+        padding: 14px 16px;
+      }
       header {
         flex-direction: column;
         gap: 12px;
@@ -230,15 +342,12 @@
         justify-content: center;
         gap: 14px;
       }
-      h1 { font-size: 26px; }
     }
 
-    @media (max-height: 700px) {
-      .hero-inner { padding: 18px 20px; }
-      .subtitle { margin-bottom: 10px; font-size: 13px; }
-      h1 { margin-bottom: 12px; font-size: 26px; }
-      .btn { padding: 9px 20px; }
-      #role-rest { font-size: 12px; min-height: 2.4em; padding: 8px 10px; }
+    @media (max-height: 720px) {
+      .window { padding: 16px 14px; gap: 12px; }
+      .window-lines { font-size: 13px; gap: 6px; }
+      .btn { padding: 11px 14px; font-size: 15px; }
     }
   </style>
 </head>
@@ -255,16 +364,53 @@
       </nav>
     </header>
 
-    <section class="hero" id="home">
-      <div class="hero-inner glass">
-        <p class="subtitle">Recognition beyond super chat, invest in the legacy, take your own side!</p>
-        <h1>To him who has</h1>
-        <div class="buttons" id="shop">
-          <a class="btn primary" href="https://buy.stripe.com/3cI3cu9aq45JbmO2Fl2sM01" target="_blank" rel="noopener">BUY FLAG NOW</a>
-          <a class="btn" href="https://chat.afirstflag.com/" target="_blank" rel="noopener">JOIN LIVE CHAT</a>
+    <main class="windows" id="home" aria-label="Main site components">
+      <section class="window red" aria-labelledby="win-flag">
+        <div class="window-body">
+          <h2 id="win-flag" class="visually-hidden" style="position:absolute;left:-9999px;">Buy Flag</h2>
+          <ul class="window-lines">
+            <li>Support the movement</li>
+            <li>Claim your flag and Bitcoin wallet</li>
+            <li>Become a Member</li>
+          </ul>
         </div>
-      </div>
-    </section>
+        <div class="window-cta">
+          <a class="btn primary" href="https://buy.stripe.com/3cI3cu9aq45JbmO2Fl2sM01" target="_blank" rel="noopener">BUY FLAG NOW</a>
+        </div>
+      </section>
+
+      <section class="window white" aria-labelledby="win-chat">
+        <div class="window-body">
+          <h2 id="win-chat" class="visually-hidden" style="position:absolute;left:-9999px;">Join Chat Room</h2>
+          <ul class="window-lines">
+            <li>Technical Support</li>
+            <li>Host live-broadcasting Events</li>
+            <li>Socialize &amp; Network</li>
+            <li>Discover hidden secrets to unlock commands</li>
+          </ul>
+        </div>
+        <div class="window-cta">
+          <a class="btn" href="https://chat.afirstflag.com/" target="_blank" rel="noopener">ENTER CHATROOM</a>
+        </div>
+      </section>
+
+      <section class="window blue" aria-labelledby="win-search">
+        <div class="window-body">
+          <h2 id="win-search" class="visually-hidden" style="position:absolute;left:-9999px;">Search</h2>
+          <ul class="window-lines">
+            <li>Secure your digital footprint</li>
+            <li>Search Dark Web &amp; Crypto Currency</li>
+          </ul>
+        </div>
+        <div class="window-cta">
+          <form class="search-row" action="#" method="get" onsubmit="return false;" role="search">
+            <input type="search" id="deep-search" name="q" placeholder="Enter text" aria-label="Deep search">
+            <button type="submit" class="btn">SEARCH</button>
+          </form>
+          <p class="search-note">Search chrome only for now — wires later to deep search / wallets.</p>
+        </div>
+      </section>
+    </main>
 
     <aside class="role-bar glass" aria-label="Role expectation">
       <div class="role-top">
@@ -286,9 +432,6 @@
       <p id="role-rest"></p>
       <p class="role-hint">Choose a role. The expectation updates immediately.</p>
     </aside>
-
-      <div style="flex:1"></div>
-    </div>
   </div>
 
   <script>

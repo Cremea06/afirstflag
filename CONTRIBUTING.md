@@ -1,5 +1,8 @@
 # Contributing to A First Flag
 
+## Current help wanted
+Contributor cards in Built With Gratitude — see [Issue #1](https://github.com/Cremea06/afirstflag/issues/1).
+
 Thanks for helping. This project is split across two public repos:
 
 - Website: https://github.com/Cremea06/afirstflag

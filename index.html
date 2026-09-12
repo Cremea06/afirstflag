@@ -12,12 +12,12 @@
       background: #001433;
       color: #111;
       min-height: 100vh;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     .page {
       min-height: 100vh;
-      max-height: 100vh;
       display: flex;
       flex-direction: column;
       background-color: #001433;
@@ -27,6 +27,8 @@
       background-size: cover;
       background-position: center top;
       background-repeat: no-repeat;
+      background-attachment: fixed;
+      padding-bottom: 24px;
     }
 
     .glass {
@@ -67,7 +69,7 @@
     /* Three main windows — equal size (match tallest/middle), space above/below */
     .windows {
       flex: 1 1 auto;
-      min-height: 0;
+      min-height: 220px;
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 18px;
@@ -242,7 +244,7 @@
     /* Role expectation */
     .role-bar {
       flex-shrink: 0;
-      margin: 0 16px 12px;
+      margin: 0 16px 10px;
       padding: 12px 16px 14px;
       border-radius: 16px;
       color: #f4f7ff;
@@ -326,9 +328,196 @@
       color: rgba(244, 247, 255, 0.55);
     }
 
+
+    /* Built With Gratitude — g10 drawer under role bar */
+    .gratitude-wrap {
+      flex-shrink: 0;
+      margin: 0 16px 8px;
+    }
+
+    .drawer.glass {
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .drawer-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      background: transparent;
+      border: 0;
+      color: #fff;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .drawer-toggle .chev {
+      transition: transform 0.2s;
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .drawer:not(.open) .drawer-toggle .chev {
+      transform: rotate(-90deg);
+    }
+
+    .drawer-body {
+      padding: 0 16px 16px;
+      display: none;
+    }
+
+    .drawer.open .drawer-body {
+      display: block;
+    }
+
+    .grat-lede {
+      font-size: 12px;
+      color: rgba(244, 247, 255, 0.7);
+      margin-bottom: 12px;
+      line-height: 1.45;
+    }
+
+    .grat-lede code {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 10px;
+    }
+
+    .grat-sec {
+      margin-bottom: 14px;
+    }
+
+    .grat-sec h3 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #f4f7ff;
+    }
+
+    .grat-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .grat-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    .tcard {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.28);
+      border-top-width: 3px;
+      color: #f4f7ff;
+    }
+
+    .tcard.open-review {
+      background: rgba(239, 68, 68, 0.12);
+    }
+
+    .badge-open {
+      font-size: 9px;
+      background: #fecaca;
+      color: #991b1b;
+      padding: 2px 5px;
+      border-radius: 4px;
+      margin-left: 4px;
+    }
+
+    .tcard h4 {
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .tcard dl {
+      font-size: 11px;
+      display: grid;
+      gap: 4px;
+    }
+
+    .tcard dt {
+      font-size: 9px;
+      text-transform: uppercase;
+      color: rgba(244, 247, 255, 0.55);
+      font-weight: 700;
+    }
+
+    .tcard dd {
+      margin: 0;
+      color: rgba(244, 247, 255, 0.9);
+    }
+
+    .tcard .thanks {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.15);
+      font-size: 11px;
+      font-style: italic;
+      color: rgba(244, 247, 255, 0.65);
+    }
+
+    .local-note {
+      font-size: 11px;
+      color: rgba(244, 247, 255, 0.7);
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px dashed rgba(148, 163, 184, 0.4);
+      border-radius: 10px;
+    }
+
+    .local-note code {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    .sponsors-band {
+      padding: 14px;
+      border-radius: 12px;
+      background: rgba(245, 158, 11, 0.14);
+      border: 2px solid rgba(245, 158, 11, 0.6);
+    }
+
+    .sponsors-band h3 {
+      font-size: 12px;
+      color: #fcd34d;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .sponsors-band .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .sponsors-band .ph {
+      padding: 10px 16px;
+      border: 1.5px dashed #d97706;
+      border-radius: 10px;
+      font-weight: 800;
+      color: #fef3c7;
+    }
+
     @media (max-width: 900px) {
-      body { overflow: auto; }
-      .page { max-height: none; min-height: 100vh; }
+      .page { min-height: 100vh; background-attachment: scroll; }
+      .windows { flex: 0 0 auto; }
       .windows {
         grid-template-columns: 1fr;
         padding: 14px 16px;
@@ -354,7 +543,7 @@
 <body>
   <div class="page">
     <header class="glass">
-      <a class="logo" href="#home">AMERICA FIRST ECOSYSTEM</a>
+      <a class="logo" href="#home">afirstflag.com</a>
       <nav>
         <a href="#home">HOME</a>
         <a href="https://fuentes.store/" target="_blank" rel="noopener">SHOP</a>
@@ -370,7 +559,7 @@
           <h2 id="win-flag" class="visually-hidden" style="position:absolute;left:-9999px;">Buy Flag</h2>
           <ul class="window-lines">
             <li>Support the movement</li>
-            <li>Claim your flag + Bitcoin wallet</li>
+            <li>Claim your flag and Bitcoin wallet</li>
             <li>Become a Member</li>
           </ul>
         </div>
@@ -432,6 +621,207 @@
       <p id="role-rest"></p>
       <p class="role-hint">Choose a role. The expectation updates immediately.</p>
     </aside>
+
+    <div class="gratitude-wrap">
+      <section class="drawer glass" id="grat-drawer" aria-label="Built With Gratitude">
+        <button type="button" class="drawer-toggle" id="grat-toggle" aria-expanded="false" aria-controls="grat-panel">
+          <span>Built With Gratitude <span style="opacity:0.6;font-weight:600;font-size:12px">· click to <span class="label-state">expand</span></span></span>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="drawer-body" id="grat-panel">
+          <p class="grat-lede">Public thank-you for the stack beneath this site. Formal inventory lives in <code>docs/TECHNOLOGY-ATTRIBUTION.md</code> and <code>docs/THIRD-PARTY-NOTICES.md</code>. Sponsors (financial) stay separate below.</p>
+
+          <section class="grat-sec">
+            <h3><span class="grat-dot" style="background:#38bdf8"></span> Foundational Technology</h3>
+            <div class="grat-cards">
+              <article class="tcard" style="border-top-color:#38bdf8">
+                <h4>Node.js</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Server runtime for Milliway / portal backends</dd>
+                  <dt>Maintainer</dt><dd>OpenJS Foundation</dd>
+                  <dt>License</dt><dd>MIT</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#38bdf8">
+                <h4>HTML / CSS / JS</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Client markup, styling, and interaction</dd>
+                  <dt>Maintainer</dt><dd>WHATWG / W3C / browser vendors</dd>
+                  <dt>License</dt><dd>Web platform standards</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#38bdf8">
+                <h4>Web APIs</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Browser primitives (fetch, storage, media)</dd>
+                  <dt>Maintainer</dt><dd>Standards bodies + implementers</dd>
+                  <dt>License</dt><dd>Platform APIs</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#38bdf8">
+                <h4>WebRTC</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Realtime audio/video and peer connectivity</dd>
+                  <dt>Maintainer</dt><dd>W3C / IETF</dd>
+                  <dt>License</dt><dd>Standards</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="grat-sec">
+            <h3><span class="grat-dot" style="background:#4ade80"></span> Open-Source Projects</h3>
+            <div class="grat-cards">
+              <article class="tcard" style="border-top-color:#4ade80">
+                <h4>Express</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>HTTP application framework</dd>
+                  <dt>Maintainer</dt><dd>OpenJS / Express maintainers</dd>
+                  <dt>License</dt><dd>MIT</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#4ade80">
+                <h4>Socket.IO</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Realtime messaging for chat</dd>
+                  <dt>Maintainer</dt><dd>Automattic / community</dd>
+                  <dt>License</dt><dd>MIT</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#4ade80">
+                <h4>Nodemailer</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Outbound SMTP mail layer</dd>
+                  <dt>Maintainer</dt><dd>Andris Reinman</dd>
+                  <dt>License</dt><dd>MIT-family</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#4ade80">
+                <h4>dotenv</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Environment configuration</dd>
+                  <dt>Maintainer</dt><dd>dotenv project</dd>
+                  <dt>License</dt><dd>BSD-2-Clause</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#4ade80">
+                <h4>PM2</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Process management / keep-alive</dd>
+                  <dt>Maintainer</dt><dd>Unitech / Keymetrics</dd>
+                  <dt>License</dt><dd>AGPL-3.0</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="grat-sec">
+            <h3><span class="grat-dot" style="background:#fbbf24"></span> Infrastructure &amp; Services</h3>
+            <div class="grat-cards">
+              <article class="tcard" style="border-top-color:#fbbf24">
+                <h4>Stripe</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Payments · Buy flag Payment Link</dd>
+                  <dt>Maintainer</dt><dd>Stripe, Inc.</dd>
+                  <dt>License</dt><dd>Commercial ToS</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#fbbf24">
+                <h4>xAI (Cranky / Neagle)</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>AI assistants for conversational help</dd>
+                  <dt>Maintainer</dt><dd>xAI</dd>
+                  <dt>License</dt><dd>Commercial API / ToS</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#fbbf24">
+                <h4>GitHub</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Source hosting, review, release workflow</dd>
+                  <dt>Maintainer</dt><dd>GitHub (Microsoft)</dd>
+                  <dt>License</dt><dd>Service ToS</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#fbbf24">
+                <h4>Namecheap / Apache</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>DNS + web hosting stack</dd>
+                  <dt>Maintainer</dt><dd>Namecheap · Apache HTTP Server</dd>
+                  <dt>License</dt><dd>Service / Apache-2.0</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard open-review" style="border-top-color:#fbbf24">
+                <h4>Google STUN <span class="badge-open">Review</span></h4>
+                <dl>
+                  <dt>Purpose</dt><dd>WebRTC NAT traversal assist</dd>
+                  <dt>Maintainer</dt><dd>Google</dd>
+                  <dt>License</dt><dd>Terms review — open item</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#fbbf24">
+                <h4>SMTP (via Nodemailer)</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Mail transport behind Nodemailer</dd>
+                  <dt>Maintainer</dt><dd>Provider-dependent</dd>
+                  <dt>License</dt><dd>Provider ToS</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="grat-sec">
+            <h3><span class="grat-dot" style="background:#a78bfa"></span> Standards &amp; Communities</h3>
+            <div class="grat-cards">
+              <article class="tcard" style="border-top-color:#a78bfa">
+                <h4>OpenJS Foundation</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Stewardship of Node.js / Express ecosystem</dd>
+                  <dt>Maintainer</dt><dd>OpenJS</dd>
+                  <dt>License</dt><dd>n/a (community)</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#a78bfa">
+                <h4>WHATWG / W3C / IETF</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Web &amp; realtime standards we build upon</dd>
+                  <dt>Maintainer</dt><dd>Standards communities</dd>
+                  <dt>License</dt><dd>Standards documents</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+            </div>
+          </section>
+
+          <p class="local-note"><strong>App-local:</strong> Auth codes use <code>Math.random</code> — original app functionality, not a third-party credit.</p>
+
+          <div class="sponsors-band">
+            <h3>Sponsors (financial) — separate from tech</h3>
+            <div class="row">
+              <div class="ph">A1</div>
+              <div class="ph">A2</div>
+              <div class="ph">B1</div>
+              <div class="ph">B2</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
 
   <script>
@@ -512,6 +902,18 @@
       setInterval(sendHeartbeat, 20000);
       updateCount();
       setInterval(updateCount, 15000);
+    })();
+
+    (function () {
+      var drawer = document.getElementById("grat-drawer");
+      var btn = document.getElementById("grat-toggle");
+      if (!drawer || !btn) return;
+      btn.addEventListener("click", function () {
+        var open = drawer.classList.toggle("open");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        var state = btn.querySelector(".label-state");
+        if (state) state.textContent = open ? "collapse" : "expand";
+      });
     })();
   </script>
 </body>

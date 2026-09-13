@@ -636,14 +636,14 @@
           <h2 id="win-search" class="visually-hidden" style="position:absolute;left:-9999px;">Bitcoin address lookup</h2>
           <ul class="window-lines">
             <li>Bitcoin address lookup</li>
-            <li>Paste a public bc1 Bitcoin address</li>
+            <li>Paste a public Bitcoin address</li>
             <li>See confirmed balance on the public chain</li>
             <li>We never need private keys</li>
           </ul>
         </div>
         <div class="window-cta">
           <form class="search-row" id="btc-lookup-form" action="#" method="post" role="search">
-            <input type="search" id="btc-lookup-address" name="address" autocomplete="off" spellcheck="false" placeholder="bc1… public address" aria-label="Bitcoin public address">
+            <input type="search" id="btc-lookup-address" name="address" autocomplete="off" spellcheck="false" placeholder="Paste a public Bitcoin address" aria-label="Bitcoin public address">
             <button type="submit" class="btn" id="btc-lookup-submit">SEARCH</button>
           </form>
           <p class="search-note">Public blockchain data only. Not identity or ownership proof.</p>
@@ -1048,7 +1048,7 @@
         resultEl.hidden = true;
         resultEl.innerHTML = "";
         if (!address) {
-          showError("Paste a Bitcoin public address (bc1…).");
+          showError("Paste a public Bitcoin address.");
           return;
         }
         setStatus("Checking the public chain…");

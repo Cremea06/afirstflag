@@ -241,6 +241,54 @@
       line-height: 1.35;
     }
 
+    .lookup-status {
+      font-size: 12px;
+      color: rgba(244, 247, 255, 0.8);
+      min-height: 1.2em;
+      margin-top: 4px;
+    }
+    .lookup-result {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      font-size: 12px;
+      line-height: 1.45;
+      color: #f4f7ff;
+      text-align: left;
+    }
+    .lookup-result .addr-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-family: ui-monospace, monospace;
+      word-break: break-all;
+    }
+    .lookup-result .copy-btn {
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .lookup-result .stats {
+      display: grid;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .lookup-result a { color: #93c5fd; }
+    .lookup-result .disclaimer {
+      font-size: 11px;
+      color: rgba(244, 247, 255, 0.65);
+      margin-top: 8px;
+    }
+
     /* Role expectation */
     .role-bar {
       flex-shrink: 0;
@@ -585,18 +633,22 @@
 
       <section class="window blue" aria-labelledby="win-search">
         <div class="window-body">
-          <h2 id="win-search" class="visually-hidden" style="position:absolute;left:-9999px;">Search</h2>
+          <h2 id="win-search" class="visually-hidden" style="position:absolute;left:-9999px;">Bitcoin address lookup</h2>
           <ul class="window-lines">
-            <li>Secure your digital footprint</li>
-            <li>Search Dark Web &amp; Crypto Currency</li>
+            <li>Bitcoin address lookup</li>
+            <li>Paste a public bc1 Bitcoin address</li>
+            <li>See confirmed balance on the public chain</li>
+            <li>We never need private keys</li>
           </ul>
         </div>
         <div class="window-cta">
-          <form class="search-row" action="#" method="get" onsubmit="return false;" role="search">
-            <input type="search" id="deep-search" name="q" placeholder="Enter text" aria-label="Deep search">
-            <button type="submit" class="btn">SEARCH</button>
+          <form class="search-row" id="btc-lookup-form" action="#" method="post" role="search">
+            <input type="search" id="btc-lookup-address" name="address" autocomplete="off" spellcheck="false" placeholder="bc1… public address" aria-label="Bitcoin public address">
+            <button type="submit" class="btn" id="btc-lookup-submit">SEARCH</button>
           </form>
-          <p class="search-note">Search chrome only for now — wires later to deep search / wallets.</p>
+          <p class="search-note">Public blockchain data only. Not identity or ownership proof.</p>
+          <p class="lookup-status" id="btc-lookup-status" role="status" aria-live="polite"></p>
+          <div class="lookup-result" id="btc-lookup-result" hidden></div>
         </div>
       </section>
     </main>
@@ -733,6 +785,15 @@
                   <dt>Purpose</dt><dd>Payments · Buy flag Payment Link</dd>
                   <dt>Maintainer</dt><dd>Stripe, Inc.</dd>
                   <dt>License</dt><dd>Commercial ToS</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#fbbf24">
+                <h4>Mempool.space</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Public Bitcoin address / chain explorer data</dd>
+                  <dt>Maintainer</dt><dd>Mempool Open Source Project</dd>
+                  <dt>License</dt><dd>Service / open-source explorer</dd>
                 </dl>
                 <p class="thanks">Thank you for making this available.</p>
               </article>
@@ -913,6 +974,108 @@
         btn.setAttribute("aria-expanded", open ? "true" : "false");
         var state = btn.querySelector(".label-state");
         if (state) state.textContent = open ? "collapse" : "expand";
+      });
+    })();
+
+    (function () {
+      var host = (location.hostname || "").toLowerCase();
+      var local = host === "localhost" || host === "127.0.0.1";
+      window.AFF_NEST_API = window.AFF_NEST_API || (local ? "http://127.0.0.1:3000" : "https://chat.afirstflag.com");
+
+      var form = document.getElementById("btc-lookup-form");
+      var input = document.getElementById("btc-lookup-address");
+      var statusEl = document.getElementById("btc-lookup-status");
+      var resultEl = document.getElementById("btc-lookup-result");
+      var submitBtn = document.getElementById("btc-lookup-submit");
+      if (!form || !input) return;
+
+      function setStatus(msg) {
+        statusEl.textContent = msg || "";
+      }
+
+      function truncateAddr(a) {
+        if (!a || a.length < 16) return a || "";
+        return a.slice(0, 8) + "…" + a.slice(-6);
+      }
+
+      function fmtBtc(n) {
+        var x = Number(n);
+        if (!isFinite(x)) return "—";
+        return x.toFixed(8) + " BTC";
+      }
+
+      function showError(msg) {
+        resultEl.hidden = true;
+        resultEl.innerHTML = "";
+        setStatus(msg);
+      }
+
+      function showSuccess(data) {
+        setStatus("");
+        var unconf = "";
+        if (data.unconfirmed_received_btc != null || data.unconfirmed_spent_btc != null) {
+          unconf = "<div>Unconfirmed in/out: " + fmtBtc(data.unconfirmed_received_btc) + " / " + fmtBtc(data.unconfirmed_spent_btc) + "</div>";
+        }
+        resultEl.innerHTML =
+          '<div class="addr-row"><span title="' + data.address + '">' + truncateAddr(data.address) + "</span>" +
+          '<button type="button" class="copy-btn" id="btc-lookup-copy">Copy</button></div>' +
+          '<div class="stats">' +
+          "<div><strong>Confirmed balance:</strong> " + fmtBtc(data.balance_btc) + "</div>" +
+          "<div>Received: " + fmtBtc(data.received_btc) + "</div>" +
+          "<div>Spent: " + fmtBtc(data.spent_btc) + "</div>" +
+          "<div>Tx count: " + (data.tx_count != null ? data.tx_count : "—") + "</div>" +
+          unconf +
+          "</div>" +
+          (data.mempool_url ? '<a href="' + data.mempool_url + '" target="_blank" rel="noopener">View on Mempool</a>' : "") +
+          '<p class="disclaimer">Public blockchain data for a Bitcoin address. Not proof of who holds the keys. We never ask for private keys.</p>';
+        resultEl.hidden = false;
+        var copyBtn = document.getElementById("btc-lookup-copy");
+        if (copyBtn) {
+          copyBtn.addEventListener("click", function () {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(data.address).then(function () {
+                copyBtn.textContent = "Copied";
+                setTimeout(function () { copyBtn.textContent = "Copy"; }, 1200);
+              }).catch(function () {});
+            }
+          });
+        }
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var address = (input.value || "").trim();
+        resultEl.hidden = true;
+        resultEl.innerHTML = "";
+        if (!address) {
+          showError("Paste a Bitcoin public address (bc1…).");
+          return;
+        }
+        setStatus("Checking the public chain…");
+        submitBtn.disabled = true;
+        fetch(window.AFF_NEST_API.replace(/\/$/, "") + "/api/flag-wallet-lookup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ address: address })
+        })
+          .then(function (res) {
+            return res.json().then(function (body) {
+              return { ok: res.ok, status: res.status, body: body };
+            });
+          })
+          .then(function (r) {
+            submitBtn.disabled = false;
+            if (r.ok && r.body && r.body.ok) {
+              showSuccess(r.body);
+              return;
+            }
+            var msg = (r.body && r.body.message) || "Lookup failed.";
+            showError(msg);
+          })
+          .catch(function () {
+            submitBtn.disabled = false;
+            showError("Couldn't reach the lookup service. Try again in a minute.");
+          });
       });
     })();
   </script>

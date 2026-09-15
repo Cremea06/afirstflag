@@ -627,7 +627,7 @@
       </section>
 
       <section class="window white" aria-labelledby="win-chat">
-        <div id="online-counter" class="online-chip" aria-live="polite">Loading patriots online...</div>
+        <div id="online-counter" class="online-chip" aria-live="polite">Loading online…</div>
         <div class="window-body">
           <h2 id="win-chat" class="visually-hidden" style="position:absolute;left:-9999px;">Join Chat Room</h2>
           <ul class="window-lines">
@@ -979,11 +979,11 @@
           .then(function (data) {
             const count = data.online || 0;
             counterEl.textContent = count === 1
-              ? "1 patriot online right now"
-              : count + " patriots online right now";
+              ? "1 online"
+              : count + " online";
           })
           .catch(function () {
-            counterEl.textContent = "Online counter unavailable";
+            counterEl.textContent = "Online unavailable";
           });
       }
 

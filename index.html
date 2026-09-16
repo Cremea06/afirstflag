@@ -122,6 +122,21 @@
       color: #fff;
     }
 
+    .flags-left-chip {
+      display: inline-flex;
+      align-self: flex-start;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    }
+
     .window.white {
       position: relative;
       background: linear-gradient(160deg, rgba(255, 255, 255, 0.38), rgba(235, 240, 250, 0.28));
@@ -756,6 +771,7 @@
           </ul>
         </div>
         <div class="window-cta">
+          <div id="flags-left" class="flags-left-chip" aria-live="polite">Flags available</div>
           <a class="btn primary" href="https://buy.stripe.com/3cI3cu9aq45JbmO2Fl2sM01" target="_blank" rel="noopener">BUY FLAG NOW</a>
         </div>
       </section>
@@ -1278,6 +1294,28 @@
             showError("Couldn't reach the lookup service. Try again in a minute.");
           });
       });
+    })();
+
+    (function () {
+      var el = document.getElementById("flags-left");
+      if (!el) return;
+      var fallback = "Flags available";
+      fetch("/api/flag-stats.php")
+        .then(function (res) {
+          if (!res.ok) throw new Error("bad status");
+          return res.json();
+        })
+        .then(function (data) {
+          var n = data && data.remaining;
+          if (typeof n !== "number" || !isFinite(n) || n < 0) {
+            el.textContent = fallback;
+            return;
+          }
+          el.textContent = Math.floor(n) + " flags left";
+        })
+        .catch(function () {
+          el.textContent = fallback;
+        });
     })();
 
     (function () {

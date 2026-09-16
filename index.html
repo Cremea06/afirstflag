@@ -591,6 +591,137 @@
       }
     }
 
+
+    html { scroll-behavior: smooth; }
+
+    .gallery-band {
+      flex-shrink: 0;
+      margin: 0 16px 10px;
+      padding: 16px 16px 18px;
+      border-radius: 16px;
+      color: #f4f7ff;
+      scroll-margin-top: 18px;
+    }
+
+    .gallery-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .gallery-head h2 {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(244, 247, 255, 0.7);
+      font-weight: 700;
+    }
+
+    .gallery-lede {
+      font-size: 13px;
+      line-height: 1.45;
+      color: rgba(244, 247, 255, 0.85);
+      font-weight: 500;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .gcard {
+      display: flex;
+      flex-direction: column;
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .gcard img {
+      width: 100%;
+      height: 210px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .gcard figcaption {
+      padding: 10px 12px 12px;
+    }
+
+    .gcard strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      margin-bottom: 4px;
+    }
+
+    .gcard span {
+      font-size: 12px;
+      line-height: 1.4;
+      color: rgba(244, 247, 255, 0.75);
+    }
+
+    .gallery-cta {
+      margin-top: 14px;
+      max-width: 280px;
+    }
+
+    .flag-teaser {
+      width: 100%;
+      height: 92px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      background: rgba(0, 12, 32, 0.82);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .lightbox.open { display: flex; }
+
+    .lightbox img {
+      max-width: min(1100px, 96vw);
+      max-height: 86vh;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+    }
+
+    .lightbox .lb-cap {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #f4f7ff;
+      font-size: 13px;
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    }
+
+    @media (max-width: 900px) {
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gcard img { height: 220px; }
+    }
+
     @media (max-height: 720px) {
       .window { padding: 16px 14px; gap: 12px; }
       .window-lines { font-size: 13px; gap: 6px; }
@@ -615,6 +746,9 @@
       <section class="window red" aria-labelledby="win-flag">
         <div class="window-body">
           <h2 id="win-flag" class="visually-hidden" style="position:absolute;left:-9999px;">Buy Flag</h2>
+          <a href="#gallery" title="See the flag in the yard">
+            <img class="flag-teaser" src="/images/flag-yard-thumb.jpg" alt="America First yard flag staked in a flower bed">
+          </a>
           <ul class="window-lines">
             <li>Support the movement</li>
             <li>Claim your flag and Bitcoin wallet</li>
@@ -663,6 +797,45 @@
         </div>
       </section>
     </main>
+
+
+    <section class="gallery-band glass" id="gallery" aria-label="Flag gallery">
+      <div class="gallery-head">
+        <h2>Gallery</h2>
+        <p class="gallery-lede">This is the numbered yard flag: stake it, sleeve it, ship it in the tube.</p>
+      </div>
+      <div class="gallery-grid">
+        <figure class="gcard" data-full="/images/flag-yard.jpg" data-cap="Staked and visible from the street.">
+          <img src="/images/flag-yard.jpg" alt="AF yard flag planted beside a chain-link fence">
+          <figcaption>
+            <strong>In the yard</strong>
+            <span>Staked and visible from the street.</span>
+          </figcaption>
+        </figure>
+        <figure class="gcard" data-full="/images/flag-kit.jpg" data-cap="Flag, sleeve, pole, and shipping tube.">
+          <img src="/images/flag-kit.jpg" alt="Flag kit with shipping tube, caps, and sleeve on a table">
+          <figcaption>
+            <strong>The kit</strong>
+            <span>Flag, sleeve, pole, and shipping tube.</span>
+          </figcaption>
+        </figure>
+        <figure class="gcard" data-full="/images/flag-detail.jpg" data-cap="Sleeve on. Logo reads at a glance.">
+          <img src="/images/flag-detail.jpg" alt="Close-up of sleeved AF flag among flowers">
+          <figcaption>
+            <strong>Close-up</strong>
+            <span>Sleeve on. Logo reads at a glance.</span>
+          </figcaption>
+        </figure>
+      </div>
+      <div class="gallery-cta">
+        <a class="btn primary" href="https://buy.stripe.com/3cI3cu9aq45JbmO2Fl2sM01" target="_blank" rel="noopener">BUY FLAG NOW</a>
+      </div>
+    </section>
+
+    <div class="lightbox" id="lightbox" hidden>
+      <img id="lightbox-img" alt="">
+      <p class="lb-cap" id="lightbox-cap"></p>
+    </div>
 
     <aside class="role-bar glass" aria-label="Role expectation">
       <div class="role-top">
@@ -1104,6 +1277,46 @@
             submitBtn.disabled = false;
             showError("Couldn't reach the lookup service. Try again in a minute.");
           });
+      });
+    })();
+
+    (function () {
+      var lb = document.getElementById("lightbox");
+      var img = document.getElementById("lightbox-img");
+      var cap = document.getElementById("lightbox-cap");
+      if (!lb || !img) return;
+
+      function openLb(src, text, alt) {
+        img.src = src;
+        img.alt = alt || "";
+        cap.textContent = text || "";
+        lb.hidden = false;
+        lb.classList.add("open");
+      }
+
+      function closeLb() {
+        lb.classList.remove("open");
+        lb.hidden = true;
+        img.src = "";
+      }
+
+      document.querySelectorAll(".gcard").forEach(function (card) {
+        card.addEventListener("click", function () {
+          var photo = card.querySelector("img");
+          openLb(card.getAttribute("data-full"), card.getAttribute("data-cap"), photo ? photo.alt : "");
+        });
+        card.setAttribute("tabindex", "0");
+        card.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            card.click();
+          }
+        });
+      });
+
+      lb.addEventListener("click", closeLb);
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") closeLb();
       });
     })();
   </script>

@@ -1,0 +1,6 @@
+# Pretty URL for flag stats (Apache / Namecheap)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /api/
+  RewriteRule ^flag-stats/?$ flag-stats.php [L]
+</IfModule>

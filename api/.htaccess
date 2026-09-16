@@ -1,6 +1,7 @@
-# Pretty URL for flag stats (Apache / Namecheap)
+# Pretty URLs for shop API (Apache / Namecheap)
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /api/
   RewriteRule ^flag-stats/?$ flag-stats.php [L]
+  RewriteRule ^stripe-webhook/?$ stripe-webhook.php [L]
 </IfModule>

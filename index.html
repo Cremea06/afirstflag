@@ -413,43 +413,17 @@
       font-size: 14px;
     }
 
-    .live-state-card {
-      margin-top: 4px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: rgba(0, 0, 0, 0.22);
-      border: 1px dashed rgba(255, 255, 255, 0.22);
-      color: rgba(244, 247, 255, 0.72);
+    #live-state-panel.drawer-body {
+      padding-top: 0;
+      padding-bottom: 12px;
     }
 
-    .live-state-card .ls-label {
-      display: block;
-      font-size: 11px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      font-weight: 700;
-      color: rgba(244, 247, 255, 0.55);
-      margin-bottom: 4px;
-    }
-
-    .live-state-card .ls-value {
-      display: block;
-      font-size: 18px;
-      font-weight: 700;
-      font-style: normal;
+    .drawer-body #live-home-visits.online-chip {
+      display: inline-block;
+      margin: 0 0 2px;
       font-variant-numeric: tabular-nums;
-      color: rgba(244, 247, 255, 0.88);
     }
 
-    .live-state-card .ls-note {
-      display: block;
-      margin-top: 6px;
-      font-size: 11px;
-      line-height: 1.4;
-      font-weight: 500;
-      font-style: italic;
-      color: rgba(244, 247, 255, 0.52);
-    }
 
     /* Built With Gratitude — g10 drawer under role bar */
     .gratitude-wrap {
@@ -814,11 +788,7 @@
           <span class="chev" aria-hidden="true">▾</span>
         </button>
         <div class="drawer-body" id="live-state-panel">
-          <div class="live-state-card" id="live-state-home">
-            <span class="ls-label">Homepage visits</span>
-            <span class="ls-value" id="live-home-visits">—</span>
-            <span class="ls-note">Page loads since counter start (not unique visitors)</span>
-          </div>
+          <div id="live-home-visits" class="online-chip" aria-live="polite">— visits</div>
         </div>
       </section>
     </div>
@@ -1269,13 +1239,13 @@
         .then(function (data) {
           var n = data && data.homeVisits;
           if (typeof n !== "number" || !isFinite(n) || n < 0) {
-            valueEl.textContent = "—";
+            valueEl.textContent = "— visits";
             return;
           }
-          valueEl.textContent = fmt(Math.floor(n));
+          valueEl.textContent = fmt(Math.floor(n)) + " visits";
         })
         .catch(function () {
-          valueEl.textContent = "—";
+          valueEl.textContent = "— visits";
         });
     })();
 

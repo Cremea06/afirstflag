@@ -407,6 +407,16 @@
       font-variant-numeric: tabular-nums;
     }
 
+    .live-visits-note {
+      display: block;
+      margin: 6px 0 0;
+      font-size: 11px;
+      line-height: 1.4;
+      font-weight: 500;
+      font-style: italic;
+      color: rgba(244, 247, 255, 0.52);
+    }
+
 
     /* Built With Gratitude — g10 drawer under role bar */
 
@@ -880,6 +890,7 @@
         </button>
         <div class="drawer-body" id="live-state-panel">
           <div id="live-home-visits" class="online-chip" aria-live="polite">— visits</div>
+          <p class="live-visits-note">Browsers counted since counter start (same browser is not counted again)</p>
         </div>
       </section>
     </div>
@@ -1366,12 +1377,59 @@
       var valueEl = document.getElementById("live-home-visits");
       if (!valueEl) return;
 
+      var COUNT_KEY = "af_home_counted";
+
       function fmt(n) {
         try {
           return Number(n).toLocaleString("en-US");
         } catch (e) {
           return String(n);
         }
+      }
+
+      function paint(n) {
+        if (typeof n !== "number" || !isFinite(n) || n < 0) {
+          valueEl.textContent = "— visits";
+          return;
+        }
+        valueEl.textContent = fmt(Math.floor(n)) + " visits";
+      }
+
+      function paintError() {
+        valueEl.textContent = "— visits";
+      }
+
+      function readOnlyFetch() {
+        fetch("/api/live-stats.php")
+          .then(function (res) {
+            if (!res.ok) throw new Error("bad status");
+            return res.json();
+          })
+          .then(function (data) {
+            paint(data && data.homeVisits);
+          })
+          .catch(function () {
+            paintError();
+          });
+      }
+
+      var alreadyCounted = false;
+      var storageOk = true;
+      try {
+        alreadyCounted = localStorage.getItem(COUNT_KEY) === "1";
+      } catch (e) {
+        storageOk = false;
+      }
+
+      if (!storageOk) {
+        // Storage blocked — never hit; paint read-only
+        readOnlyFetch();
+        return;
+      }
+
+      if (alreadyCounted) {
+        readOnlyFetch();
+        return;
       }
 
       fetch("/api/live-stats.php?hit=1")
@@ -1381,14 +1439,18 @@
         })
         .then(function (data) {
           var n = data && data.homeVisits;
-          if (typeof n !== "number" || !isFinite(n) || n < 0) {
-            valueEl.textContent = "— visits";
-            return;
+          paint(n);
+          if (typeof n === "number" && isFinite(n) && n >= 0) {
+            try {
+              localStorage.setItem(COUNT_KEY, "1");
+            } catch (e) {
+              /* ignore — next load may retry hit */
+            }
           }
-          valueEl.textContent = fmt(Math.floor(n)) + " visits";
         })
         .catch(function () {
-          valueEl.textContent = "— visits";
+          paintError();
+          /* do not set af_home_counted — failed hit can retry next load */
         });
     })();
 

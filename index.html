@@ -1469,12 +1469,77 @@
     (function () {
       var drawer = document.getElementById("live-state-drawer");
       var btn = document.getElementById("live-state-toggle");
+      var noteEl = document.querySelector("#live-state-panel .live-visits-note");
       if (!drawer || !btn) return;
+
+      var FINAL_NOTE = "Browsers counted since counter start (same browser is not counted again)";
+      var playedOnce = false;
+      var timers = [];
+
+      function clearTimers() {
+        for (var i = 0; i < timers.length; i++) clearTimeout(timers[i]);
+        timers = [];
+      }
+
+      function setNote(text) {
+        if (noteEl) noteEl.textContent = text;
+      }
+
+      function markPresent() {
+        try {
+          return localStorage.getItem("af_home_counted") === "1";
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function reduceMotion() {
+        try {
+          return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function playSequence() {
+        clearTimers();
+        if (!noteEl) return;
+        if (reduceMotion()) {
+          setNote(FINAL_NOTE);
+          playedOnce = true;
+          return;
+        }
+        var hasMark = markPresent();
+        setNote("Checking visit mark");
+        timers.push(setTimeout(function () {
+          setNote(hasMark ? "Mark found: Yes" : "Mark found: No");
+        }, 650));
+        timers.push(setTimeout(function () {
+          setNote(hasMark ? "Welcome back" : "Welcome");
+        }, 1300));
+        timers.push(setTimeout(function () {
+          setNote(FINAL_NOTE);
+          playedOnce = true;
+        }, 2000));
+      }
+
       btn.addEventListener("click", function () {
         var open = drawer.classList.toggle("open");
         btn.setAttribute("aria-expanded", open ? "true" : "false");
         var state = btn.querySelector(".label-state");
         if (state) state.textContent = open ? "collapse" : "expand";
+
+        if (open) {
+          if (playedOnce) {
+            clearTimers();
+            setNote(FINAL_NOTE);
+          } else {
+            playSequence();
+          }
+        } else {
+          clearTimers();
+          if (playedOnce) setNote(FINAL_NOTE);
+        }
       });
     })();
 

@@ -398,20 +398,30 @@
 
     #live-state-panel.drawer-body {
       padding-top: 0;
-      padding-bottom: 12px;
+      padding-bottom: 10px;
     }
 
-    .drawer-body #live-home-visits.online-chip {
+    .live-visits-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 12px;
+    }
+
+    .live-visits-row #live-home-visits.online-chip {
       display: inline-block;
-      margin: 0 0 2px;
+      margin: 0;
+      flex: 0 0 auto;
       font-variant-numeric: tabular-nums;
     }
 
-    .live-visits-note {
-      display: block;
-      margin: 6px 0 0;
+    .live-visits-row .live-visits-note {
+      display: inline;
+      margin: 0;
+      flex: 1 1 12rem;
+      min-width: 0;
       font-size: 11px;
-      line-height: 1.4;
+      line-height: 1.35;
       font-weight: 500;
       font-style: italic;
       color: rgba(244, 247, 255, 0.52);
@@ -889,8 +899,10 @@
           <span class="chev" aria-hidden="true">▾</span>
         </button>
         <div class="drawer-body" id="live-state-panel">
-          <div id="live-home-visits" class="online-chip" aria-live="polite">— visits</div>
-          <p class="live-visits-note">Browsers counted since counter start (same browser is not counted again)</p>
+          <div class="live-visits-row">
+            <div id="live-home-visits" class="online-chip" aria-live="polite">— visits</div>
+            <p class="live-visits-note">Browsers counted since counter start (same browser is not counted again)</p>
+          </div>
         </div>
       </section>
     </div>

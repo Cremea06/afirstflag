@@ -402,6 +402,43 @@
     }
 
 
+    /* Live-state Analysis — compact drawer above windows (same chrome as Gratitude) */
+    .live-state-wrap {
+      flex-shrink: 0;
+      margin: 8px 16px 6px;
+    }
+
+    .live-state-wrap .drawer-toggle {
+      padding: 10px 16px;
+      font-size: 14px;
+    }
+
+    .live-state-card {
+      margin-top: 4px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px dashed rgba(255, 255, 255, 0.22);
+      color: rgba(244, 247, 255, 0.72);
+    }
+
+    .live-state-card .ls-label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: rgba(244, 247, 255, 0.55);
+      margin-bottom: 4px;
+    }
+
+    .live-state-card .ls-value {
+      font-size: 14px;
+      font-weight: 600;
+      font-style: italic;
+      color: rgba(244, 247, 255, 0.78);
+    }
+
     /* Built With Gratitude — g10 drawer under role bar */
     .gratitude-wrap {
       flex-shrink: 0;
@@ -757,6 +794,21 @@
         <a href="https://chat.afirstflag.com/" target="_blank" rel="noopener">CONTACT</a>
       </nav>
     </header>
+
+    <div class="live-state-wrap">
+      <section class="drawer glass" id="live-state-drawer" aria-label="Live-state Analysis">
+        <button type="button" class="drawer-toggle" id="live-state-toggle" aria-expanded="false" aria-controls="live-state-panel">
+          <span>Live-state Analysis <span style="opacity:0.6;font-weight:600;font-size:12px">· click to <span class="label-state">expand</span></span></span>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="drawer-body" id="live-state-panel">
+          <div class="live-state-card">
+            <span class="ls-label">Homepage visitors</span>
+            <span class="ls-value">Coming soon</span>
+          </div>
+        </div>
+      </section>
+    </div>
 
     <main class="windows" id="home" aria-label="Main site components">
       <section class="window red" aria-labelledby="win-flag">
@@ -1181,6 +1233,18 @@
       setInterval(sendHeartbeat, 20000);
       updateCount();
       setInterval(updateCount, 15000);
+    })();
+
+    (function () {
+      var drawer = document.getElementById("live-state-drawer");
+      var btn = document.getElementById("live-state-toggle");
+      if (!drawer || !btn) return;
+      btn.addEventListener("click", function () {
+        var open = drawer.classList.toggle("open");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        var state = btn.querySelector(".label-state");
+        if (state) state.textContent = open ? "collapse" : "expand";
+      });
     })();
 
     (function () {

@@ -315,28 +315,11 @@
       margin-top: 8px;
     }
 
-    /* Role expectation */
-    .role-bar {
+    /* Role expectation — drawer (same chrome as Gallery / Gratitude) */
+    .role-bar.drawer {
       flex-shrink: 0;
       margin: 0 16px 10px;
-      padding: 12px 16px 14px;
-      border-radius: 16px;
       color: #f4f7ff;
-    }
-
-    .role-top {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-
-    .role-bar .label {
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: rgba(244, 247, 255, 0.7);
-      font-weight: 700;
     }
 
     .online-chip {
@@ -832,24 +815,27 @@
       </section>
     </main>
 
-    <aside class="role-bar glass" aria-label="Role expectation">
-      <div class="role-top">
-        <div class="label">Role expectation</div>
+    <aside class="drawer glass role-bar" id="role-drawer" aria-label="Role expectation">
+      <button type="button" class="drawer-toggle" id="role-toggle" aria-expanded="false" aria-controls="role-panel">
+        <span>Role expectation <span style="opacity:0.6;font-weight:600;font-size:12px">· click to <span class="label-state">expand</span></span></span>
+        <span class="chev" aria-hidden="true">▾</span>
+      </button>
+      <div class="drawer-body" id="role-panel">
+        <p class="role-sentence">
+          <span>As a</span>
+          <select id="role" aria-label="Choose a role">
+            <option value="guest">Guest User</option>
+            <option value="sponsor">Sponsor</option>
+            <option value="founder">Founder</option>
+            <option value="developer">Developer</option>
+            <option value="buyer">Buyer</option>
+            <option value="member">Member</option>
+          </select>
+          <span id="of">of this site,</span>
+        </p>
+        <p id="role-rest"></p>
+        <p class="role-hint">Choose a role. The expectation updates immediately.</p>
       </div>
-      <p class="role-sentence">
-        <span>As a</span>
-        <select id="role" aria-label="Choose a role">
-          <option value="guest">Guest User</option>
-          <option value="sponsor">Sponsor</option>
-          <option value="founder">Founder</option>
-          <option value="developer">Developer</option>
-          <option value="buyer">Buyer</option>
-          <option value="member">Member</option>
-        </select>
-        <span id="of">of this site,</span>
-      </p>
-      <p id="role-rest"></p>
-      <p class="role-hint">Choose a role. The expectation updates immediately.</p>
     </aside>
 
     <div class="gratitude-wrap">
@@ -1165,6 +1151,19 @@
       roleSelect.addEventListener("change", updateRole);
       updateRole();
     })();
+
+    (function () {
+      var drawer = document.getElementById("role-drawer");
+      var btn = document.getElementById("role-toggle");
+      if (!drawer || !btn) return;
+      btn.addEventListener("click", function () {
+        var open = drawer.classList.toggle("open");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        var state = btn.querySelector(".label-state");
+        if (state) state.textContent = open ? "collapse" : "expand";
+      });
+    })();
+
 
     (function () {
       let visitorId = localStorage.getItem("af_visitor_id");

@@ -433,10 +433,22 @@
     }
 
     .live-state-card .ls-value {
-      font-size: 14px;
-      font-weight: 600;
+      display: block;
+      font-size: 18px;
+      font-weight: 700;
+      font-style: normal;
+      font-variant-numeric: tabular-nums;
+      color: rgba(244, 247, 255, 0.88);
+    }
+
+    .live-state-card .ls-note {
+      display: block;
+      margin-top: 6px;
+      font-size: 11px;
+      line-height: 1.4;
+      font-weight: 500;
       font-style: italic;
-      color: rgba(244, 247, 255, 0.78);
+      color: rgba(244, 247, 255, 0.52);
     }
 
     /* Built With Gratitude — g10 drawer under role bar */
@@ -802,9 +814,10 @@
           <span class="chev" aria-hidden="true">▾</span>
         </button>
         <div class="drawer-body" id="live-state-panel">
-          <div class="live-state-card">
-            <span class="ls-label">Homepage visitors</span>
-            <span class="ls-value">Coming soon</span>
+          <div class="live-state-card" id="live-state-home">
+            <span class="ls-label">Homepage visits</span>
+            <span class="ls-value" id="live-home-visits">—</span>
+            <span class="ls-note">Page loads since counter start (not unique visitors)</span>
           </div>
         </div>
       </section>
@@ -1233,6 +1246,37 @@
       setInterval(sendHeartbeat, 20000);
       updateCount();
       setInterval(updateCount, 15000);
+    })();
+
+
+    (function () {
+      var valueEl = document.getElementById("live-home-visits");
+      if (!valueEl) return;
+
+      function fmt(n) {
+        try {
+          return Number(n).toLocaleString("en-US");
+        } catch (e) {
+          return String(n);
+        }
+      }
+
+      fetch("/api/live-stats.php?hit=1")
+        .then(function (res) {
+          if (!res.ok) throw new Error("bad status");
+          return res.json();
+        })
+        .then(function (data) {
+          var n = data && data.homeVisits;
+          if (typeof n !== "number" || !isFinite(n) || n < 0) {
+            valueEl.textContent = "—";
+            return;
+          }
+          valueEl.textContent = fmt(Math.floor(n));
+        })
+        .catch(function () {
+          valueEl.textContent = "—";
+        });
     })();
 
     (function () {

@@ -632,33 +632,15 @@
 
     html { scroll-behavior: smooth; }
 
-    .gallery-band {
+    .gallery-band.drawer {
       flex-shrink: 0;
       margin: 10px 16px 18px;
-      padding: 16px 16px 18px;
-      border-radius: 16px;
       color: #f4f7ff;
       scroll-margin-top: 18px;
     }
 
-    .gallery-head {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-    }
-
-    .gallery-head h2 {
-      font-size: 13px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: rgba(244, 247, 255, 0.7);
-      font-weight: 700;
-    }
-
-    .gallery-lede {
+    .gallery-band .gallery-lede {
+      margin: 0 0 14px;
       font-size: 13px;
       line-height: 1.45;
       color: rgba(244, 247, 255, 0.85);
@@ -1098,12 +1080,14 @@
       </section>
     </div>
 
-    <section class="gallery-band glass" id="gallery" aria-label="Flag gallery">
-      <div class="gallery-head">
-        <h2>Gallery</h2>
+    <section class="drawer glass gallery-band" id="gallery" aria-label="Flag gallery">
+      <button type="button" class="drawer-toggle" id="gallery-toggle" aria-expanded="false" aria-controls="gallery-panel">
+        <span>Gallery <span style="opacity:0.6;font-weight:600;font-size:12px">· click to <span class="label-state">expand</span></span></span>
+        <span class="chev" aria-hidden="true">▾</span>
+      </button>
+      <div class="drawer-body" id="gallery-panel">
         <p class="gallery-lede">This is the numbered yard flag: stake it, sleeve it, ship it in the tube.</p>
-      </div>
-      <div class="gallery-grid">
+        <div class="gallery-grid">
         <figure class="gcard" data-full="/images/flag-yard.jpg" data-cap="Staked and visible from the street.">
           <img src="/images/flag-yard.jpg" alt="AF yard flag planted beside a chain-link fence">
           <figcaption>
@@ -1128,6 +1112,7 @@
       </div>
       <div class="gallery-cta">
         <a class="btn primary" href="https://buy.stripe.com/3cI3cu9aq45JbmO2Fl2sM01" target="_blank" rel="noopener">BUY FLAG NOW</a>
+      </div>
       </div>
     </section>
 
@@ -1272,6 +1257,38 @@
         if (state) state.textContent = open ? "collapse" : "expand";
       });
     })();
+    (function () {
+      var drawer = document.getElementById("gallery");
+      var btn = document.getElementById("gallery-toggle");
+      if (!drawer || !btn) return;
+
+      function setOpen(open) {
+        drawer.classList.toggle("open", open);
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        var state = btn.querySelector(".label-state");
+        if (state) state.textContent = open ? "collapse" : "expand";
+      }
+
+      btn.addEventListener("click", function () {
+        setOpen(!drawer.classList.contains("open"));
+      });
+
+      function openFromHash() {
+        if ((location.hash || "").toLowerCase() === "#gallery") {
+          setOpen(true);
+        }
+      }
+
+      openFromHash();
+      window.addEventListener("hashchange", openFromHash);
+
+      document.querySelectorAll('a[href="#gallery"]').forEach(function (a) {
+        a.addEventListener("click", function () {
+          setOpen(true);
+        });
+      });
+    })();
+
 
     (function () {
       var host = (location.hostname || "").toLowerCase();

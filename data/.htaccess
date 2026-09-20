@@ -1,4 +1,4 @@
-# Block direct HTTP access to inventory files
+# Block direct HTTP access to live-stats store
 <IfModule mod_authz_core.c>
   Require all denied
 </IfModule>

@@ -422,9 +422,9 @@
       min-width: 0;
       font-size: 11px;
       line-height: 1.35;
-      font-weight: 500;
+      font-weight: 600;
       font-style: italic;
-      color: rgba(244, 247, 255, 0.52);
+      color: #f4c430;
     }
 
 
@@ -901,7 +901,7 @@
         <div class="drawer-body" id="live-state-panel">
           <div class="live-visits-row">
             <div id="live-home-visits" class="online-chip" aria-live="polite">— visits</div>
-            <p class="live-visits-note">Browsers counted since counter start (same browser is not counted again)</p>
+            <p class="live-visits-note">Welcome</p>
           </div>
         </div>
       </section>
@@ -1472,8 +1472,8 @@
       var noteEl = document.querySelector("#live-state-panel .live-visits-note");
       if (!drawer || !btn) return;
 
-      var FINAL_NOTE = "Browsers counted since counter start (same browser is not counted again)";
       var playedOnce = false;
+      var lockedWelcome = "Welcome";
       var timers = [];
 
       function clearTimers() {
@@ -1493,6 +1493,10 @@
         }
       }
 
+      function welcomeForMark(hasMark) {
+        return hasMark ? "Welcome back" : "Welcome";
+      }
+
       function reduceMotion() {
         try {
           return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1504,21 +1508,23 @@
       function playSequence() {
         clearTimers();
         if (!noteEl) return;
+        var hasMark = markPresent();
+        lockedWelcome = welcomeForMark(hasMark);
         if (reduceMotion()) {
-          setNote(FINAL_NOTE);
+          setNote(lockedWelcome);
           playedOnce = true;
           return;
         }
-        var hasMark = markPresent();
+        // Same ~2s timing as CHG-027; lock stays on Welcome / Welcome back (accent via CSS)
         setNote("Checking visit mark");
         timers.push(setTimeout(function () {
           setNote(hasMark ? "Mark found: Yes" : "Mark found: No");
         }, 650));
         timers.push(setTimeout(function () {
-          setNote(hasMark ? "Welcome back" : "Welcome");
+          setNote(lockedWelcome);
         }, 1300));
         timers.push(setTimeout(function () {
-          setNote(FINAL_NOTE);
+          setNote(lockedWelcome);
           playedOnce = true;
         }, 2000));
       }
@@ -1532,13 +1538,13 @@
         if (open) {
           if (playedOnce) {
             clearTimers();
-            setNote(FINAL_NOTE);
+            setNote(lockedWelcome);
           } else {
             playSequence();
           }
         } else {
           clearTimers();
-          if (playedOnce) setNote(FINAL_NOTE);
+          if (playedOnce) setNote(lockedWelcome);
         }
       });
     })();

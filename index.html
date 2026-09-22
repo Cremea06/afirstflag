@@ -206,6 +206,40 @@
       margin-top: auto;
     }
 
+
+    /* CHG-029 — three windows start collapsed; open together on first engage */
+    .windows .window {
+      cursor: pointer;
+      overflow: hidden;
+      transition: min-height 0.28s ease, padding 0.28s ease, gap 0.28s ease;
+    }
+
+    .windows .window.open {
+      cursor: default;
+    }
+
+    .windows .window:not(.open) {
+      min-height: 3.25rem;
+      height: auto;
+      padding: 14px 18px;
+      gap: 0;
+      justify-content: center;
+    }
+
+    .windows .window:not(.open) .window-body {
+      flex: 0 0 auto;
+      gap: 0;
+    }
+
+    .windows .window:not(.open) .window-body > a,
+    .windows .window:not(.open) .flag-teaser,
+    .windows .window:not(.open) .window-lines li:not(:first-child),
+    .windows .window:not(.open) .window-cta,
+    .windows .window:not(.open) #online-counter {
+      display: none !important;
+    }
+
+
     .btn {
       display: inline-flex;
       align-items: center;
@@ -1913,6 +1947,51 @@
         if (e.key === "Escape") closeLb();
       });
     })();
+
+    (function () {
+      var root = document.querySelector("main.windows");
+      if (!root) return;
+      var cards = root.querySelectorAll(".window");
+      if (!cards.length) return;
+
+      var KEY = "a1-windows-opened";
+
+      function openAll() {
+        for (var i = 0; i < cards.length; i++) {
+          cards[i].classList.add("open");
+        }
+        try {
+          sessionStorage.setItem(KEY, "1");
+        } catch (e) {}
+      }
+
+      var already = false;
+      try {
+        already = sessionStorage.getItem(KEY) === "1";
+      } catch (e) {}
+
+      if (already) {
+        openAll();
+        return;
+      }
+
+      for (var i = 0; i < cards.length; i++) {
+        if (!cards[i].hasAttribute("tabindex")) {
+          cards[i].setAttribute("tabindex", "0");
+        }
+      }
+
+      function onFirst() {
+        openAll();
+      }
+
+      for (var j = 0; j < cards.length; j++) {
+        cards[j].addEventListener("mouseenter", onFirst, { once: true });
+        cards[j].addEventListener("focusin", onFirst, { once: true });
+        cards[j].addEventListener("click", onFirst, { once: true });
+      }
+    })();
+
   </script>
 </body>
 </html>

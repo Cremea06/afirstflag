@@ -57,15 +57,22 @@
       text-decoration: none;
     }
 
-    nav { display: flex; gap: 24px; }
-
-    nav a {
+    /* CHG-034: header BTC balance chip (replaces nav) */
+    .btc-balance-chip {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 4px;
+      background: #2f6fd6;
+      color: #fff;
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
       text-decoration: none;
-      color: #f4f7ff;
-      font-size: 13px;
-      letter-spacing: 0.08em;
-      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.18);
     }
+    .btc-balance-chip:hover { background: #3a7be3; }
+    .btc-balance-chip:focus-visible { outline: 2px solid #f4c430; outline-offset: 2px; }
 
     /* Three main windows — equal size (match tallest/middle), space above/below */
     .windows {
@@ -785,10 +792,10 @@
         flex-direction: column;
         gap: 12px;
       }
-      nav {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 14px;
+      .btc-balance-chip {
+        font-size: 14px;
+        white-space: normal;
+        text-align: center;
       }
     }
 
@@ -917,13 +924,11 @@
   <div class="page">
     <header class="glass">
       <a class="logo" href="#home">AMERICA FIRST ECOSYSTEM</a>
-      <nav>
-        <a href="#home">HOME</a>
-        <a href="https://fuentes.store/" target="_blank" rel="noopener">SHOP</a>
-        <a href="https://americafirst.plus/" target="_blank" rel="noopener">CONTENT</a>
-        <a href="#gallery">GALLERY</a>
-        <a href="https://chat.afirstflag.com/" target="_blank" rel="noopener">CONTACT</a>
-      </nav>
+      <a class="btc-balance-chip" id="header-btc-balance"
+         href="https://mempool.space/address/bc1qcergrmvap2rlnx3e7g2nl8e5seh54mymrsjfnl"
+         target="_blank" rel="noopener"
+         title="bc1qcergrmvap2rlnx3e7g2nl8e5seh54mymrsjfnl (public address, view on mempool.space)"
+         aria-live="polite">Confirmed balance: <span class="btc-balance-value">0.00000</span> BTC</a>
     </header>
 
     <div class="live-state-wrap">
@@ -1884,6 +1889,53 @@
             showError("Couldn't reach the lookup service. Try again in a minute.");
           });
       });
+    })();
+
+
+    /* CHG-034: header confirmed BTC balance (public address only; never private keys) */
+    (function () {
+      var ADDRESS = "bc1qcergrmvap2rlnx3e7g2nl8e5seh54mymrsjfnl";
+      var chip = document.getElementById("header-btc-balance");
+      if (!chip) return;
+      var valueEl = chip.querySelector(".btc-balance-value");
+      var NEST_API = "https://chat.afirstflag.com"; /* shop-domain /api/flag-wallet-lookup is 404 */
+
+      function paint(btc) {
+        var x = Number(btc);
+        valueEl.textContent = isFinite(x) && x >= 0 ? x.toFixed(5) : "—";
+      }
+
+      function fromNest() {
+        return fetch(NEST_API + "/api/flag-wallet-lookup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ address: ADDRESS })
+        }).then(function (res) {
+          if (!res.ok) throw new Error("nest " + res.status);
+          return res.json();
+        }).then(function (d) {
+          if (!d || !d.ok || typeof d.balance_btc !== "number") throw new Error("nest shape");
+          return d.balance_btc;
+        });
+      }
+
+      function fromMempool() {
+        return fetch("https://mempool.space/api/address/" + ADDRESS).then(function (res) {
+          if (!res.ok) throw new Error("mempool " + res.status);
+          return res.json();
+        }).then(function (d) {
+          var c = d && d.chain_stats;
+          if (!c) throw new Error("mempool shape");
+          return (c.funded_txo_sum - c.spent_txo_sum) / 1e8;
+        });
+      }
+
+      function refresh() {
+        fromNest().catch(fromMempool).then(paint).catch(function () { paint(NaN); });
+      }
+
+      refresh();
+      setInterval(refresh, 5 * 60 * 1000);
     })();
 
     (function () {

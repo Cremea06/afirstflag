@@ -128,6 +128,132 @@
       color: #fff;
     }
 
+    /* CHG-038 — Buy Flag stand-in → live crossfade */
+    .window.red {
+      position: relative;
+    }
+    .window.red .flag-standin,
+    .window.red .flag-live {
+      transition: opacity 0.8s ease;
+    }
+    .window.red .flag-live {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      flex: 1 1 auto;
+      min-height: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .window.red .flag-standin {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 18px 16px;
+      border-radius: 18px;
+      box-sizing: border-box;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .window.red .flag-standin-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+    .window.red .flag-standin-pic {
+      width: 100%;
+      height: 110px;
+      border-radius: 10px;
+      background: #2f6fd6;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.3;
+      padding: 8px;
+      box-sizing: border-box;
+      margin-bottom: 8px;
+    }
+    .window.red .flag-standin-lines {
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #2f6fd6;
+      color: #fff;
+      font-size: clamp(13px, 1.35vw, 16px);
+      line-height: 1.35;
+      font-weight: 600;
+    }
+    .window.red .flag-standin-cta {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+      margin-top: auto;
+    }
+    .window.red .flag-standin-chip {
+      display: inline-flex;
+      align-self: flex-start;
+      background: #2f6fd6;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+    .window.red .flag-standin-buy {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      box-sizing: border-box;
+      background: #2f6fd6;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: clamp(11px, 1.15vw, 14px);
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      font-family: inherit;
+      text-align: center;
+      line-height: 1.25;
+      cursor: default;
+      pointer-events: none;
+      user-select: none;
+    }
+    .window.red.is-live .flag-standin {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .window.red.is-live .flag-live {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    /* Collapsed: keep existing first-line live label; hide stand-in overlay */
+    .windows .window.red:not(.open) .flag-standin {
+      display: none !important;
+    }
+    .windows .window.red:not(.open) .flag-live {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     .flags-left-chip {
       display: inline-flex;
       align-self: flex-start;
@@ -947,20 +1073,36 @@
 
     <main class="windows" id="home" aria-label="Main site components">
       <section class="window red" aria-labelledby="win-flag">
-        <div class="window-body">
-          <h2 id="win-flag" class="visually-hidden" style="position:absolute;left:-9999px;">Buy Flag</h2>
-          <a href="#gallery" title="See the flag in the yard">
-            <img class="flag-teaser" src="/images/flag-yard-thumb.jpg" alt="America First yard flag staked in a flower bed">
-          </a>
-          <ul class="window-lines">
-            <li>Support the movement</li>
-            <li>Claim your flag and Bitcoin wallet</li>
-            <li>Become a Member</li>
-          </ul>
+        <div class="flag-standin" aria-hidden="true">
+          <div class="flag-standin-body">
+            <div class="flag-standin-pic">Your product picture here</div>
+            <ul class="flag-standin-lines">
+              <li>This</li>
+              <li>That</li>
+              <li>The other</li>
+            </ul>
+          </div>
+          <div class="flag-standin-cta">
+            <div class="flag-standin-chip">Live state API call</div>
+            <button type="button" class="flag-standin-buy" tabindex="-1" aria-disabled="true">Buy now-1-click-and-done-don't-make-me-do-extra-shit</button>
+          </div>
         </div>
-        <div class="window-cta">
-          <div id="flags-left" class="flags-left-chip" aria-live="polite">Flags available</div>
-          <a class="btn primary" href="https://buy.stripe.com/3cI3cu9aq45JbmO2Fl2sM01" target="_blank" rel="noopener">BUY FLAG NOW</a>
+        <div class="flag-live">
+          <div class="window-body">
+            <h2 id="win-flag" class="visually-hidden" style="position:absolute;left:-9999px;">Buy Flag</h2>
+            <a href="#gallery" title="See the flag in the yard">
+              <img class="flag-teaser" src="/images/flag-yard-thumb.jpg" alt="America First yard flag staked in a flower bed">
+            </a>
+            <ul class="window-lines">
+              <li>Support the movement</li>
+              <li>Claim your flag and Bitcoin wallet</li>
+              <li>Become a Member</li>
+            </ul>
+          </div>
+          <div class="window-cta">
+            <div id="flags-left" class="flags-left-chip" aria-live="polite">Flags available</div>
+            <a class="btn primary" href="https://buy.stripe.com/3cI3cu9aq45JbmO2Fl2sM01" target="_blank" rel="noopener">BUY FLAG NOW</a>
+          </div>
         </div>
       </section>
 
@@ -1938,25 +2080,53 @@
     })();
 
     (function () {
+      var red = document.querySelector("section.window.red");
+      if (!red) return;
+      setTimeout(function () {
+        red.classList.add("is-live");
+      }, 5000);
+    })();
+
+    (function () {
       var el = document.getElementById("flags-left");
       if (!el) return;
       var fallback = "Flags available";
-      fetch("/api/flag-stats.php")
-        .then(function (res) {
-          if (!res.ok) throw new Error("bad status");
-          return res.json();
-        })
-        .then(function (data) {
-          var n = data && data.remaining;
-          if (typeof n !== "number" || !isFinite(n) || n < 0) {
+      function fetchFlagStats() {
+        fetch("/api/flag-stats.php")
+          .then(function (res) {
+            if (!res.ok) throw new Error("bad status");
+            return res.json();
+          })
+          .then(function (data) {
+            var n = data && data.remaining;
+            if (typeof n !== "number" || !isFinite(n) || n < 0) {
+              el.textContent = fallback;
+              return;
+            }
+            el.textContent = Math.floor(n) + " flags left";
+          })
+          .catch(function () {
             el.textContent = fallback;
-            return;
+          });
+      }
+      var red = document.querySelector("section.window.red");
+      if (red && !red.classList.contains("is-live")) {
+        var started = false;
+        function start() {
+          if (started) return;
+          started = true;
+          fetchFlagStats();
+        }
+        var mo = new MutationObserver(function () {
+          if (red.classList.contains("is-live")) {
+            mo.disconnect();
+            start();
           }
-          el.textContent = Math.floor(n) + " flags left";
-        })
-        .catch(function () {
-          el.textContent = fallback;
         });
+        mo.observe(red, { attributes: true, attributeFilter: ["class"] });
+      } else {
+        fetchFlagStats();
+      }
     })();
 
     (function () {

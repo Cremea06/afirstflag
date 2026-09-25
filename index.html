@@ -128,7 +128,7 @@
       color: #fff;
     }
 
-    /* CHG-038 — Buy Flag stand-in → live crossfade */
+    /* CHG-038/039 — Buy Flag stand-in → live crossfade; stand-in chrome matches live */
     .window.red {
       position: relative;
     }
@@ -160,18 +160,13 @@
       opacity: 1;
       pointer-events: auto;
     }
-    .window.red .flag-standin-body {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      flex: 1 1 auto;
-      min-height: 0;
-    }
+    /* Quiet placeholder frame — same footprint as .flag-teaser; no blue fill */
     .window.red .flag-standin-pic {
       width: 100%;
       height: 110px;
       border-radius: 10px;
-      background: #2f6fd6;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      background: rgba(255, 255, 255, 0.06);
       color: #fff;
       display: flex;
       align-items: center;
@@ -184,58 +179,15 @@
       box-sizing: border-box;
       margin-bottom: 8px;
     }
-    .window.red .flag-standin-lines {
-      list-style: none;
-      display: grid;
-      gap: 8px;
-      margin: 0;
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: #2f6fd6;
-      color: #fff;
-      font-size: clamp(13px, 1.35vw, 16px);
-      line-height: 1.35;
-      font-weight: 600;
-    }
-    .window.red .flag-standin-cta {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      flex-shrink: 0;
-      margin-top: auto;
-    }
-    .window.red .flag-standin-chip {
-      display: inline-flex;
-      align-self: flex-start;
-      background: #2f6fd6;
-      color: #fff;
-      padding: 5px 10px;
-      border-radius: 10px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      white-space: nowrap;
-    }
+    /* Inert buy control: reuse .btn.primary glass under .window.red; long label size only */
     .window.red .flag-standin-buy {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      box-sizing: border-box;
-      background: #2f6fd6;
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-size: clamp(11px, 1.15vw, 14px);
-      font-weight: 800;
-      letter-spacing: 0.02em;
-      font-family: inherit;
-      text-align: center;
-      line-height: 1.25;
-      cursor: default;
       pointer-events: none;
+      cursor: default;
       user-select: none;
+      font-size: clamp(11px, 1.15vw, 14px);
+      letter-spacing: 0.02em;
+      line-height: 1.25;
+      text-align: center;
     }
     .window.red.is-live .flag-standin {
       opacity: 0;
@@ -1074,17 +1026,17 @@
     <main class="windows" id="home" aria-label="Main site components">
       <section class="window red" aria-labelledby="win-flag">
         <div class="flag-standin" aria-hidden="true">
-          <div class="flag-standin-body">
+          <div class="window-body">
             <div class="flag-standin-pic">Your product picture here</div>
-            <ul class="flag-standin-lines">
+            <ul class="window-lines">
               <li>This</li>
               <li>That</li>
               <li>The other</li>
             </ul>
           </div>
-          <div class="flag-standin-cta">
-            <div class="flag-standin-chip">Live state API call</div>
-            <button type="button" class="flag-standin-buy" tabindex="-1" aria-disabled="true">Buy now-1-click-and-done-don't-make-me-do-extra-shit</button>
+          <div class="window-cta">
+            <div class="flags-left-chip">Live state API call</div>
+            <button type="button" class="btn primary flag-standin-buy" tabindex="-1" aria-disabled="true">Buy now-1-click-and-done-don't-make-me-do-extra-shit</button>
           </div>
         </div>
         <div class="flag-live">

@@ -995,6 +995,36 @@
       .window-lines { font-size: 13px; gap: 6px; }
       .btn { padding: 11px 14px; font-size: 15px; }
     }
+
+    /* CHG-040: How it works drawer (reuses .drawer / .drawer-toggle / .drawer-body chrome) */
+    .how-band.drawer {
+      flex-shrink: 0;
+      margin: 0 16px 8px;
+      color: #f4f7ff;
+      scroll-margin-top: 18px;
+    }
+
+    .how-band .how-lede {
+      margin: 0 0 12px;
+      font-size: 13px;
+      line-height: 1.45;
+      color: rgba(244, 247, 255, 0.85);
+      font-weight: 500;
+    }
+
+    .how-band .how-map {
+      display: block;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    .how-band .how-map img {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+    }
   </style>
 </head>
 <body>
@@ -1375,6 +1405,22 @@
         </div>
       </section>
     </div>
+
+    <section class="drawer glass how-band" id="how-it-works" aria-label="How it works">
+      <button type="button" class="drawer-toggle" id="how-toggle" aria-expanded="false" aria-controls="how-panel">
+        <span>How it works <span style="opacity:0.6;font-weight:600;font-size:12px">· click to <span class="label-state">expand</span></span></span>
+        <span class="chev" aria-hidden="true">▾</span>
+      </button>
+      <div class="drawer-body" id="how-panel">
+        <p class="how-lede">Public system map: what a visitor can see and use. Tap the map to open it full size.</p>
+        <a class="how-map" href="/images/architecture-public.png" target="_blank" rel="noopener">
+          <picture>
+            <source srcset="/images/architecture-public.webp" type="image/webp">
+            <img src="/images/architecture-public.png" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit counts, collaborators, and flag stats. The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in.">
+          </picture>
+        </a>
+      </div>
+    </section>
 
     <section class="drawer glass gallery-band" id="gallery" aria-label="Flag gallery">
       <button type="button" class="drawer-toggle" id="gallery-toggle" aria-expanded="false" aria-controls="gallery-panel">
@@ -1875,6 +1921,38 @@
       window.addEventListener("hashchange", openFromHash);
 
       document.querySelectorAll('a[href="#gallery"]').forEach(function (a) {
+        a.addEventListener("click", function () {
+          setOpen(true);
+        });
+      });
+    })();
+
+    (function () {
+      var drawer = document.getElementById("how-it-works");
+      var btn = document.getElementById("how-toggle");
+      if (!drawer || !btn) return;
+
+      function setOpen(open) {
+        drawer.classList.toggle("open", open);
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        var state = btn.querySelector(".label-state");
+        if (state) state.textContent = open ? "collapse" : "expand";
+      }
+
+      btn.addEventListener("click", function () {
+        setOpen(!drawer.classList.contains("open"));
+      });
+
+      function openFromHash() {
+        if ((location.hash || "").toLowerCase() === "#how-it-works") {
+          setOpen(true);
+        }
+      }
+
+      openFromHash();
+      window.addEventListener("hashchange", openFromHash);
+
+      document.querySelectorAll('a[href="#how-it-works"]').forEach(function (a) {
         a.addEventListener("click", function () {
           setOpen(true);
         });

@@ -545,6 +545,48 @@
       color: #f4c430;
     }
 
+    /* CHG-041: Live-state command row (layout only; chrome reuses the chip class, .search-note, .search-row, .btn.primary, .role-hint) */
+    .live-cmd-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 12px;
+      margin-top: 10px;
+    }
+
+    .live-cmd-row #live-role-chip {
+      display: inline-block;
+      flex: 0 0 auto;
+      margin: 0;
+    }
+
+    .live-cmd-row .live-cmd-form {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 10px;
+      flex: 1 1 18rem;
+      min-width: 0;
+      max-width: 34rem;
+      margin: 0;
+    }
+
+    .live-cmd-row .live-cmd-form .search-row {
+      flex: 1 1 12rem;
+      min-width: 0;
+      width: auto;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .live-cmd-row #live-cmd-input {
+      min-width: 0;
+    }
+
+    .live-cmd-row #live-cmd-hint {
+      flex: 1 0 100%;
+      margin: 0;
+    }
+
 
     /* Built With Gratitude — g10 drawer under role bar */
 
@@ -1048,6 +1090,17 @@
           <div class="live-visits-row">
             <div id="live-home-visits" class="online-chip" aria-live="polite">— visits</div>
             <p class="live-visits-note">Welcome</p>
+          </div>
+          <div class="live-cmd-row" id="live-cmd-row">
+            <div id="live-role-chip" class="online-chip">Current role: Guest User</div>
+            <form class="live-cmd-form" id="live-cmd-form" action="#" autocomplete="off" novalidate>
+              <label class="search-note" for="live-cmd-input">Command</label>
+              <div class="search-row">
+                <input type="search" id="live-cmd-input" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" placeholder="/login" aria-describedby="live-cmd-hint">
+                <button type="submit" class="btn primary" id="live-cmd-submit">RUN</button>
+              </div>
+            </form>
+            <p class="role-hint" id="live-cmd-hint" aria-live="polite"></p>
           </div>
         </div>
       </section>
@@ -1724,6 +1777,27 @@
           clearTimers();
           if (playedOnce) setNote(lockedWelcome);
         }
+      });
+    })();
+
+    /* CHG-041: Live-state command field. Bound by id only; single command /login -> chat, same tab. */
+    (function () {
+      var form = document.getElementById("live-cmd-form");
+      var input = document.getElementById("live-cmd-input");
+      var hint = document.getElementById("live-cmd-hint");
+      if (!form || !input || !hint) return;
+
+      var LOGIN_URL = "https://chat.afirstflag.com/?login=1";
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var cmd = String(input.value || "").trim().toLowerCase();
+        if (cmd === "/login") {
+          hint.textContent = "";
+          window.location.assign(LOGIN_URL);
+          return;
+        }
+        hint.textContent = "unknown command.";
       });
     })();
 

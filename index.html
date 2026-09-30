@@ -560,6 +560,14 @@
       margin: 0;
     }
 
+    /* CHG-050: long member names stay on one line; the full text is in the chip's title */
+    .live-cmd-row #live-role-chip {
+      max-width: min(22rem, 100%);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .live-cmd-row .live-cmd-form {
       display: flex;
       flex-wrap: wrap;
@@ -1799,6 +1807,23 @@
         }
         hint.textContent = "unknown command.";
       });
+    })();
+
+    /* CHG-050: Live-state role chip shows the signed-in Nest member (CHG-049 contract). Text only. */
+    (function () {
+      var chip = document.getElementById('live-role-chip');
+      if (!chip) return;
+      function setRole(label) { chip.textContent = 'Current role: ' + label; chip.title = chip.textContent; } // textContent, never innerHTML
+      setRole('Guest User');
+      var ctl = new AbortController();
+      var timer = setTimeout(function () { ctl.abort(); }, 3000);
+      fetch('https://chat.afirstflag.com/api/member/me', { credentials: 'include', cache: 'no-store', signal: ctl.signal })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          if (d && d.member === true && typeof d.name === 'string' && d.name) setRole(d.name);
+        })
+        .catch(function () { /* stay "Guest User" */ })
+        .finally(function () { clearTimeout(timer); });
     })();
 
     (function () {

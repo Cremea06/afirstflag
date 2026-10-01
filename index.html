@@ -560,12 +560,30 @@
       margin: 0;
     }
 
-    /* CHG-050: long member names stay on one line; the full text is in the chip's title */
-    .live-cmd-row #live-role-chip {
+    /* CHG-052: role chip + name pill stack as one column item; with the pill hidden it is exactly the role chip's box */
+    .live-cmd-row .live-chip-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      flex: 0 1 auto;
+      min-width: 0;
       max-width: min(22rem, 100%);
+    }
+
+    /* CHG-050 (moved to the name pill in CHG-052): long names stay on one line; the full text is in the pill's title */
+    .live-cmd-row #live-name-chip {
+      max-width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      margin: 0;
+      padding: 4px 8px;
+      font-size: 10px;
+    }
+
+    #live-name-chip[hidden] {
+      display: none;
     }
 
     .live-cmd-row .live-cmd-form {
@@ -1100,7 +1118,10 @@
             <p class="live-visits-note">Welcome</p>
           </div>
           <div class="live-cmd-row" id="live-cmd-row">
-            <div id="live-role-chip" class="online-chip">Current role: Guest User</div>
+            <div class="live-chip-stack">
+              <div id="live-role-chip" class="online-chip">Current role: Guest User</div>
+              <div id="live-name-chip" class="online-chip" hidden></div>
+            </div>
             <form class="live-cmd-form" id="live-cmd-form" action="#" autocomplete="off" novalidate>
               <label class="search-note" for="live-cmd-input">Command</label>
               <div class="search-row">
@@ -1809,18 +1830,27 @@
       });
     })();
 
-    /* CHG-050: Live-state role chip shows the signed-in Nest member (CHG-049 contract). Text only. */
+    /* CHG-050/052: Live-state role chip shows the tier; the name pill shows who is signed in (CHG-049 contract). Text only. */
     (function () {
       var chip = document.getElementById('live-role-chip');
       if (!chip) return;
+      var nameChip = document.getElementById('live-name-chip');
       function setRole(label) { chip.textContent = 'Current role: ' + label; chip.title = chip.textContent; } // textContent, never innerHTML
+      function roleLabel(d) { return d && d.member === true ? 'Member' : 'Guest User'; } // CHG-052: future tiers (flagholder, operator) map here
+      function setName(name) {
+        if (!nameChip || typeof name !== 'string' || !name) return; // pill stays hidden
+        nameChip.textContent = 'Signed in: ' + name; // textContent, never innerHTML
+        nameChip.title = nameChip.textContent;
+        nameChip.hidden = false;
+      }
       setRole('Guest User');
       var ctl = new AbortController();
       var timer = setTimeout(function () { ctl.abort(); }, 3000);
       fetch('https://chat.afirstflag.com/api/member/me', { credentials: 'include', cache: 'no-store', signal: ctl.signal })
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (d) {
-          if (d && d.member === true && typeof d.name === 'string' && d.name) setRole(d.name);
+          setRole(roleLabel(d));
+          if (d && d.member === true) setName(d.name);
         })
         .catch(function () { /* stay "Guest User" */ })
         .finally(function () { clearTimeout(timer); });

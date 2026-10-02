@@ -1850,7 +1850,7 @@
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (d) {
           setRole(roleLabel(d));
-          if (d && d.member === true) setName(d.name);
+          if (d && d.member === true) setName(typeof d.display === 'string' && d.display ? d.display : d.name); // CHG-055: 'WV Andy' when a state is set
         })
         .catch(function () { /* stay "Guest User" */ })
         .finally(function () { clearTimeout(timer); });

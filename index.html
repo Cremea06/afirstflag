@@ -1095,7 +1095,7 @@
       height: auto;
     }
 
-    /* CHG-060 / CHG-062: "Run page in Rust / C" links and engine chip (Live-state drawer) */
+    /* CHG-060 / CHG-062 / CHG-063: Engine options (JS current + Rust/C links + chip) */
     .engine-row {
       display: flex;
       flex-wrap: wrap;
@@ -1117,7 +1117,11 @@
       text-underline-offset: 3px;
     }
     .engine-row a:hover, .engine-row a:focus-visible { color: #fff; }
-    .engine-row a[hidden], .engine-chip[hidden] { display: none; }
+    .engine-row a[hidden], .engine-chip[hidden], #engine-js-current[hidden] { display: none; }
+    #engine-js-current {
+      color: rgba(244, 247, 255, 0.65);
+      font-weight: 600;
+    }
     .engine-chip {
       display: inline-block;
       padding: 3px 10px;
@@ -1171,9 +1175,10 @@
           </div>
           <div class="live-engine-row engine-row" id="engine-row" aria-label="Page engine">
             <span class="search-note">Engine</span>
+            <span id="engine-js-current">Run page in JavaScript</span>
+            <a id="engine-js-link" href="/" hidden>Run page in JavaScript</a>
             <a class="engine-link" data-engine="rust" href="/rust/">Run page in Rust</a>
             <a class="engine-link" data-engine="c" href="/c/">Run page in C</a>
-            <a id="engine-js-link" href="/" hidden>Run page in JavaScript</a>
             <span class="engine-chip" id="engine-chip" role="status" hidden></span>
           </div>
         </div>
@@ -2504,10 +2509,12 @@
       }
     })();
 
-    /* CHG-060: /rust/ and /c/ (or ?engine=rust|c) load the WebAssembly engine. The root page loads nothing extra. */
+    /* CHG-060 / CHG-063: /rust/ and /c/ (or ?engine=rust|c) load the WebAssembly engine. Hide JS-current placeholder so #engine-js-link can show. Root keeps the placeholder. */
     (function () {
       var p = location.pathname || "";
       if (!/^\/(rust|c)\/?(index\.html)?$/i.test(p) && !/[?&]engine=(rust|c)\b/i.test(location.search || "")) return;
+      var cur = document.getElementById("engine-js-current");
+      if (cur) cur.hidden = true;
       var s = document.createElement("script");
       s.src = "/engine/aff-engine.js?v=060-1";
       document.body.appendChild(s);

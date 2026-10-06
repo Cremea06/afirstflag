@@ -134,6 +134,7 @@
       position: relative;
     }
     .window.red .flag-standin,
+    .window.red .flag-card3,
     .window.red .flag-live {
       transition: opacity 0.8s ease;
     }
@@ -147,6 +148,7 @@
       opacity: 0;
       pointer-events: none;
     }
+    .window.red .flag-card3,
     .window.red .flag-standin {
       position: absolute;
       inset: 0;
@@ -207,7 +209,21 @@
       opacity: 0;
       pointer-events: none;
     }
+    /* CHG-067: card 3 overlay (shares stand-in chrome); hidden unless .show-card3 */
+    .window.red .flag-card3 {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .window.red.is-live.show-card3 .flag-card3 {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .window.red.is-live.show-card3 .flag-live {
+      opacity: 0;
+      pointer-events: none;
+    }
     /* Collapsed: keep existing first-line live label; hide stand-in overlay */
+    .windows .window.red:not(.open) .flag-card3,
     .windows .window.red:not(.open) .flag-standin {
       display: none !important;
     }
@@ -1245,6 +1261,22 @@
             <a class="btn primary" href="https://buy.stripe.com/3cI3cu9aq45JbmO2Fl2sM01" target="_blank" rel="noopener">BUY FLAG NOW</a>
           </div>
         </div>
+        <!-- CHG-067: card 3 (rotation: pottery, flag, card 3). Copy of stand-in for now; edit this block to reword. No IDs; buy button stays inert. -->
+        <div class="flag-card3" aria-hidden="true">
+          <div class="window-body">
+            <div class="flag-standin-pic">Coming soon new product (pottery)</div>
+            <ul class="window-lines">
+              <li>Handmade coffee mug</li>
+              <li>Comes with unique member tag (mugger)</li>
+              <li>Bitcoin Wallet address</li>
+            </ul>
+          </div>
+          <div class="window-cta">
+            <div class="flags-left-chip">Live state API call</div>
+            <button type="button" class="btn primary flag-standin-buy" tabindex="-1" aria-disabled="true">Buy now-1-click-and-done-don't-make-me-do-extra</button>
+          </div>
+        </div>
+        <!-- /CHG-067 card 3 -->
       </section>
 
       <section class="window white" aria-labelledby="win-chat">
@@ -2389,11 +2421,21 @@
     (function () {
       var red = document.querySelector("section.window.red");
       if (!red) return;
+      /* CHG-067: index cycle 0 pottery, 1 flag (live), 2 card 3; one step per 10s while .open */
+      var CARD_CLASS = ["show-standin", "", "show-card3"];
+      var idx = 0;
+      function showCard(i) {
+        idx = i;
+        for (var k = 0; k < CARD_CLASS.length; k++) {
+          if (CARD_CLASS[k]) red.classList.toggle(CARD_CLASS[k], k === idx);
+        }
+      }
       setTimeout(function () {
         red.classList.add("is-live");
+        showCard(1);
         setInterval(function () {
           if (!red.classList.contains("open")) return;
-          red.classList.toggle("show-standin");
+          showCard((idx + 1) % CARD_CLASS.length);
         }, 10000);
       }, 5000);
     })();

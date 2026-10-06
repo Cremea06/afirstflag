@@ -1227,7 +1227,7 @@
           <div class="live-cmd-row" id="live-cmd-row">
             <div class="live-chip-stack">
               <div id="live-role-chip" class="online-chip">Current role: Guest User</div>
-              <div id="live-name-chip" class="online-chip" hidden></div>
+              <div id="live-name-chip" class="online-chip" title="Signed in: false">Signed in: false</div>
             </div>
             <form class="live-cmd-form" id="live-cmd-form" action="#" autocomplete="off" novalidate>
               <label class="search-note" for="live-cmd-input">Command</label>
@@ -2059,7 +2059,7 @@
       function setRole(label) { chip.textContent = 'Current role: ' + label; chip.title = chip.textContent; } // textContent, never innerHTML
       function roleLabel(d) { return d && d.member === true ? 'Member' : 'Guest User'; } // CHG-052: future tiers (flagholder, operator) map here
       function setName(name) {
-        if (!nameChip || typeof name !== 'string' || !name) return; // pill stays hidden
+        if (!nameChip || typeof name !== 'string' || !name) return; // CHG-073: pill keeps its 'Signed in: false' placeholder
         nameChip.textContent = 'Signed in: ' + name; // textContent, never innerHTML
         nameChip.title = nameChip.textContent;
         nameChip.hidden = false;

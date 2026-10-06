@@ -1160,6 +1160,28 @@
     .engine-chip[data-mode="js-fallback"] { border-color: rgba(255, 255, 255, 0.45); color: #e5e7eb; }
     .engine-note { font-size: 12px; color: #f4c430; margin-top: 2px; }
     .engine-note:empty { display: none; }
+
+    /* CHG-068: Live-state Click counter row under the Engine row (chrome reuses .btn.primary and .online-chip) */
+    .live-click-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 12px;
+      margin-top: 10px;
+    }
+    .live-click-row .btn {
+      width: auto;
+      flex: 0 0 auto;
+      padding: 6px 14px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .live-click-row #live-click-count.online-chip {
+      display: inline-block;
+      margin: 0;
+      flex: 0 0 auto;
+      font-variant-numeric: tabular-nums;
+    }
   </style>
 </head>
 <body>
@@ -1207,6 +1229,10 @@
             <span class="engine-current" id="engine-c-current" hidden>Run page in C</span>
             <a class="engine-link" data-engine="c" href="/c/">Run page in C</a>
             <span class="engine-chip" id="engine-chip" role="status">Engine: JavaScript</span>
+          </div>
+          <div class="live-click-row" id="live-click-row" role="group" aria-label="Click counter">
+            <button type="button" class="btn primary" id="live-click-btn">Click counter</button>
+            <span class="online-chip" id="live-click-count" aria-live="polite">Clicks: 0</span>
           </div>
         </div>
       </section>
@@ -2577,6 +2603,33 @@
       document.body.appendChild(s);
     })();
 
+  </script>
+  <script>
+    /* CHG-068: Live-state Click counter. Per-visitor count in localStorage (kept in memory if storage is blocked). No network.
+       Own script block so an error in the main script (for example blocked storage) cannot stop it. */
+    (function () {
+      var btn = document.getElementById("live-click-btn");
+      var out = document.getElementById("live-click-count");
+      if (!btn || !out) return;
+      var KEY = "aff_click_counter";
+      var count = 0;
+      function stored() {
+        try {
+          var n = parseInt(window.localStorage.getItem(KEY), 10);
+          return n > 0 ? n : 0;
+        } catch (e) {
+          return 0;
+        }
+      }
+      function paint() { out.textContent = "Clicks: " + count; }
+      count = stored();
+      paint();
+      btn.addEventListener("click", function () {
+        count = Math.max(count, stored()) + 1; // another tab may have counted too
+        paint();
+        try { window.localStorage.setItem(KEY, String(count)); } catch (e) { /* in-memory only */ }
+      });
+    })();
   </script>
 </body>
 </html>

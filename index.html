@@ -1095,14 +1095,21 @@
       height: auto;
     }
 
-    /* CHG-060: "Run page in Rust / C" links and engine chip (header) */
+    /* CHG-060 / CHG-062: "Run page in Rust / C" links and engine chip (Live-state drawer) */
     .engine-row {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 6px 14px;
       font-size: 13px;
+    }
+    .live-engine-row {
+      margin-top: 10px;
+    }
+    .live-engine-row .search-note {
+      margin: 0;
+      flex: 0 0 auto;
     }
     .engine-row a {
       color: #cfe0ff;
@@ -1130,12 +1137,6 @@
   <div class="page">
     <header class="glass">
       <a class="logo" href="#home">AMERICA FIRST ECOSYSTEMS</a>
-      <nav class="engine-row" id="engine-row" aria-label="Page engine">
-        <a class="engine-link" data-engine="rust" href="/rust/">Run page in Rust</a>
-        <a class="engine-link" data-engine="c" href="/c/">Run page in C</a>
-        <a id="engine-js-link" href="/" hidden>Run page in JavaScript</a>
-        <span class="engine-chip" id="engine-chip" role="status" hidden></span>
-      </nav>
       <a class="btc-balance-chip" id="header-btc-balance"
          href="https://mempool.space/address/bc1qcergrmvap2rlnx3e7g2nl8e5seh54mymrsjfnl"
          target="_blank" rel="noopener"
@@ -1168,6 +1169,13 @@
             </form>
             <p class="role-hint" id="live-cmd-hint" aria-live="polite"></p>
           </div>
+          <div class="live-engine-row engine-row" id="engine-row" aria-label="Page engine">
+            <span class="search-note">Engine</span>
+            <a class="engine-link" data-engine="rust" href="/rust/">Run page in Rust</a>
+            <a class="engine-link" data-engine="c" href="/c/">Run page in C</a>
+            <a id="engine-js-link" href="/" hidden>Run page in JavaScript</a>
+            <span class="engine-chip" id="engine-chip" role="status" hidden></span>
+          </div>
         </div>
       </section>
     </div>
@@ -1179,10 +1187,10 @@
       </button>
       <div class="drawer-body" id="how-panel">
         <p class="how-lede">Public system map: what a visitor can see and use. Tap the map to open it full size.</p>
-        <a class="how-map" href="/images/architecture-public.png" target="_blank" rel="noopener">
+        <a class="how-map" href="/images/architecture-public.png?v=062" target="_blank" rel="noopener">
           <picture>
-            <source srcset="/images/architecture-public.webp" type="image/webp">
-            <img src="/images/architecture-public.png" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit counts, collaborators, and flag stats. The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The homepage also links to Run page in Rust and Run page in C, which check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent; typos and private keys are caught there on those pages.">
+            <source srcset="/images/architecture-public.webp?v=062" type="image/webp">
+            <img src="/images/architecture-public.png?v=062" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit counts, collaborators, and flag stats. The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The homepage also links to Run page in Rust and Run page in C, which check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent; typos and private keys are caught there on those pages.">
           </picture>
         </a>
       </div>

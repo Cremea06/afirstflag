@@ -198,6 +198,15 @@
       opacity: 1;
       pointer-events: auto;
     }
+    /* CHG-066 — after live, alternate pottery/flag every 10s while .open */
+    .window.red.is-live.show-standin .flag-standin {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .window.red.is-live.show-standin .flag-live {
+      opacity: 0;
+      pointer-events: none;
+    }
     /* Collapsed: keep existing first-line live label; hide stand-in overlay */
     .windows .window.red:not(.open) .flag-standin {
       display: none !important;
@@ -2382,6 +2391,10 @@
       if (!red) return;
       setTimeout(function () {
         red.classList.add("is-live");
+        setInterval(function () {
+          if (!red.classList.contains("open")) return;
+          red.classList.toggle("show-standin");
+        }, 10000);
       }, 5000);
     })();
 

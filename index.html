@@ -1182,6 +1182,16 @@
       flex: 0 0 auto;
       font-variant-numeric: tabular-nums;
     }
+
+    /* CHG-069: click speed chips beside the count (same .online-chip chrome; the row wraps them on narrow screens) */
+    .live-click-row #live-click-speed.online-chip,
+    .live-click-row #live-click-best.online-chip {
+      display: inline-block;
+      margin: 0;
+      flex: 0 0 auto;
+      font-variant-numeric: tabular-nums;
+    }
+    .live-click-row #live-click-speed.online-chip { min-width: 11em; } /* room for "99.9" so the Best chip does not shift */
   </style>
 </head>
 <body>
@@ -1233,6 +1243,8 @@
           <div class="live-click-row" id="live-click-row" role="group" aria-label="Click counter">
             <button type="button" class="btn primary" id="live-click-btn">Click counter</button>
             <span class="online-chip" id="live-click-count" aria-live="polite">Clicks: 0</span>
+            <span class="online-chip" id="live-click-speed" aria-live="off">Speed: 0.0 clicks/s</span>
+            <span class="online-chip" id="live-click-best" aria-live="polite">Best: 0.0 clicks/s</span>
           </div>
         </div>
       </section>
@@ -2628,6 +2640,62 @@
         count = Math.max(count, stored()) + 1; // another tab may have counted too
         paint();
         try { window.localStorage.setItem(KEY, String(count)); } catch (e) { /* in-memory only */ }
+      });
+
+      /* CHG-069: click speed from the same button. Rolling 3s window of performance.now() stamps;
+         rate = (clicks in window - 1) / seconds from the oldest click in the window to now, so it is exact
+         at each click and decays smoothly to 0.0 once clicking stops. Best (3+ clicks in window, at most 30/s)
+         is kept in localStorage, or in memory if storage is blocked. */
+      var speedOut = document.getElementById("live-click-speed");
+      var bestOut = document.getElementById("live-click-best");
+      if (!speedOut || !bestOut) return;
+      var BEST_KEY = "aff_click_speed_best";
+      var WINDOW_MS = 3000, TICK_MS = 250, MIN_CLICKS_FOR_BEST = 3, MAX_RATE = 30;
+      var stamps = [];
+      var best = 0;
+      var timer = 0;
+      function now() {
+        return (window.performance && performance.now) ? performance.now() : Date.now();
+      }
+      function storedBest() {
+        try {
+          var v = parseFloat(window.localStorage.getItem(BEST_KEY));
+          return v > 0 && v <= MAX_RATE ? v : 0;
+        } catch (e) {
+          return 0;
+        }
+      }
+      function rate(t) {
+        while (stamps.length && t - stamps[0] > WINDOW_MS) stamps.shift();
+        if (stamps.length < 2) return 0;
+        var span = (t - stamps[0]) / 1000;
+        return span > 0 ? (stamps.length - 1) / span : 0;
+      }
+      function paintSpeed(r) { speedOut.textContent = "Speed: " + r.toFixed(1) + " clicks/s"; }
+      function paintBest() { bestOut.textContent = "Best: " + best.toFixed(1) + " clicks/s"; }
+      function tick() {
+        paintSpeed(rate(now()));
+        if (stamps.length < 2 && timer) { clearInterval(timer); timer = 0; } // idle: stop refreshing
+      }
+      best = storedBest();
+      paintBest();
+      btn.addEventListener("click", function () {
+        var t = now();
+        stamps.push(t);
+        var r = rate(t);
+        paintSpeed(r);
+        if (stamps.length >= MIN_CLICKS_FOR_BEST && r <= MAX_RATE) {
+          var prev = Math.max(best, storedBest()); // another tab may have a higher best
+          var rounded = Math.round(r * 10) / 10;
+          if (rounded > prev) {
+            best = rounded;
+            try { window.localStorage.setItem(BEST_KEY, String(best)); } catch (e) { /* in-memory only */ }
+          } else {
+            best = prev;
+          }
+          paintBest();
+        }
+        if (!timer && stamps.length >= 2) timer = setInterval(tick, TICK_MS);
       });
     })();
   </script>

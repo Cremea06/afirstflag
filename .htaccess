@@ -26,3 +26,17 @@ Options -Indexes
 </IfModule>
 
 # END Security
+# BEGIN CHG-060 WebAssembly engine variants (/rust/ and /c/)
+# Serve .wasm with its registered type (the loader also works without it).
+<IfModule mod_mime.c>
+  AddType application/wasm .wasm
+</IfModule>
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE application/wasm
+</IfModule>
+# /rust/ and /c/ show the same homepage; engine/aff-engine.js reads the path.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^(rust|c)/?$ /index.html [L]
+</IfModule>
+# END CHG-060

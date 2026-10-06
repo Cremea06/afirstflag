@@ -1,0 +1,22 @@
+[package]
+name = "aff_addr"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "afirstflag.com address check (Bitcoin base58check, bech32, bech32m, SHA-256) compiled to WebAssembly"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
+[dependencies]
+# none on purpose: no wasm-bindgen, no crates.io code ships in the .wasm
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+debug = false

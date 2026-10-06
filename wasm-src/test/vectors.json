@@ -1,0 +1,277 @@
+[
+ {
+  "input": "bc1qcergrmvap2rlnx3e7g2nl8e5seh54mymrsjfnl",
+  "expect": 3,
+  "note": "site donation address (header chip)"
+ },
+ {
+  "input": "BC1QCERGRMVAP2RLNX3E7G2NL8E5SEH54MYMRSJFNL",
+  "expect": 3,
+  "note": "site address, all caps"
+ },
+ {
+  "input": "bc1qcergrmvap2rlnx3e7g2nl8e5seh54mymrsjfnm",
+  "expect": -6,
+  "note": "site address, last char typo"
+ },
+ {
+  "input": "bc1qcergrmvap2rlnx3e7g2nl8e5seh54mymrsjfln",
+  "expect": -6,
+  "note": "site address, two chars swapped"
+ },
+ {
+  "input": "Bc1qcergrmvap2rlnx3e7g2nl8e5seh54mymrsjfnl",
+  "expect": -8,
+  "note": "mixed case"
+ },
+ {
+  "input": "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq",
+  "expect": 3,
+  "note": "P2WPKH"
+ },
+ {
+  "input": "BC1QW508D6QEJXTDG4Y5R3ZARVARY0C5XW7KV8F3T4",
+  "expect": 3,
+  "note": "BIP-173/350 valid"
+ },
+ {
+  "input": "bc1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3qccfmv3",
+  "expect": 4,
+  "note": "P2WSH (BIP-173)"
+ },
+ {
+  "input": "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqzk5jj0",
+  "expect": 5,
+  "note": "P2TR (BIP-350 valid)"
+ },
+ {
+  "input": "bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7kt5nd6y",
+  "expect": 6,
+  "note": "v1, 40-byte program (BIP-350 valid)"
+ },
+ {
+  "input": "BC1SW50QGDZ25J",
+  "expect": 6,
+  "note": "v16, 2-byte program (BIP-350 valid)"
+ },
+ {
+  "input": "bc1zw508d6qejxtdg4y5r3zarvaryvaxxpcs",
+  "expect": 6,
+  "note": "v2, 16-byte program (BIP-350 valid)"
+ },
+ {
+  "input": "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t5",
+  "expect": -6,
+  "note": "BIP-173 invalid checksum"
+ },
+ {
+  "input": "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqh2y7hd",
+  "expect": -6,
+  "note": "BIP-350: v1 with bech32 checksum"
+ },
+ {
+  "input": "BC1S0XLXVLHEMJA6C4DQV22UAPCTQUPFHLXM9H8Z3K2E72Q4K9HCZ7VQ54WELL",
+  "expect": -6,
+  "note": "BIP-350: v16 with bech32 checksum"
+ },
+ {
+  "input": "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kemeawh",
+  "expect": -6,
+  "note": "BIP-350: v0 with bech32m checksum"
+ },
+ {
+  "input": "bc1p38j9r5y49hruaue7wxjce0updqjuyyx0kh56v8s25huc6995vvpql3jow4",
+  "expect": -3,
+  "note": "BIP-350: invalid char 'o'"
+ },
+ {
+  "input": "BC130XLXVLHEMJA6C4DQV22UAPCTQUPFHLXM9H8Z3K2E72Q4K9HCZ7VQ7ZWS8R",
+  "expect": -7,
+  "note": "BIP-350: witness version 17"
+ },
+ {
+  "input": "bc1pw5dgrnzv",
+  "expect": -7,
+  "note": "BIP-350: 1-byte program"
+ },
+ {
+  "input": "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7v8n0nx0muaewav253zgeav",
+  "expect": -7,
+  "note": "BIP-350: 41-byte program"
+ },
+ {
+  "input": "BC1QR508D6QEJXTDG4Y5R3ZARVARYV98GJ9P",
+  "expect": -7,
+  "note": "BIP-350: v0 16-byte program"
+ },
+ {
+  "input": "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7v07qwwzcrf",
+  "expect": -7,
+  "note": "BIP-350: zero padding over 4 bits"
+ },
+ {
+  "input": "bc1gmk9yu",
+  "expect": -7,
+  "note": "BIP-350: empty data section"
+ },
+ {
+  "input": "tb1q0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vq24jc47",
+  "expect": -5,
+  "note": "testnet bech32"
+ },
+ {
+  "input": "tb1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vq47Zagq",
+  "expect": -5,
+  "note": "testnet, mixed case"
+ },
+ {
+  "input": "bcrt1qs758ursh4q9z627kt3pp5yysm78ddny6txaqgw",
+  "expect": -5,
+  "note": "regtest"
+ },
+ {
+  "input": "tc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vq5zuyut",
+  "expect": -3,
+  "note": "BIP-350: unknown hrp (has 0 and l, not base58)"
+ },
+ {
+  "input": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+  "expect": 1,
+  "note": "genesis P2PKH"
+ },
+ {
+  "input": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNb",
+  "expect": -6,
+  "note": "genesis, last char typo"
+ },
+ {
+  "input": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfN0",
+  "expect": -3,
+  "note": "base58 has no '0'"
+ },
+ {
+  "input": "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy",
+  "expect": 2,
+  "note": "P2SH"
+ },
+ {
+  "input": "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLz",
+  "expect": -6,
+  "note": "P2SH typo"
+ },
+ {
+  "input": "1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH",
+  "expect": 1,
+  "note": "generated P2PKH"
+ },
+ {
+  "input": "1111111111111111111114oLvT2",
+  "expect": 1,
+  "note": "generated P2PKH, all-zero hash (many leading 1s)"
+ },
+ {
+  "input": "3CNHUhP3uyB9EUtRLsmvFUmvGdjGdkTxJw",
+  "expect": 2,
+  "note": "generated P2SH"
+ },
+ {
+  "input": "mrCDrCybB6J1vRfbwM5hemdJz73FwDBC8r",
+  "expect": -5,
+  "note": "generated testnet P2PKH"
+ },
+ {
+  "input": "2N3vVYSK5XRgVSGWy21PnsRmBUywSQNdCsf",
+  "expect": -5,
+  "note": "generated testnet P2SH"
+ },
+ {
+  "input": "LVuDpNCSSj6pQ7t9Pv6d6sUkLKoqDEVUnJ",
+  "expect": -7,
+  "note": "generated Litecoin P2PKH (version 0x30)"
+ },
+ {
+  "input": "13q1P3NyDM6J9SNKPaBC7rMQ9NMEabXocoX",
+  "expect": -7,
+  "note": "generated 26-byte payload"
+ },
+ {
+  "input": "1abc",
+  "expect": -7,
+  "note": "too short"
+ },
+ {
+  "input": "",
+  "expect": -1,
+  "note": "empty"
+ },
+ {
+  "input": "bc1qcergrmvap2rlnx3e7g2nl8e5seh54mymrsjfnl bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq",
+  "expect": -3,
+  "note": "two addresses"
+ },
+ {
+  "input": "bc1qcergrmvap2rlnx3e7g2nl8e5seh54mymrsjfnl,",
+  "expect": -3,
+  "note": "trailing comma"
+ },
+ {
+  "input": "bc1qcergrmvap2rlnx3e7g2nl8e5seh54mymrsjfné",
+  "expect": -3,
+  "note": "non-ASCII"
+ },
+ {
+  "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "expect": -2,
+  "note": "91 chars"
+ },
+ {
+  "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "expect": -2,
+  "note": "over buffer"
+ },
+ {
+  "input": "hello",
+  "expect": -3,
+  "note": "random word ('l' is not base58)"
+ },
+ {
+  "input": "abc",
+  "expect": -7,
+  "note": "short base58-only text"
+ },
+ {
+  "input": "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ",
+  "expect": -4,
+  "note": "WIF private key (wiki example)"
+ },
+ {
+  "input": "KwdMAjGmerYanjeui5SHS7JkmpZvVipYvB2LJGU1ZxJwYvP98617",
+  "expect": -4,
+  "note": "compressed WIF (wiki example)"
+ },
+ {
+  "input": "xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi",
+  "expect": -4,
+  "note": "BIP-32 test xprv"
+ },
+ {
+  "input": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+  "expect": -4,
+  "note": "64 hex chars"
+ },
+ {
+  "input": "0xBA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD",
+  "expect": -4,
+  "note": "0x + 64 hex"
+ },
+ {
+  "input": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+  "expect": -4,
+  "note": "12-word seed (BIP-39 test)"
+ },
+ {
+  "input": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+  "expect": -3,
+  "note": "11 words: not flagged as seed, has spaces"
+ }
+]

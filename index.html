@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>America First Flags - afirstflag.com</title>
+  <link rel="canonical" href="https://afirstflag.com/">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1093,12 +1094,48 @@
       max-width: 100%;
       height: auto;
     }
+
+    /* CHG-060: "Run page in Rust / C" links and engine chip (header) */
+    .engine-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 6px 14px;
+      font-size: 13px;
+    }
+    .engine-row a {
+      color: #cfe0ff;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .engine-row a:hover, .engine-row a:focus-visible { color: #fff; }
+    .engine-row a[hidden], .engine-chip[hidden] { display: none; }
+    .engine-chip {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(244, 196, 48, 0.65);
+      color: #f4c430;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .engine-chip[data-mode="js-fallback"] { border-color: rgba(255, 255, 255, 0.45); color: #e5e7eb; }
+    .engine-note { font-size: 12px; color: #f4c430; margin-top: 2px; }
+    .engine-note:empty { display: none; }
   </style>
 </head>
 <body>
   <div class="page">
     <header class="glass">
       <a class="logo" href="#home">AMERICA FIRST ECOSYSTEMS</a>
+      <nav class="engine-row" id="engine-row" aria-label="Page engine">
+        <a class="engine-link" data-engine="rust" href="/rust/">Run page in Rust</a>
+        <a class="engine-link" data-engine="c" href="/c/">Run page in C</a>
+        <a id="engine-js-link" href="/" hidden>Run page in JavaScript</a>
+        <span class="engine-chip" id="engine-chip" role="status" hidden></span>
+      </nav>
       <a class="btc-balance-chip" id="header-btc-balance"
          href="https://mempool.space/address/bc1qcergrmvap2rlnx3e7g2nl8e5seh54mymrsjfnl"
          target="_blank" rel="noopener"
@@ -1314,6 +1351,24 @@
                 </dl>
                 <p class="thanks">Thank you for making this available.</p>
               </article>
+              <article class="tcard" style="border-top-color:#38bdf8">
+                <h4>Rust</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Language for the "Run page in Rust" address check, compiled to WebAssembly</dd>
+                  <dt>Maintainer</dt><dd>Rust Project / Rust Foundation</dd>
+                  <dt>License</dt><dd>MIT or Apache-2.0</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#38bdf8">
+                <h4>WebAssembly</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Runs the Rust and C address checks inside your browser</dd>
+                  <dt>Maintainer</dt><dd>W3C WebAssembly Community and Working Groups</dd>
+                  <dt>License</dt><dd>W3C standard</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
             </div>
           </section>
 
@@ -1398,6 +1453,24 @@
                   <dt>Purpose</dt><dd>HTTPS front for the chat server</dd>
                   <dt>Maintainer</dt><dd>nginx team (F5)</dd>
                   <dt>License</dt><dd>BSD-2-Clause</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#4ade80">
+                <h4>Clang / LLVM</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Compiles the "Run page in C" address check and links both .wasm files (wasm-ld)</dd>
+                  <dt>Maintainer</dt><dd>LLVM Project / LLVM Foundation</dd>
+                  <dt>License</dt><dd>Apache-2.0 with LLVM Exception</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#4ade80">
+                <h4>Binaryen</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Shrinks both .wasm files before they ship (wasm-opt)</dd>
+                  <dt>Maintainer</dt><dd>WebAssembly Community Group</dd>
+                  <dt>License</dt><dd>Apache-2.0</dd>
                 </dl>
                 <p class="thanks">Thank you for making this available.</p>
               </article>
@@ -2208,6 +2281,12 @@
           showError("Paste a public Bitcoin address.");
           return;
         }
+        /* CHG-060: on /rust/ and /c/ the address is checked in the browser first (WebAssembly). Root page: no-op. */
+        var pre = window.AFF_PRECHECK ? window.AFF_PRECHECK(address) : null;
+        if (pre && !pre.ok) {
+          showError(pre.message);
+          return;
+        }
         setStatus("Checking the public chain…");
         submitBtn.disabled = true;
         fetch(window.AFF_NEST_API.replace(/\/$/, "") + "/api/flag-wallet-lookup", {
@@ -2415,6 +2494,15 @@
         cards[j].addEventListener("focusin", onFirst, { once: true });
         cards[j].addEventListener("click", onFirst, { once: true });
       }
+    })();
+
+    /* CHG-060: /rust/ and /c/ (or ?engine=rust|c) load the WebAssembly engine. The root page loads nothing extra. */
+    (function () {
+      var p = location.pathname || "";
+      if (!/^\/(rust|c)\/?(index\.html)?$/i.test(p) && !/[?&]engine=(rust|c)\b/i.test(location.search || "")) return;
+      var s = document.createElement("script");
+      s.src = "/engine/aff-engine.js?v=060-1";
+      document.body.appendChild(s);
     })();
 
   </script>

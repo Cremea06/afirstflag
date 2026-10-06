@@ -1,0 +1,5 @@
+# Debian's rustc has no bundled rust-lld; use LLVM's wasm-ld from the lld package.
+# With rustup this file is harmless (wasm-ld must still be on PATH) or can be deleted.
+[target.wasm32-unknown-unknown]
+linker = "wasm-ld"
+rustflags = ["-C", "link-arg=-zstack-size=16384", "-C", "link-arg=--initial-memory=131072"]

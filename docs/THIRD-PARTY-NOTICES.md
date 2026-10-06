@@ -17,6 +17,10 @@ Last reviewed: 2026-10-02 (CHG-059).
 | three.js | 3D renderer (vendored r170) | MIT |
 | PM2 | Process manager | AGPL-3.0 |
 | nginx | HTTPS front for chat | BSD-2-Clause |
+| Rust `core` + `compiler_builtins` | Compiled into `engine/aff-addr-rust.wasm` (Rust engine) | MIT or Apache-2.0 |
+| Clang / LLVM / LLD | Build tool for both .wasm files (nothing from LLVM runtime libraries is linked) | Apache-2.0 WITH LLVM-exception |
+| Binaryen (wasm-opt) | Build tool, .wasm size optimizer | Apache-2.0 |
+| WABT (wasm2wat) | Build check, no imports in .wasm | Apache-2.0 |
 | Stripe | Payments + webhook | Stripe ToS |
 | mempool.space | Bitcoin balance data | mempool.space terms; explorer code AGPL-3.0 |
 | xAI API | Chat assist (Neagle) | xAI ToS |

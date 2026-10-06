@@ -6,3 +6,6 @@ Thumbs.db
 
 # Optional: ignore the backups folder if you don’t want it in Git
 'Backups and troubleshooting'/
+
+# CHG-060: Rust build output (the shipped .wasm lives in /engine/)
+wasm-src/rust/target/

@@ -11,6 +11,9 @@ Last reviewed: 2026-10-02 (CHG-059), against Shop `main` d3ea766 and Nest `main`
 - Web APIs, WebRTC: standards bodies (chat voice/video uses WebRTC)
 - PHP: The PHP Group / PHP Foundation, PHP License 3.01 (shop API: visit counter, collaborators, flag stats, Stripe webhook)
 - PowerShell: Microsoft + community, MIT for PowerShell 7 (runs `tools/offline-chatroom.ps1`; Windows PowerShell 5.1 ships with Windows)
+- WebAssembly: W3C standard (runs the `/rust/` and `/c/` address checks in the visitor's browser)
+- Rust: Rust Project / Rust Foundation, MIT or Apache-2.0 (language of `wasm-src/rust/`; Rust `core` and `compiler_builtins` code is compiled into `engine/aff-addr-rust.wasm`)
+- C: ISO C11 (language of `wasm-src/c/`; no C library is linked into `engine/aff-addr-c.wasm`)
 
 ## Open source (chat / server)
 
@@ -23,6 +26,13 @@ Last reviewed: 2026-10-02 (CHG-059), against Shop `main` d3ea766 and Nest `main`
 - three.js: MIT (r170, vendored as `public/world/three.min.js` for the Nest World courtyard)
 - PM2: AGPL-3.0 (ops; keeps the chat server running)
 - nginx: BSD-2-Clause (HTTPS front for the chat server)
+
+## Build tools (shop WebAssembly engines, run on the build box only)
+
+- Clang / LLVM / LLD: LLVM Project, Apache-2.0 WITH LLVM-exception (compiles the C engine; `wasm-ld` links both .wasm files)
+- Binaryen: WebAssembly Community Group, Apache-2.0 (`wasm-opt -Oz` shrinks both .wasm files)
+- WABT: WebAssembly Community Group, Apache-2.0 (`wasm2wat` check in `wasm-src/build.sh` that the modules have no imports)
+- Not used: wasm-bindgen, wasm-pack, Emscripten, wasi-sdk, any crates.io crate
 
 ## Services
 

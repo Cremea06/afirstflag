@@ -1095,7 +1095,7 @@
       height: auto;
     }
 
-    /* CHG-060 / CHG-062 / CHG-063 / CHG-064: Engine options (JS current + Rust/C links + chip; root shows gold JS chip) */
+    /* CHG-060 / CHG-062 / CHG-063 / CHG-064 / CHG-065: Engine options (active engine = muted current text; others = links; gold chip) */
     .engine-row {
       display: flex;
       flex-wrap: wrap;
@@ -1117,8 +1117,8 @@
       text-underline-offset: 3px;
     }
     .engine-row a:hover, .engine-row a:focus-visible { color: #fff; }
-    .engine-row a[hidden], .engine-chip[hidden], #engine-js-current[hidden] { display: none; }
-    #engine-js-current {
+    .engine-row a[hidden], .engine-chip[hidden], .engine-current[hidden] { display: none; }
+    .engine-current {
       color: rgba(244, 247, 255, 0.65);
       font-weight: 600;
     }
@@ -1175,9 +1175,11 @@
           </div>
           <div class="live-engine-row engine-row" id="engine-row" aria-label="Page engine">
             <span class="search-note">Engine</span>
-            <span id="engine-js-current">Run page in JavaScript</span>
+            <span class="engine-current" id="engine-js-current">Run page in JavaScript</span>
             <a id="engine-js-link" href="/" hidden>Run page in JavaScript</a>
+            <span class="engine-current" id="engine-rust-current" hidden>Run page in Rust</span>
             <a class="engine-link" data-engine="rust" href="/rust/">Run page in Rust</a>
+            <span class="engine-current" id="engine-c-current" hidden>Run page in C</span>
             <a class="engine-link" data-engine="c" href="/c/">Run page in C</a>
             <span class="engine-chip" id="engine-chip" role="status">Engine: JavaScript</span>
           </div>
@@ -2509,14 +2511,14 @@
       }
     })();
 
-    /* CHG-060 / CHG-063: /rust/ and /c/ (or ?engine=rust|c) load the WebAssembly engine. Hide JS-current placeholder so #engine-js-link can show. Root keeps the placeholder. */
+    /* CHG-060 / CHG-063 / CHG-065: /rust/ and /c/ (or ?engine=rust|c) load the WebAssembly engine. Hide JS-current so #engine-js-link can show; aff-engine.js shows muted current for Rust/C. Root keeps JS-current. */
     (function () {
       var p = location.pathname || "";
       if (!/^\/(rust|c)\/?(index\.html)?$/i.test(p) && !/[?&]engine=(rust|c)\b/i.test(location.search || "")) return;
       var cur = document.getElementById("engine-js-current");
       if (cur) cur.hidden = true;
       var s = document.createElement("script");
-      s.src = "/engine/aff-engine.js?v=060-1";
+      s.src = "/engine/aff-engine.js?v=065-1";
       document.body.appendChild(s);
     })();
 

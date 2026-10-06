@@ -13,7 +13,7 @@
 (function (root) {
   "use strict";
 
-  var VERSION = "060-1";
+  var VERSION = "065-1";
   var BUF_LEN = 1024;
 
   /* ------------------------------------------------ JavaScript reference */
@@ -270,12 +270,16 @@
   var state = { id: id, label: eng.label, mode: "loading", bytes: 0, impl: null, error: null };
   root.AFF_ENGINE = state;
 
-  /* UI: chip + links in the Bitcoin lookup window */
+  /* UI: chip + links; active engine = muted current text (same pattern as root JS) */
   var chip = document.getElementById("engine-chip");
   var jsLink = document.getElementById("engine-js-link");
   var links = document.querySelectorAll(".engine-link[data-engine]");
   for (var i = 0; i < links.length; i++) {
-    if (links[i].getAttribute("data-engine") === id) links[i].hidden = true;
+    if (links[i].getAttribute("data-engine") === id) {
+      links[i].hidden = true;
+      var cur = document.getElementById("engine-" + id + "-current");
+      if (cur) cur.hidden = false;
+    }
   }
   if (jsLink) jsLink.hidden = false;
   function paintChip() {

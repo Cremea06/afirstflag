@@ -2625,22 +2625,64 @@
       if (!btn || !out) return;
       var KEY = "aff_click_counter";
       var count = 0;
+      /* CHG-070: the count resets to 0 after 10s with no click (Best is kept). Last-click time (Date.now) is in
+         localStorage aff_click_last (in memory if storage is blocked); a stored count whose last click is 10s+ old
+         is stale and reads as 0. Elapsed time is re-checked with Date.now when the timer fires and when the tab is
+         shown again, because background tabs may throttle timers. */
+      var LAST_KEY = "aff_click_last", IDLE_MS = 10000;
+      var last = 0, idleTimer = 0;
+      function fresh(t) {
+        var age = Date.now() - t;
+        return t > 0 && age >= 0 && age < IDLE_MS;
+      }
+      function storedLast() {
+        try {
+          var t = parseInt(window.localStorage.getItem(LAST_KEY), 10);
+          return t > 0 ? t : 0;
+        } catch (e) {
+          return 0;
+        }
+      }
       function stored() {
         try {
           var n = parseInt(window.localStorage.getItem(KEY), 10);
-          return n > 0 ? n : 0;
+          return n > 0 && fresh(storedLast()) ? n : 0; // CHG-070: stale stored count reads as 0
         } catch (e) {
           return 0;
         }
       }
       function paint() { out.textContent = "Clicks: " + count; }
+      function clearStored() {
+        try {
+          if (parseInt(window.localStorage.getItem(KEY), 10) > 0) window.localStorage.setItem(KEY, "0");
+        } catch (e) { /* in-memory only */ }
+      }
+      function check() {
+        if (idleTimer) { clearTimeout(idleTimer); idleTimer = 0; }
+        if (!count) return;
+        var t = Math.max(last, storedLast()); // another tab may have clicked more recently: wait for that click instead
+        if (fresh(t)) {
+          idleTimer = setTimeout(check, t + IDLE_MS - Date.now());
+        } else {
+          count = 0;
+          paint();
+          clearStored();
+        }
+      }
       count = stored();
+      if (count) last = storedLast(); else clearStored();
       paint();
+      check();
       btn.addEventListener("click", function () {
-        count = Math.max(count, stored()) + 1; // another tab may have counted too
+        count = Math.max(fresh(last) ? count : 0, stored()) + 1; // another tab may have counted too
+        last = Date.now();
         paint();
+        try { window.localStorage.setItem(LAST_KEY, String(last)); } catch (e) { /* in-memory only */ }
         try { window.localStorage.setItem(KEY, String(count)); } catch (e) { /* in-memory only */ }
+        check(); // one idle timer, restarted on every click
       });
+      document.addEventListener("visibilitychange", function () { if (!document.hidden) check(); });
+      window.addEventListener("pageshow", check);
 
       /* CHG-069: click speed from the same button. Rolling 3s window of performance.now() stamps;
          rate = (clicks in window - 1) / seconds from the oldest click in the window to now, so it is exact

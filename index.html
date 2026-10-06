@@ -1192,6 +1192,14 @@
       font-variant-numeric: tabular-nums;
     }
     .live-click-row #live-click-speed.online-chip { min-width: 11em; } /* room for "99.9" so the Best chip does not shift */
+
+    /* CHG-072: server-wide Record chip right after Best (same .online-chip chrome) */
+    .live-click-row #live-click-record.online-chip {
+      display: inline-block;
+      margin: 0;
+      flex: 0 0 auto;
+      font-variant-numeric: tabular-nums;
+    }
   </style>
 </head>
 <body>
@@ -1245,6 +1253,7 @@
             <span class="online-chip" id="live-click-count" aria-live="polite">Clicks: 0</span>
             <span class="online-chip" id="live-click-speed" aria-live="off">Speed: 0.0 clicks/s</span>
             <span class="online-chip" id="live-click-best" aria-live="polite">Best: 0.0 clicks/s</span>
+            <span class="online-chip" id="live-click-record" aria-live="polite" title="Best click speed on this site (all visitors)">Record: --</span>
           </div>
         </div>
       </section>
@@ -1257,10 +1266,10 @@
       </button>
       <div class="drawer-body" id="how-panel">
         <p class="how-lede">Public system map: what a visitor can see and use. Tap the map to open it full size.</p>
-        <a class="how-map" href="/images/architecture-public.png?v=071" target="_blank" rel="noopener">
+        <a class="how-map" href="/images/architecture-public.png?v=072" target="_blank" rel="noopener">
           <picture>
-            <source srcset="/images/architecture-public.webp?v=071" type="image/webp">
-            <img src="/images/architecture-public.png?v=071" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit counts, collaborators, and flag stats. The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage, no server), and the Buy Flag window rotates its cards while open.">
+            <source srcset="/images/architecture-public.webp?v=072" type="image/webp">
+            <img src="/images/architecture-public.png?v=072" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit counts, collaborators, flag stats, and the click speed record. The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open.">
           </picture>
         </a>
       </div>
@@ -2738,6 +2747,113 @@
           paintBest();
         }
         if (!timer && stamps.length >= 2) timer = setInterval(tick, TICK_MS);
+      });
+    })();
+  </script>
+  <script>
+    /* CHG-072: server-wide click speed Record chip (#live-click-record). Own script block and own click
+       listener, so the Clicks / Speed / Best code above is unchanged and an error here cannot affect it.
+       On load: GET /api/click-record.php (3s timeout); on any failure the chip quietly stays "Record: --".
+       When a run beats the shown record (3+ clicks in the 3s window, at most 30/s, same formula as Speed),
+       POST that window's click times (whole ms from the first click), at most once per 5s; the best run seen
+       while waiting is sent when the 5s are up. The server recomputes the rate and keeps the max.
+       A run refused with 429 (rate limit) is kept and retried after Retry-After. After a network or server
+       error it waits 30s and retries; after 3 such failures it stops sending until the page is reloaded. */
+    (function () {
+      var btn = document.getElementById("live-click-btn");
+      var out = document.getElementById("live-click-record");
+      if (!btn || !out || !window.fetch || !window.JSON) return;
+      var API = "/api/click-record.php";
+      var WINDOW_MS = 3000, MIN_CLICKS = 3, MAX_RATE = 30, MAX_SEND = 100, GAP_MS = 5000, TIMEOUT_MS = 3000;
+      var record = null;   // last record from the server; null = not loaded
+      var stamps = [];     // this listener's own rolling 3s window
+      var pending = null;  // best unsent run { t: [...], r: rate }
+      var sent = 0;        // best rate already sent on this page view
+      var lastSend = -1e9, busy = false, sendTimer = 0, pauseUntil = 0, fails = 0, stopped = false;
+      function now() {
+        return (window.performance && performance.now) ? performance.now() : Date.now();
+      }
+      function paint() {
+        out.textContent = record === null ? "Record: --" : "Record: " + record.toFixed(1) + " clicks/s";
+      }
+      function take(data) {
+        var v = data && typeof data.record === "number" ? data.record : NaN;
+        if (v >= 0 && v <= MAX_RATE) {
+          record = record === null ? v : Math.max(record, v);
+          paint();
+        }
+      }
+      function call(opts) {
+        var ctl = window.AbortController ? new AbortController() : null;
+        var timer = setTimeout(function () { if (ctl) ctl.abort(); }, TIMEOUT_MS);
+        if (ctl) opts.signal = ctl.signal;
+        function done(x) { clearTimeout(timer); return x; }
+        return fetch(API, opts).then(function (res) {
+          return res.json().then(null, function () { return null; }).then(function (data) {
+            return done({ status: res.status, ok: res.ok, headers: res.headers, data: data });
+          });
+        }).then(null, function (e) { done(null); throw e; });
+      }
+      function failed() {
+        fails += 1;
+        if (fails >= 3) stopped = true; else pauseUntil = now() + 30000;
+      }
+      function send() {
+        if (stopped) { pending = null; return; }
+        if (busy || sendTimer || !pending) return;
+        var wait = Math.max(lastSend + GAP_MS, pauseUntil) - now();
+        if (wait > 0) {
+          sendTimer = setTimeout(function () { sendTimer = 0; send(); }, Math.min(wait, 600000));
+          return;
+        }
+        var run = pending;
+        pending = null;
+        busy = true;
+        lastSend = now();
+        var prevSent = sent;
+        sent = Math.max(sent, run.r);
+        function retryLater() { // keep this run for the next try unless a better one is already waiting
+          sent = prevSent;
+          if (!pending || pending.r < run.r) pending = run;
+        }
+        call({ method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ t: run.t }) })
+          .then(function (x) {
+            if (x.status === 429) {
+              var ra = parseInt(x.headers.get("Retry-After"), 10);
+              pauseUntil = now() + Math.min(ra > 0 ? ra : 60, 600) * 1000;
+              retryLater();
+            } else if (x.status >= 500) {
+              failed();
+              retryLater();
+            } else {
+              fails = 0;
+            }
+            take(x.data);
+          }, function () { failed(); retryLater(); })
+          .then(function () {
+            busy = false;
+            if (pending && record !== null && pending.r <= record) pending = null;
+            send();
+          });
+      }
+      call({ method: "GET" }).then(function (x) { if (x.ok) take(x.data); }, function () { /* quiet */ });
+      btn.addEventListener("click", function () {
+        var t = now();
+        stamps.push(t);
+        while (stamps.length && t - stamps[0] > WINDOW_MS) stamps.shift();
+        var n = stamps.length;
+        if (n < MIN_CLICKS || n > MAX_SEND || stopped) return;
+        var rel = [0];
+        for (var i = 1; i < n; i++) {
+          rel.push(Math.round(stamps[i] - stamps[0]));
+          if (rel[i] <= rel[i - 1]) return; // two clicks in the same ms: the server would reject it
+        }
+        var r = (n - 1) / (rel[n - 1] / 1000); // same formula the server uses on the same numbers
+        if (!(r > 0) || r > MAX_RATE) return;
+        r = Math.round(r * 10) / 10;
+        if (r <= (record === null ? 0 : record) || r <= sent || (pending && r <= pending.r)) return;
+        pending = { t: rel, r: r };
+        send();
       });
     })();
   </script>

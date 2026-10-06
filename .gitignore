@@ -9,3 +9,9 @@ Thumbs.db
 
 # CHG-060: Rust build output (the shipped .wasm lives in /engine/)
 wasm-src/rust/target/
+
+# CHG-072: click speed record store, created on the server by api/click-record.php (never commit)
+data/click-record.json
+data/click-record-hits.json
+data/click-record-salt.php
+data/click-record-salt.php.*.tmp

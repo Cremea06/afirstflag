@@ -579,6 +579,14 @@
     }
     .live-visits-row #live-geo .live-geo-flag { line-height: 1; } /* the emoji font is taller; keeps the pill the same height as its neighbors */
 
+    /* CHG-077: remaining countries pill right after the visits pill (same .online-chip chrome; filled from the same /api/geo-country.php answer) */
+    .live-visits-row #live-remaining.online-chip {
+      display: inline-block;
+      margin: 0;
+      flex: 0 0 auto;
+      font-variant-numeric: tabular-nums;
+    }
+
     .live-visits-row .live-visits-note {
       display: inline;
       margin: 0;
@@ -1251,6 +1259,7 @@
             <div id="live-countries" class="online-chip" title="ISO 3166-1 alpha-2 codes (249)">Countries: 249</div>
             <div id="live-geo" class="online-chip" title="From your IP address, looked up on this site only">Country: unknown</div>
             <div id="live-home-visits" class="online-chip" aria-live="polite">— visits</div>
+            <div id="live-remaining" class="online-chip" title="Of 249, not seen here yet">Remaining countries: …</div>
             <p class="live-visits-note">Welcome</p>
           </div>
           <div class="live-cmd-row" id="live-cmd-row">
@@ -1295,10 +1304,10 @@
       </button>
       <div class="drawer-body" id="how-panel">
         <p class="how-lede">Public system map: what a visitor can see and use. Tap the map to open it full size.</p>
-        <a class="how-map" href="/images/architecture-public.png?v=076" target="_blank" rel="noopener">
+        <a class="how-map" href="/images/architecture-public.png?v=077" target="_blank" rel="noopener">
           <picture>
-            <source srcset="/images/architecture-public.webp?v=076" type="image/webp">
-            <img src="/images/architecture-public.png?v=076" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit counts, collaborators, flag stats, the click speed record, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service.">
+            <source srcset="/images/architecture-public.webp?v=077" type="image/webp">
+            <img src="/images/architecture-public.png?v=077" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit counts, collaborators, flag stats, the click speed record, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet.">
           </picture>
         </a>
       </div>
@@ -2900,10 +2909,13 @@
        the scripts above (for example blocked storage) cannot stop it. One GET /api/geo-country.php on load
        (3s timeout). The server looks the address up in its own bundled database (geo/), so the address is not
        sent to any other service. Shows flag + name, e.g. "US flag United States"; an unknown address or any
-       failure keeps "Country: unknown". Text only (textContent), never innerHTML. */
+       failure keeps "Country: unknown". Text only (textContent), never innerHTML.
+       CHG-077: the same answer's "remaining" (0..249) fills #live-remaining, "Remaining countries: N". No extra
+       request. A 503 answer (lookup down) still carries remaining. Any failure keeps "Remaining countries: …". */
     (function () {
       var chip = document.getElementById("live-geo");
-      if (!chip || !window.fetch) return;
+      var rem = document.getElementById("live-remaining");
+      if ((!chip && !rem) || !window.fetch) return;
       var TIMEOUT_MS = 3000;
       var late = false;
       var ctl = window.AbortController ? new AbortController() : null;
@@ -2914,8 +2926,11 @@
       }
       function show(data) {
         clearTimeout(timer);
-        var cc = data && data.cc, name = data && data.name;
-        if (late || typeof cc !== "string" || !/^[A-Z]{2}$/.test(cc) ||
+        if (late || !data) return;
+        var n = data.remaining;
+        if (rem && typeof n === "number" && n % 1 === 0 && n >= 0 && n <= 249) rem.textContent = "Remaining countries: " + n;
+        var cc = data.cc, name = data.name;
+        if (!chip || typeof cc !== "string" || !/^[A-Z]{2}$/.test(cc) ||
             typeof name !== "string" || !name || name.length > 60) return;
         var f = document.createElement("span");
         f.className = "live-geo-flag";
@@ -2929,8 +2944,8 @@
       var opts = { credentials: "same-origin" };
       if (ctl) opts.signal = ctl.signal;
       fetch("/api/geo-country.php", opts)
-        .then(function (res) { return res.ok ? res.json() : null; })
-        .then(show, function () { clearTimeout(timer); /* quiet: keep "Country: unknown" */ });
+        .then(function (res) { return (res.ok || res.status === 503) ? res.json() : null; })
+        .then(show, function () { clearTimeout(timer); /* quiet: keep "Country: unknown" and "Remaining countries: …" */ });
     })();
   </script>
 </body>

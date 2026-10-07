@@ -10,6 +10,7 @@ another service, logged, or stored.
 | `ip-country.bin` | packed ranges, format in `tools/geo-build/build.py` and `geo/lookup.php` |
 | `lookup.php` | `af_geo_lookup()` binary search (no network, a few small file reads) |
 | `country-names.php` | code to name map, generated from `tools/geo-build/country-names.tsv` |
+| `visited.php` | CHG-077: the 249 ISO 3166-1 alpha-2 codes and the countries-seen set in `data/countries-visited.json` (codes only; not generated) |
 
 ## Source
 

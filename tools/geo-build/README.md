@@ -11,6 +11,8 @@ Live-state). Run these on a build machine; the web host only needs the committed
   The build stops if the data uses a code that has no name here.
 - `test-lookup.php` 73 checks of `geo/lookup.php` against the built file (well-known addresses,
   range edges, private and reserved ranges, junk input, missing or damaged file). `php tools/geo-build/test-lookup.php`
+- `test-visited.php` (CHG-077) checks of `geo/visited.php`, the countries-seen set behind "Remaining countries"
+  (the 249 codes, add once, invalid codes never written, damaged file repair), in a temp folder. `php tools/geo-build/test-visited.php`
 
 ## Refresh
 

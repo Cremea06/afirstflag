@@ -18,3 +18,8 @@ data/click-record-salt.php.*.tmp
 
 # CHG-076: Python byte-code from running tools/geo-build/build.py
 __pycache__/
+
+# CHG-077: countries seen so far, created on the server by api/geo-country.php (never commit; delete to reset the count)
+data/countries-visited.json
+data/countries-visited.json.tmp
+data/countries-visited.lock

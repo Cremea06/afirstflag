@@ -34,6 +34,15 @@ Last reviewed: 2026-10-02 (CHG-059), against Shop `main` d3ea766 and Nest `main`
 - WABT: WebAssembly Community Group, Apache-2.0 (`wasm2wat` check in `wasm-src/build.sh` that the modules have no imports)
 - Not used: wasm-bindgen, wasm-pack, Emscripten, wasi-sdk, any crates.io crate
 
+## Data (shop visitor country pill, CHG-076)
+
+- DB-IP IP to Country Lite: DB-IP (Eris Networks), CC BY 4.0. Release 2026-10, repacked by `tools/geo-build/build.py`
+  into `geo/ip-country.bin` and looked up on our own server by `api/geo-country.php`, so visitor addresses are not
+  sent to DB-IP or anyone else. Attribution link "IP Geolocation by DB-IP" (https://db-ip.com) is on the homepage
+  in Built With Gratitude.
+- ISO 3166-1 alpha-2 country codes (ISO), with short English names checked against Debian iso-codes 4.18.0
+  (`tools/geo-build/country-names.tsv`; plus XK for Kosovo, which DB-IP uses).
+
 ## Services
 
 - Stripe: payments (Buy Flag Payment Link) and webhook for flag inventory

@@ -567,6 +567,18 @@
       font-variant-numeric: tabular-nums;
     }
 
+    /* CHG-076: visitor country pill between Countries and visits (same .online-chip chrome; flag + name from /api/geo-country.php) */
+    .live-visits-row #live-geo.online-chip {
+      display: inline-block;
+      margin: 0;
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .live-visits-row #live-geo .live-geo-flag { line-height: 1; } /* the emoji font is taller; keeps the pill the same height as its neighbors */
+
     .live-visits-row .live-visits-note {
       display: inline;
       margin: 0;
@@ -908,6 +920,13 @@
       color: rgba(244, 247, 255, 0.9);
     }
 
+    /* CHG-076: links inside cards (DB-IP attribution) */
+    .tcard dd a {
+      color: #cfe0ff;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
     .tcard .thanks {
       margin-top: 8px;
       padding-top: 6px;
@@ -1230,6 +1249,7 @@
         <div class="drawer-body" id="live-state-panel">
           <div class="live-visits-row">
             <div id="live-countries" class="online-chip" title="ISO 3166-1 alpha-2 codes (249)">Countries: 249</div>
+            <div id="live-geo" class="online-chip" title="From your IP address, looked up on this site only">Country: unknown</div>
             <div id="live-home-visits" class="online-chip" aria-live="polite">— visits</div>
             <p class="live-visits-note">Welcome</p>
           </div>
@@ -1275,10 +1295,10 @@
       </button>
       <div class="drawer-body" id="how-panel">
         <p class="how-lede">Public system map: what a visitor can see and use. Tap the map to open it full size.</p>
-        <a class="how-map" href="/images/architecture-public.png?v=072" target="_blank" rel="noopener">
+        <a class="how-map" href="/images/architecture-public.png?v=076" target="_blank" rel="noopener">
           <picture>
-            <source srcset="/images/architecture-public.webp?v=072" type="image/webp">
-            <img src="/images/architecture-public.png?v=072" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit counts, collaborators, flag stats, and the click speed record. The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open.">
+            <source srcset="/images/architecture-public.webp?v=076" type="image/webp">
+            <img src="/images/architecture-public.png?v=076" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit counts, collaborators, flag stats, the click speed record, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service.">
           </picture>
         </a>
       </div>
@@ -1661,6 +1681,15 @@
                   <dt>Purpose</dt><dd>Free TLS certificate for the chat site</dd>
                   <dt>Maintainer</dt><dd>Internet Security Research Group (ISRG)</dd>
                   <dt>License</dt><dd>Free service (Subscriber Agreement)</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
+              <article class="tcard" style="border-top-color:#fbbf24">
+                <h4>DB-IP</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Visitor country pill in Live-state, from IP to Country Lite data kept on this site (no outside lookup)</dd>
+                  <dt>Maintainer</dt><dd><a href="https://db-ip.com" target="_blank" rel="noopener">IP Geolocation by DB-IP</a></dd>
+                  <dt>License</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></dd>
                 </dl>
                 <p class="thanks">Thank you for making this available.</p>
               </article>
@@ -2864,6 +2893,44 @@
         pending = { t: rel, r: r };
         send();
       });
+    })();
+  </script>
+  <script>
+    /* CHG-076: visitor country pill (#live-geo), between Countries and visits. Own script block, so an error in
+       the scripts above (for example blocked storage) cannot stop it. One GET /api/geo-country.php on load
+       (3s timeout). The server looks the address up in its own bundled database (geo/), so the address is not
+       sent to any other service. Shows flag + name, e.g. "US flag United States"; an unknown address or any
+       failure keeps "Country: unknown". Text only (textContent), never innerHTML. */
+    (function () {
+      var chip = document.getElementById("live-geo");
+      if (!chip || !window.fetch) return;
+      var TIMEOUT_MS = 3000;
+      var late = false;
+      var ctl = window.AbortController ? new AbortController() : null;
+      var timer = setTimeout(function () { late = true; if (ctl) ctl.abort(); }, TIMEOUT_MS);
+      function flag(cc) { // two regional indicator symbols (U+1F1E6 + letter), written as UTF-16 surrogate pairs
+        return "\uD83C" + String.fromCharCode(0xDDE6 + cc.charCodeAt(0) - 65) +
+               "\uD83C" + String.fromCharCode(0xDDE6 + cc.charCodeAt(1) - 65);
+      }
+      function show(data) {
+        clearTimeout(timer);
+        var cc = data && data.cc, name = data && data.name;
+        if (late || typeof cc !== "string" || !/^[A-Z]{2}$/.test(cc) ||
+            typeof name !== "string" || !name || name.length > 60) return;
+        var f = document.createElement("span");
+        f.className = "live-geo-flag";
+        f.setAttribute("aria-hidden", "true");
+        f.textContent = flag(cc) + " ";
+        chip.textContent = "";
+        chip.appendChild(f);
+        chip.appendChild(document.createTextNode(name));
+        chip.title = name + ", from your IP address, looked up on this site only";
+      }
+      var opts = { credentials: "same-origin" };
+      if (ctl) opts.signal = ctl.signal;
+      fetch("/api/geo-country.php", opts)
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .then(show, function () { clearTimeout(timer); /* quiet: keep "Country: unknown" */ });
     })();
   </script>
 </body>

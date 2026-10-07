@@ -29,5 +29,18 @@ Last reviewed: 2026-10-02 (CHG-059).
 | Let's Encrypt | TLS certificate (chat) | ISRG Subscriber Agreement |
 | SMTP provider | Sign-in code mail | Provider ToS |
 | Google STUN | WebRTC | Google terms: review open |
+| DB-IP IP to Country Lite (release 2026-10) | Data for the visitor country pill, bundled as `geo/ip-country.bin` (repacked) | CC BY 4.0, attribution required (see below) |
+
+## DB-IP IP to Country Lite (CHG-076)
+
+- Data: IP to Country Lite by DB-IP (Eris Networks S.A.S., France), https://db-ip.com/db/download/ip-to-country-lite
+- License: Creative Commons Attribution 4.0 International, https://creativecommons.org/licenses/by/4.0/
+- Attribution (required): DB-IP requires web applications to link back to DB-IP.com on pages that show or use results.
+  The homepage does this with `<a href="https://db-ip.com">IP Geolocation by DB-IP</a>` in the
+  Built With Gratitude drawer (DB-IP card). Keep that link while the data is used.
+- Changes we made: any gaps filled as unknown, IPv6 reduced to /64 units, private and other special-purpose ranges
+  set to unknown, neighboring ranges merged, repacked as a binary file (`tools/geo-build/build.py`).
+  Source release, checksums and build details: `geo/README.md`.
+- The data is provided as is, without warranty; DB-IP does not endorse this site.
 
 Do not copy this file into a product that implies those vendors endorse afirstflag.

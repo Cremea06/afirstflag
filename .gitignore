@@ -15,3 +15,6 @@ data/click-record.json
 data/click-record-hits.json
 data/click-record-salt.php
 data/click-record-salt.php.*.tmp
+
+# CHG-076: Python byte-code from running tools/geo-build/build.py
+__pycache__/

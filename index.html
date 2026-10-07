@@ -559,6 +559,14 @@
       font-variant-numeric: tabular-nums;
     }
 
+    /* CHG-074: static ISO 3166-1 alpha-2 country count chip beside the visits chip (same .online-chip chrome; no network) */
+    .live-visits-row #live-countries.online-chip {
+      display: inline-block;
+      margin: 0;
+      flex: 0 0 auto;
+      font-variant-numeric: tabular-nums;
+    }
+
     .live-visits-row .live-visits-note {
       display: inline;
       margin: 0;
@@ -1222,6 +1230,7 @@
         <div class="drawer-body" id="live-state-panel">
           <div class="live-visits-row">
             <div id="live-home-visits" class="online-chip" aria-live="polite">— visits</div>
+            <div id="live-countries" class="online-chip" title="ISO 3166-1 alpha-2 codes (249)">Countries: 249</div>
             <p class="live-visits-note">Welcome</p>
           </div>
           <div class="live-cmd-row" id="live-cmd-row">

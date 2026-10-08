@@ -1235,6 +1235,35 @@
       flex: 0 0 auto;
       font-variant-numeric: tabular-nums;
     }
+
+    /* CHG-081: Server row under the Click counter row: CPU chip, small Task Manager style graph, Mem and Up chips (same .online-chip chrome) */
+    .live-server-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 12px;
+      margin-top: 10px;
+    }
+    .live-server-row .search-note {
+      margin: 0;
+      flex: 0 0 auto;
+    }
+    .live-server-row .online-chip {
+      display: inline-block;
+      margin: 0;
+      flex: 0 0 auto;
+      font-variant-numeric: tabular-nums;
+    }
+    .live-server-row #live-server-cpu.online-chip { min-width: 6.2em; } /* room for "CPU: 100%" so the graph does not shift */
+    .live-server-graph {
+      display: block;
+      flex: 0 0 auto;
+      width: 120px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
   </style>
 </head>
 <body>
@@ -1293,6 +1322,13 @@
             <span class="online-chip" id="live-click-best" aria-live="polite">Best: 0.0 clicks/s</span>
             <span class="online-chip" id="live-click-record" aria-live="polite" title="Best click speed on this site (all visitors)">Record: --</span>
           </div>
+          <div class="live-server-row" id="live-server-row" role="group" aria-label="Server">
+            <span class="search-note">Server</span>
+            <span class="online-chip" id="live-server-cpu">CPU: …</span>
+            <canvas class="live-server-graph" id="live-server-graph" width="120" height="28" aria-hidden="true"></canvas>
+            <span class="online-chip" id="live-server-mem">Mem: …</span>
+            <span class="online-chip" id="live-server-up">Up: …</span>
+          </div>
         </div>
       </section>
     </div>
@@ -1304,10 +1340,10 @@
       </button>
       <div class="drawer-body" id="how-panel">
         <p class="how-lede">Public system map: what a visitor can see and use. Tap the map to open it full size.</p>
-        <a class="how-map" href="/images/architecture-public.png?v=077" target="_blank" rel="noopener">
+        <a class="how-map" href="/images/architecture-public.png?v=081" target="_blank" rel="noopener">
           <picture>
-            <source srcset="/images/architecture-public.webp?v=077" type="image/webp">
-            <img src="/images/architecture-public.png?v=077" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit counts, collaborators, flag stats, the click speed record, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet.">
+            <source srcset="/images/architecture-public.webp?v=081" type="image/webp">
+            <img src="/images/architecture-public.png?v=081" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit counts, collaborators, flag stats, the click speed record, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat.">
           </picture>
         </a>
       </div>
@@ -2946,6 +2982,128 @@
       fetch("/api/geo-country.php", opts)
         .then(function (res) { return (res.ok || res.status === 503) ? res.json() : null; })
         .then(show, function () { clearTimeout(timer); /* quiet: keep "Country: unknown" and "Remaining countries: …" */ });
+    })();
+  </script>
+  <script>
+    /* CHG-081: Server row (#live-server-row) under the Click counter row. CPU %, a small Task Manager style graph
+       (last 60 samples, newest on the right), memory % and uptime of the chat server, from
+       GET https://chat.afirstflag.com/api/server-stats (read-only; CORS allows only afirstflag.com and www; no cookies).
+       Own script block, so an error above (for example blocked storage) cannot stop it; it uses no storage.
+       Polls every 2.5s only while the Live-state drawer is open AND the tab is visible (Page Visibility API);
+       closing the drawer or hiding the tab stops the timer and aborts a request in flight. 3s timeout per request.
+       Any failure quietly shows "CPU: …", "Mem: …", "Up: …" and an empty graph, then retries after 5s, 10s, 20s,
+       then every 30s while still open; a 429 waits at least Retry-After. Text only (textContent), never innerHTML. */
+    (function () {
+      var drawer = document.getElementById("live-state-drawer");
+      var cpuEl = document.getElementById("live-server-cpu");
+      var memEl = document.getElementById("live-server-mem");
+      var upEl = document.getElementById("live-server-up");
+      var cv = document.getElementById("live-server-graph");
+      if (!drawer || !cpuEl || !memEl || !upEl || !window.fetch) return;
+      var API = "https://chat.afirstflag.com/api/server-stats";
+      var POLL_MS = 2500, TIMEOUT_MS = 3000, MAX_WAIT_MS = 30000, SLOTS = 60;
+      var timer = 0, ctl = null, seq = 0, busy = false, fails = 0;
+      var samples = [], tick = 0;
+      function pct(v) { return typeof v === "number" && isFinite(v) && v >= 0 && v <= 100; }
+      function up(s) {
+        var d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60);
+        return d > 0 ? d + "d " + h + "h" : h > 0 ? h + "h " + m + "m" : m + "m";
+      }
+      function draw() {
+        var g = cv && cv.getContext ? cv.getContext("2d") : null;
+        if (!g) return;
+        var r = window.devicePixelRatio || 1, w = 120, h = 28;
+        if (cv.width !== Math.round(w * r)) { cv.width = Math.round(w * r); cv.height = Math.round(h * r); }
+        g.setTransform(r, 0, 0, r, 0, 0);
+        g.clearRect(0, 0, w, h);
+        var step = w / (SLOTS - 1), i, x, y;
+        g.strokeStyle = "rgba(255, 255, 255, 0.08)"; // grid: 25/50/75% and one line every 10 samples, moving with time
+        g.lineWidth = 1;
+        g.beginPath();
+        for (i = 1; i < 4; i++) { y = Math.round((h * i) / 4) + 0.5; g.moveTo(0, y); g.lineTo(w, y); }
+        for (i = SLOTS - 1 - (tick % 10); i >= 0; i -= 10) { x = Math.round(i * step) + 0.5; g.moveTo(x, 0); g.lineTo(x, h); }
+        g.stroke();
+        if (!samples.length) return;
+        var n = samples.length, x0 = w - (n - 1) * step;
+        g.beginPath();
+        for (i = 0; i < n; i++) {
+          x = x0 + i * step; y = h - 1 - (samples[i] / 100) * (h - 2);
+          if (i) g.lineTo(x, y); else g.moveTo(x, y);
+        }
+        g.lineJoin = "round";
+        g.strokeStyle = "#4da3ff";
+        g.lineWidth = 1.5;
+        g.stroke();
+        g.lineTo(w, h); g.lineTo(x0, h); g.closePath();
+        g.fillStyle = "rgba(77, 163, 255, 0.22)";
+        g.fill();
+      }
+      function fallback() {
+        cpuEl.textContent = "CPU: …";
+        memEl.textContent = "Mem: …";
+        upEl.textContent = "Up: …";
+        samples = [];
+        draw();
+      }
+      function show(d) {
+        if (!d || !pct(d.cpu)) return false;
+        var list = [], src = Object.prototype.toString.call(d.samples) === "[object Array]" ? d.samples.slice(-SLOTS) : [];
+        for (var i = 0; i < src.length; i++) if (pct(src[i])) list.push(src[i]);
+        if (!list.length) list.push(d.cpu);
+        samples = list;
+        if (typeof d.ts === "number" && typeof d.intervalMs === "number" && d.intervalMs > 0) tick = Math.floor(d.ts / d.intervalMs);
+        cpuEl.textContent = "CPU: " + Math.round(d.cpu) + "%";
+        var m = d.mem && d.mem.usedPct;
+        memEl.textContent = pct(m) ? "Mem: " + Math.round(m) + "%" : "Mem: …";
+        var u = d.uptimeSec;
+        upEl.textContent = typeof u === "number" && isFinite(u) && u >= 0 ? "Up: " + up(u) : "Up: …";
+        draw();
+        return true;
+      }
+      function active() { return drawer.classList.contains("open") && !document.hidden; }
+      function stop() {
+        if (timer) { clearTimeout(timer); timer = 0; }
+        if (ctl) { ctl.abort(); ctl = null; }
+        busy = false;
+        seq++; // a late answer from before the stop is ignored
+      }
+      function poll() {
+        timer = 0;
+        if (busy || !active()) return;
+        busy = true;
+        var my = ++seq, wait = 0;
+        ctl = window.AbortController ? new AbortController() : null;
+        var c = ctl, killer = setTimeout(function () { if (c) c.abort(); }, TIMEOUT_MS);
+        var opts = { method: "GET", mode: "cors", credentials: "omit", cache: "no-store" };
+        if (c) opts.signal = c.signal;
+        fetch(API, opts)
+          .then(function (res) {
+            if (res.status === 429) wait = (parseInt(res.headers.get("Retry-After"), 10) || 0) * 1000;
+            return res.ok ? res.json() : null;
+          })
+          .then(null, function () { return null; })
+          .then(function (d) {
+            clearTimeout(killer);
+            if (my !== seq) return; // stopped meanwhile
+            busy = false;
+            ctl = null;
+            if (show(d)) fails = 0; else { fails += 1; fallback(); }
+            if (!active()) return;
+            var next = fails ? Math.min(MAX_WAIT_MS, POLL_MS * Math.pow(2, fails)) : POLL_MS;
+            timer = setTimeout(poll, Math.max(next, Math.min(wait, 120000)));
+          });
+      }
+      function sync() {
+        if (!active()) stop();
+        else if (!timer && !busy) poll();
+      }
+      if (window.MutationObserver) new MutationObserver(sync).observe(drawer, { attributes: true, attributeFilter: ["class"] });
+      else drawer.addEventListener("click", function () { setTimeout(sync, 0); });
+      document.addEventListener("visibilitychange", sync);
+      window.addEventListener("pageshow", sync);
+      window.addEventListener("pagehide", stop);
+      draw();
+      sync();
     })();
   </script>
 </body>

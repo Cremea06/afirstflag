@@ -587,6 +587,14 @@
       font-variant-numeric: tabular-nums;
     }
 
+    /* CHG-082: bot tally pill right after the visits pill (same .online-chip chrome; filled from the same /api/live-stats.php answer) */
+    .live-visits-row #live-bots.online-chip {
+      display: inline-block;
+      margin: 0;
+      flex: 0 0 auto;
+      font-variant-numeric: tabular-nums;
+    }
+
     .live-visits-row .live-visits-note {
       display: inline;
       margin: 0;
@@ -1288,6 +1296,7 @@
             <div id="live-countries" class="online-chip" title="ISO 3166-1 alpha-2 codes (249)">Countries: 249</div>
             <div id="live-geo" class="online-chip" title="From your IP address, looked up on this site only">Country: unknown</div>
             <div id="live-home-visits" class="online-chip" aria-live="polite">— visits</div>
+            <div id="live-bots" class="online-chip" title="Bot hits skipped from visits">Bots: …</div>
             <div id="live-remaining" class="online-chip" title="Of 249, not seen here yet">Remaining countries: …</div>
             <p class="live-visits-note">Welcome</p>
           </div>
@@ -1340,10 +1349,10 @@
       </button>
       <div class="drawer-body" id="how-panel">
         <p class="how-lede">Public system map: what a visitor can see and use. Tap the map to open it full size.</p>
-        <a class="how-map" href="/images/architecture-public.png?v=081" target="_blank" rel="noopener">
+        <a class="how-map" href="/images/architecture-public.png?v=082" target="_blank" rel="noopener">
           <picture>
-            <source srcset="/images/architecture-public.webp?v=081" type="image/webp">
-            <img src="/images/architecture-public.png?v=081" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit counts, collaborators, flag stats, the click speed record, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat.">
+            <source srcset="/images/architecture-public.webp?v=082" type="image/webp">
+            <img src="/images/architecture-public.png?v=082" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit and bot counts, collaborators, flag stats, the click speed record, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat.">
           </picture>
         </a>
       </div>
@@ -1952,6 +1961,7 @@
     (function () {
       var valueEl = document.getElementById("live-home-visits");
       if (!valueEl) return;
+      var botsEl = document.getElementById("live-bots"); /* CHG-082: bot tally from the same answer, no extra request */
 
       var COUNT_KEY = "af_home_counted";
 
@@ -1975,6 +1985,12 @@
         valueEl.textContent = "— visits";
       }
 
+      function paintBots(n) {
+        /* whole number 0 or more only; anything else keeps "Bots: …" */
+        if (!botsEl || typeof n !== "number" || !isFinite(n) || n < 0 || Math.floor(n) !== n) return;
+        botsEl.textContent = "Bots: " + fmt(n);
+      }
+
       function readOnlyFetch() {
         fetch("/api/live-stats.php")
           .then(function (res) {
@@ -1983,6 +1999,7 @@
           })
           .then(function (data) {
             paint(data && data.homeVisits);
+            paintBots(data && data.botHits);
           })
           .catch(function () {
             paintError();
@@ -2016,6 +2033,7 @@
         .then(function (data) {
           var n = data && data.homeVisits;
           paint(n);
+          paintBots(data && data.botHits);
           if (typeof n === "number" && isFinite(n) && n >= 0) {
             try {
               localStorage.setItem(COUNT_KEY, "1");

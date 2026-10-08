@@ -23,3 +23,13 @@ __pycache__/
 data/countries-visited.json
 data/countries-visited.json.tmp
 data/countries-visited.lock
+
+# CHG-082: visit counter limit and lock files, created on the server by api/live-stats.php (never commit).
+# data/live-stats.json itself stays tracked as before: never commit a change to it, or `git pull` on the host stops.
+data/live-stats-hits.json
+data/live-stats-hits.json.tmp
+data/live-stats-salt.php
+data/live-stats-salt.php.tmp
+data/live-stats.lock
+data/live-stats.json.tmp
+data/live-stats.json.bad

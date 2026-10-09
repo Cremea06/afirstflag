@@ -1296,7 +1296,7 @@
             <div id="live-countries" class="online-chip" title="ISO 3166-1 alpha-2 codes (249)">Countries: 249</div>
             <div id="live-remaining" class="online-chip" title="Of 249, not seen here yet">Remaining countries: …</div>
             <div id="live-geo" class="online-chip" title="From your IP address, looked up on this site only">Country: unknown</div>
-            <div id="live-home-visits" class="online-chip" aria-live="polite">— visits</div>
+            <div id="live-home-visits" class="online-chip" aria-live="polite">Human visitors: …</div>
             <div id="live-bots" class="online-chip" title="Bot hits skipped from visits">Bots: …</div>
             <p class="live-visits-note">Welcome</p>
           </div>
@@ -1975,14 +1975,14 @@
 
       function paint(n) {
         if (typeof n !== "number" || !isFinite(n) || n < 0) {
-          valueEl.textContent = "— visits";
+          valueEl.textContent = "Human visitors: …";
           return;
         }
-        valueEl.textContent = fmt(Math.floor(n)) + " visits";
+        valueEl.textContent = "Human visitors: " + fmt(Math.floor(n));
       }
 
       function paintError() {
-        valueEl.textContent = "— visits";
+        valueEl.textContent = "Human visitors: …";
       }
 
       function paintBots(n) {

@@ -30,6 +30,7 @@ Last reviewed: 2026-10-02 (CHG-059).
 | SMTP provider | Sign-in code mail | Provider ToS |
 | Google STUN | WebRTC | Google terms: review open |
 | DB-IP IP to Country Lite (release 2026-10) | Data for the visitor country pill, bundled as `geo/ip-country.bin` (repacked) | CC BY 4.0, attribution required (see below) |
+| Open Library (Internet Archive) | Book search in the Literature drawer, called from the visitor's browser | Catalog data CC0 / public domain; covers per Open Library cover guidelines (see below) |
 
 ## DB-IP IP to Country Lite (CHG-076)
 
@@ -42,5 +43,21 @@ Last reviewed: 2026-10-02 (CHG-059).
   set to unknown, neighboring ranges merged, repacked as a binary file (`tools/geo-build/build.py`).
   Source release, checksums and build details: `geo/README.md`.
 - The data is provided as is, without warranty; DB-IP does not endorse this site.
+
+## Open Library (CHG-088)
+
+- Service: Open Library Search API (https://openlibrary.org/search.json) and Covers API (https://covers.openlibrary.org),
+  run by the Internet Archive. Called directly from the visitor's browser when they search in the Literature drawer.
+  Nothing is stored or proxied by this site.
+- Data: Open Library asserts no copyright over its catalog records and asks that contributions be CC0 1.0
+  (https://openlibrary.org/developers/licensing, https://openlibrary.org/help/faq/using).
+- Covers: the cover art itself may be copyrighted by its publishers or artists. Open Library's cover guidelines
+  (https://openlibrary.org/dev/docs/api/covers) ask sites to load covers from covers.openlibrary.org (we do),
+  not to crawl, and appreciate a courtesy link back (each result links to its Open Library page; Gratitude card).
+- Usage guidance (https://openlibrary.org/developers/api): requests on behalf of human users only, about
+  1 request per second per unidentified client (3 per second when identified). Searches run only on a visitor's
+  click or Enter, one at a time.
+- Privacy: the visitor's browser contacts openlibrary.org and covers.openlibrary.org (redirects to archive.org),
+  so those services see the visitor's IP address and the search words.
 
 Do not copy this file into a product that implies those vendors endorse afirstflag.

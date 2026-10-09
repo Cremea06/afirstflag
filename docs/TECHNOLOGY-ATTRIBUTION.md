@@ -48,6 +48,8 @@ Last reviewed: 2026-10-02 (CHG-059), against Shop `main` d3ea766 and Nest `main`
 - Stripe: payments (Buy Flag Payment Link) and webhook for flag inventory
 - mempool.space: public Bitcoin balance data (address search, Confirmed balance chip); explorer code AGPL-3.0
 - xAI: Neagle replies in chat (Grok model via the xAI API)
+- Open Library (Internet Archive): book search in the Literature drawer, asked from the visitor's browser (CHG-088).
+  Catalog data CC0 / public domain; covers from covers.openlibrary.org under their cover guidelines.
 - GitHub: source hosting
 - Namecheap: domain, DNS, mail forwarding, and shared web hosting for afirstflag.com
 - Let's Encrypt (ISRG): TLS certificate for the chat site

@@ -678,6 +678,93 @@
 
     /* Built With Gratitude — g10 drawer under role bar */
 
+    /* CHG-088: Literature drawer (book search, Open Library, from the browser) */
+    .lit-wrap {
+      flex-shrink: 0;
+      margin: 0 16px 8px;
+    }
+
+    .lit-form {
+      display: flex;
+      gap: 8px;
+      max-width: 520px;
+      margin-bottom: 8px;
+    }
+
+    .lit-form input {
+      flex: 1 1 auto;
+      min-width: 0;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(0, 0, 0, 0.25);
+      color: #fff;
+      font: inherit;
+      font-size: 16px;
+    }
+
+    .lit-form .btn {
+      flex: 0 0 auto;
+      width: auto;
+    }
+
+    .lit-form .btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    #lit-status {
+      font-size: 12px;
+      color: rgba(244, 247, 255, 0.72);
+      margin: 0 0 8px;
+      min-height: 1em;
+    }
+
+    .lit-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 8px;
+    }
+
+    .lit-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 8px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      min-width: 0;
+    }
+
+    .lit-cover {
+      flex: 0 0 auto;
+      width: 44px;
+      height: 66px;
+      object-fit: cover;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .lit-cover.ph { display: block; }
+
+    .lit-meta {
+      min-width: 0;
+      font-size: 12px;
+      line-height: 1.4;
+      color: rgba(244, 247, 255, 0.8);
+      overflow-wrap: anywhere;
+    }
+
+    .lit-meta a {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+
     /* Collaborators — drawer between Gratitude and Gallery */
     .collab-wrap {
       flex-shrink: 0;
@@ -1349,10 +1436,10 @@
       </button>
       <div class="drawer-body" id="how-panel">
         <p class="how-lede">Public system map: what a visitor can see and use. Tap the map to open it full size.</p>
-        <a class="how-map" href="/images/architecture-public.png?v=082" target="_blank" rel="noopener">
+        <a class="how-map" href="/images/architecture-public.png?v=088" target="_blank" rel="noopener">
           <picture>
-            <source srcset="/images/architecture-public.webp?v=082" type="image/webp">
-            <img src="/images/architecture-public.png?v=082" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit and bot counts, collaborators, flag stats, the click speed record, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat.">
+            <source srcset="/images/architecture-public.webp?v=088" type="image/webp">
+            <img src="/images/architecture-public.png?v=088" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit and bot counts, collaborators, flag stats, the click speed record, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat. The homepage also has a literature search: the visitor's browser asks Open Library, an outside book catalog, for books matching a title.">
           </picture>
         </a>
       </div>
@@ -1747,6 +1834,15 @@
                 </dl>
                 <p class="thanks">Thank you for making this available.</p>
               </article>
+              <article class="tcard" style="border-top-color:#fbbf24">
+                <h4>Open Library</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Book search in the Literature drawer, asked from the visitor's browser</dd>
+                  <dt>Maintainer</dt><dd><a href="https://openlibrary.org" target="_blank" rel="noopener">Open Library (Internet Archive)</a></dd>
+                  <dt>License</dt><dd>Catalog data: public domain (CC0); covers: Open Library cover guidelines</dd>
+                </dl>
+                <p class="thanks">Thank you for making this available.</p>
+              </article>
             </div>
           </section>
 
@@ -1785,6 +1881,23 @@
               <div class="ph">B2</div>
             </div>
           </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="lit-wrap">
+      <section class="drawer glass" id="lit-drawer" aria-label="Literature">
+        <button type="button" class="drawer-toggle" id="lit-toggle" aria-expanded="false" aria-controls="lit-panel">
+          <span>Literature <span style="opacity:0.6;font-weight:600;font-size:12px">· click to <span class="label-state">expand</span></span></span>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="drawer-body" id="lit-panel">
+          <form class="lit-form" id="lit-form" action="#" role="search" autocomplete="off">
+            <input type="search" id="lit-q" maxlength="100" placeholder="Title" aria-label="Book title" enterkeyhint="search">
+            <button type="submit" class="btn primary" id="lit-go">Search</button>
+          </form>
+          <p id="lit-status" role="status" aria-live="polite"></p>
+          <ul class="lit-list" id="lit-results"></ul>
         </div>
       </section>
     </div>
@@ -2725,6 +2838,101 @@
       document.body.appendChild(s);
     })();
 
+  </script>
+  <script>
+    /* CHG-088: Literature drawer in its own script block, so it still works when an earlier block stops
+       (for example when the browser blocks localStorage). */
+    (function () {
+      var drawer = document.getElementById("lit-drawer");
+      var btn = document.getElementById("lit-toggle");
+      if (!drawer || !btn) return;
+      btn.addEventListener("click", function () {
+        var open = drawer.classList.toggle("open");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        var state = btn.querySelector(".label-state");
+        if (state) state.textContent = open ? "collapse" : "expand";
+      });
+    })();
+
+    /* CHG-088: Literature search. Runs only when the visitor searches; the browser asks Open Library
+       directly (title search). Nothing is stored. API text goes in with textContent only. */
+    (function () {
+      var form = document.getElementById("lit-form");
+      var input = document.getElementById("lit-q");
+      var go = document.getElementById("lit-go");
+      var statusEl = document.getElementById("lit-status");
+      var list = document.getElementById("lit-results");
+      if (!form || !input || !go || !statusEl || !list) return;
+      var API = "https://openlibrary.org/search.json";
+      var FIELDS = "key,title,author_name,first_publish_year,cover_i";
+      var busy = false;
+
+      function el(tag, cls, text) {
+        var e = document.createElement(tag);
+        if (cls) e.className = cls;
+        if (text != null) e.textContent = text;
+        return e;
+      }
+
+      function item(d) {
+        var li = el("li", "lit-item");
+        var cover = d.cover_i;
+        if (typeof cover === "number" && cover > 0 && Math.floor(cover) === cover) {
+          var img = el("img", "lit-cover");
+          img.loading = "lazy";
+          img.decoding = "async";
+          img.alt = "";
+          img.width = 44;
+          img.height = 66;
+          img.src = "https://covers.openlibrary.org/b/id/" + cover + "-S.jpg";
+          li.appendChild(img);
+        } else {
+          li.appendChild(el("span", "lit-cover ph"));
+        }
+        var meta = el("div", "lit-meta");
+        var title = typeof d.title === "string" && d.title ? d.title : "Untitled";
+        var key = typeof d.key === "string" && /^\/works\/OL\d+W$/.test(d.key) ? d.key : null;
+        if (key) {
+          var a = el("a", null, title);
+          a.href = "https://openlibrary.org" + key;
+          a.target = "_blank";
+          a.rel = "noopener";
+          meta.appendChild(a);
+        } else {
+          meta.appendChild(el("strong", null, title));
+        }
+        var authors = Array.isArray(d.author_name) ? d.author_name.filter(function (x) { return typeof x === "string"; }) : [];
+        meta.appendChild(el("div", null, authors.length ? authors.join(", ") : "Unknown author"));
+        if (typeof d.first_publish_year === "number") meta.appendChild(el("div", null, String(d.first_publish_year)));
+        li.appendChild(meta);
+        return li;
+      }
+
+      function run() {
+        var q = input.value.trim().slice(0, 100);
+        if (!q || busy) return;
+        busy = true;
+        go.disabled = true;
+        list.textContent = "";
+        statusEl.textContent = "Searching...";
+        var ctl = typeof AbortController === "function" ? new AbortController() : null;
+        var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 10000);
+        var url = API + "?title=" + encodeURIComponent(q) + "&fields=" + FIELDS + "&limit=20";
+        fetch(url, ctl ? { signal: ctl.signal, credentials: "omit" } : { credentials: "omit" })
+          .then(function (r) { if (!r.ok) throw new Error("http"); return r.json(); })
+          .then(function (j) {
+            var docs = j && Array.isArray(j.docs) ? j.docs.slice(0, 20) : [];
+            var n = j && typeof j.numFound === "number" ? j.numFound : docs.length;
+            if (!docs.length) { statusEl.textContent = "No matches."; return; }
+            for (var i = 0; i < docs.length; i++) list.appendChild(item(docs[i] || {}));
+            statusEl.textContent = n.toLocaleString("en-US") + (n === 1 ? " match" : " matches") + (n > docs.length ? ", showing " + docs.length + "." : ".");
+          })
+          .catch(function () { list.textContent = ""; statusEl.textContent = "Search unavailable. Try again later."; })
+          .then(function () { clearTimeout(timer); busy = false; go.disabled = false; });
+      }
+
+      form.addEventListener("submit", function (e) { e.preventDefault(); run(); });
+    })();
   </script>
   <script>
     /* CHG-068: Live-state Click counter. Per-visitor count in localStorage (kept in memory if storage is blocked). No network.

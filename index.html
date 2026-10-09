@@ -1462,6 +1462,22 @@
       flex: 0 0 auto;
       font-variant-numeric: tabular-nums;
     }
+    /* CHG-094: cursor position row under the Server row */
+    .live-cursor-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 12px;
+      margin-top: 10px;
+    }
+    .live-cursor-row .search-note { margin: 0; flex: 0 0 auto; }
+    .live-cursor-row .online-chip {
+      display: inline-block;
+      margin: 0;
+      flex: 0 0 auto;
+      font-variant-numeric: tabular-nums;
+      min-width: 9.5em;
+    }
     .live-server-row #live-server-cpu.online-chip { min-width: 6.2em; } /* room for "CPU: 100%" so the graph does not shift */
     .live-server-graph {
       display: block;
@@ -1537,6 +1553,10 @@
             <canvas class="live-server-graph" id="live-server-graph" width="120" height="28" aria-hidden="true"></canvas>
             <span class="online-chip" id="live-server-mem">Mem: …</span>
             <span class="online-chip" id="live-server-up">Up: …</span>
+          </div>
+          <div class="live-cursor-row" id="live-cursor-row" role="group" aria-label="Cursor">
+            <span class="search-note">Cursor</span>
+            <span class="online-chip" id="live-cursor-pos" title="Pointer position in the window, in pixels">X: …, Y: …</span>
           </div>
         </div>
       </section>
@@ -3908,6 +3928,24 @@
       window.addEventListener("pagehide", stop);
       draw();
       sync();
+    })();
+  </script>
+  <script>
+    /* CHG-094: cursor position pill. Shows the pointer's x and y in the window (CSS pixels) as it moves.
+       Updates at most once per frame; nothing is stored or sent. */
+    (function () {
+      var el = document.getElementById("live-cursor-pos");
+      if (!el) return;
+      var x = 0, y = 0, queued = false;
+      function paint() {
+        queued = false;
+        el.textContent = "X: " + x + ", Y: " + y;
+      }
+      window.addEventListener("pointermove", function (e) {
+        x = Math.round(e.clientX);
+        y = Math.round(e.clientY);
+        if (!queued) { queued = true; window.requestAnimationFrame(paint); }
+      }, { passive: true });
     })();
   </script>
 </body>

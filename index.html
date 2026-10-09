@@ -791,6 +791,22 @@
     .art-dot { display: block; background: #fff; border-radius: 50%; }
     .art-sq { border-radius: 1px; }
     .art-pad { width: 100%; max-width: 900px; }
+    /* CHG-098: Published panel beside the canvas (below it on narrow screens) */
+    .art-stage { display: flex; align-items: flex-start; gap: 14px; }
+    .art-stage .art-pad { flex: 1 1 auto; min-width: 0; }
+    .art-pub {
+      flex: 0 0 240px; width: 240px; box-sizing: border-box; padding: 10px; border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.22); font-size: 12px;
+    }
+    .art-pub h3 { margin: 0 0 8px; font-size: 13px; font-weight: 700; color: #f4f7ff; }
+    .art-pub img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; border-radius: 6px; background: #f7f3e8; }
+    .art-pub img[hidden] { display: none; }
+    .art-pub-cap { margin: 6px 0 0; color: rgba(244, 247, 255, 0.75); }
+    .art-pub-msg { margin: 4px 0 0; min-height: 1em; color: #f4c430; }
+    @media (max-width: 900px) {
+      .art-stage { flex-direction: column; align-items: stretch; }
+      .art-pub { flex: none; width: 100%; max-width: 420px; }
+    }
     #art-canvas {
       display: block; width: 100%; height: auto; aspect-ratio: 16 / 10;
       background: #f7f3e8; border-radius: 8px; cursor: crosshair;
@@ -2074,7 +2090,15 @@
         </button>
         <div class="drawer-body" id="art-panel">
           <div class="art-bar" id="art-bar" role="toolbar" aria-label="Art tools"></div>
-          <div class="art-pad" id="art-pad"><canvas id="art-canvas" width="900" height="563" aria-label="Drawing canvas"></canvas></div>
+          <div class="art-stage">
+            <div class="art-pad" id="art-pad"><canvas id="art-canvas" width="900" height="563" aria-label="Drawing canvas"></canvas></div>
+            <aside class="art-pub" id="art-pub" aria-label="Published drawing">
+              <h3>Published</h3>
+              <img id="art-pub-img" alt="The latest published drawing" width="800" height="500" hidden>
+              <p class="art-pub-cap" id="art-pub-cap">Nothing published yet</p>
+              <p class="art-pub-msg" id="art-pub-msg" role="status" aria-live="polite"></p>
+            </aside>
+          </div>
         </div>
       </section>
     </div>
@@ -3296,7 +3320,8 @@
   </script>
   <script>
     /* CHG-092: Art drawer. A drawing canvas that lives only in the visitor's browser.
-       Own script block. No network, nothing stored. Toolbar built with createElement. */
+       Own script block. Toolbar built with createElement. Drawing and Save stay local (no network).
+       CHG-098: Publish sends one downscaled PNG to /api/art-publish.php, replacing the one public drawing. */
     (function () {
       var drawer = document.getElementById("art-drawer");
       var btn = document.getElementById("art-toggle");
@@ -3380,7 +3405,8 @@
       var undoB = tool("art-btn", "Undo"); undoB.id = "art-undo"; undoB.textContent = "Undo";
       var clearB = tool("art-btn", "Clear"); clearB.id = "art-clear"; clearB.textContent = "Clear";
       var saveB = tool("art-btn", "Save as PNG", "Save"); saveB.id = "art-save"; saveB.textContent = "Save";
-      gA.appendChild(undoB); gA.appendChild(clearB); gA.appendChild(saveB);
+      var pubB = tool("art-btn", "Publish drawing for everyone", "Publish"); pubB.id = "art-publish"; pubB.textContent = "Publish";
+      gA.appendChild(undoB); gA.appendChild(clearB); gA.appendChild(saveB); gA.appendChild(pubB);
       bar.appendChild(gC); bar.appendChild(gS); bar.appendChild(gA);
       press(swBtns, swBtns[0]); press(sizeBtns, sizeBtns[1]); press(tipBtns, tipBtns[0]);
       eraser.setAttribute("aria-pressed", "false");
@@ -3520,6 +3546,75 @@
         }, "image/png");
       });
 
+      /* ---- CHG-098: Publish + Published panel ---- */
+      var PUB_API = "/api/art-publish.php", PUB_W = 800, PUB_H = 500, PUB_MAX = 950000;
+      var pubImg = document.getElementById("art-pub-img"), pubCap = document.getElementById("art-pub-cap");
+      var pubMsg = document.getElementById("art-pub-msg"), pubV = null, pubAt = 0, pubBusy = false, pubTimer = null;
+      function pubSay(t) { if (pubMsg) pubMsg.textContent = t || ""; }
+      function pubCaption() {
+        if (!pubCap) return;
+        if (!pubV) { pubCap.textContent = "Nothing published yet"; return; }
+        var m = Math.max(0, Math.floor((Date.now() - pubAt) / 60000));
+        pubCap.textContent = m < 60 ? "Published " + m + " min ago"
+          : m < 2880 ? "Published " + Math.floor(m / 60) + " h ago" : "Published " + Math.floor(m / 1440) + " days ago";
+      }
+      function pubShow(meta) {
+        if (!meta || typeof meta !== "object") return;
+        if (!meta.exists || typeof meta.v !== "string" || !/^[0-9a-f]{16}$/.test(meta.v)) {
+          pubV = null; if (pubImg) { pubImg.hidden = true; pubImg.removeAttribute("src"); }
+        } else {
+          var t = Date.parse(meta.updatedAt);
+          pubAt = isNaN(t) ? Date.now() : t;
+          if (meta.v !== pubV && pubImg) { pubImg.src = PUB_API + "?img&v=" + meta.v; pubImg.hidden = false; }
+          pubV = meta.v;
+        }
+        pubCaption();
+      }
+      function pubLoad() {
+        if (!window.fetch) return;
+        fetch(PUB_API + "?meta", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
+          .then(pubShow, function () {}).catch(function () {}); /* API down: keep what is shown, no noise */
+      }
+      function pubTick() { if (isOpen() && !document.hidden) pubLoad(); }
+      function pubStart() { if (!pubTimer) pubTimer = setInterval(pubTick, 30000); pubLoad(); }
+      function pubStop() { if (pubTimer) { clearInterval(pubTimer); pubTimer = null; } }
+      document.addEventListener("visibilitychange", function () { if (!document.hidden && isOpen()) pubLoad(); });
+      function pubBlob(w, h, cb) {
+        var c = document.createElement("canvas"); c.width = w; c.height = h;
+        var x = c.getContext("2d");
+        if (!x || !c.toBlob) { cb(null); return; }
+        x.fillStyle = PAPER; x.fillRect(0, 0, w, h);
+        x.imageSmoothingEnabled = true;
+        x.drawImage(cv, 0, 0, w, h);
+        c.toBlob(cb, "image/png");
+      }
+      pubB.addEventListener("click", function () {
+        if (pubBusy || cur || !window.fetch) return;
+        if (!window.confirm("Replace the published drawing for everyone?")) return;
+        pubBusy = true; pubB.disabled = true; pubSay("Publishing\u2026");
+        function done(t) { pubBusy = false; pubB.disabled = false; pubSay(t); }
+        function send(blob) {
+          if (!blob) { done("Could not export the drawing."); return; }
+          if (blob.size > PUB_MAX) { done("Too big to publish. Try a simpler drawing."); return; }
+          fetch(PUB_API, { method: "POST", headers: { "Content-Type": "image/png" }, body: blob, credentials: "same-origin", cache: "no-store" })
+            .then(function (r) {
+              return r.json().catch(function () { return null; }).then(function (j) {
+                if (r.ok && j && j.ok) { pubShow(j); done("Published."); return; }
+                if (r.status === 429) {
+                  var s = parseInt(r.headers.get("Retry-After"), 10);
+                  done(s > 0 && s <= 120 ? "Busy. Try again in " + s + " s." : "Publish limit reached. Try later.");
+                } else if (r.status === 413) done("Too big to publish. Try a simpler drawing.");
+                else done("Could not publish. Try later.");
+              });
+            }).catch(function () { done("Could not publish. Try later."); });
+        }
+        pubBlob(PUB_W, PUB_H, function (blob) {
+          if (blob && blob.size > PUB_MAX) { pubBlob(640, 400, send); return; }
+          send(blob);
+        });
+      });
+      setInterval(pubCaption, 30000);
+
       function typing(t) {
         if (!t || !t.tagName) return false;
         if (t.isContentEditable) return true;
@@ -3541,6 +3636,7 @@
         var state = btn.querySelector(".label-state");
         if (state) state.textContent = open ? "collapse" : "expand";
         if (open) fit();
+        if (open) pubStart(); else pubStop();
       });
       if (window.ResizeObserver) new ResizeObserver(fit).observe(pad);
       window.addEventListener("resize", fit);

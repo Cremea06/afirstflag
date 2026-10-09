@@ -1444,6 +1444,14 @@
       font-variant-numeric: tabular-nums;
     }
 
+    /* CHG-096: server-wide Total clicks pill at the end of the Click counter row (same .online-chip chrome) */
+    .live-click-row #live-click-total.online-chip {
+      display: inline-block;
+      margin: 0;
+      flex: 0 0 auto;
+      font-variant-numeric: tabular-nums;
+    }
+
     /* CHG-081: Server row under the Click counter row: CPU chip, small Task Manager style graph, Mem and Up chips (same .online-chip chrome) */
     .live-server-row {
       display: flex;
@@ -1552,6 +1560,7 @@
             <span class="online-chip" id="live-click-speed" aria-live="off">Speed: 0.0 clicks/s</span>
             <span class="online-chip" id="live-click-best" aria-live="polite">Best: 0.0 clicks/s</span>
             <span class="online-chip" id="live-click-record" aria-live="polite" title="Best click speed on this site (all visitors)">Record: --</span>
+            <span class="online-chip" id="live-click-total" aria-live="off" title="Click counter presses on this site (all visitors)">Total clicks: …</span>
           </div>
           <div class="live-server-row" id="live-server-row" role="group" aria-label="Server">
             <span class="search-note">Server</span>
@@ -3768,6 +3777,90 @@
         pending = { t: rel, r: r };
         send();
       });
+    })();
+  </script>
+  <script>
+    /* CHG-096: server-wide Total clicks pill (#live-click-total). Own script block and own click listener, so the
+       Clicks / Speed / Best / Record code above is unchanged and an error here cannot affect it.
+       Shows "Total clicks: …" until the first GET /api/click-total.php answers (3s timeout); any failure keeps the
+       last value shown (or "…") quietly. Each press adds 1 to the pill at once (optimistic) and to a buffer; the
+       buffer is POSTed as { add: n } (n at most 50, the server cap) about every 2.5s and on pagehide / tab hidden
+       (fetch keepalive). A 429 or network error keeps the buffer for the next flush. Refreshes from the server every
+       15s while the page is visible and when it becomes visible again. The per-visitor counter's idle reset only
+       touches localStorage aff_click_counter, so it never changes the total. */
+    (function () {
+      var btn = document.getElementById("live-click-btn");
+      var out = document.getElementById("live-click-total");
+      if (!btn || !out || !window.fetch || !window.JSON) return;
+      var API = "/api/click-total.php";
+      var MAX_ADD = 50, FLUSH_MS = 2500, REFRESH_MS = 15000, TIMEOUT_MS = 3000;
+      var server = null;   // last total from the server; null = not loaded
+      var buffered = 0;    // presses not yet sent
+      var inflight = 0;    // presses in a POST that has not answered yet
+      var pauseUntil = 0, flushTimer = 0, refreshTimer = 0;
+      var fmt = (window.Intl && Intl.NumberFormat) ? new Intl.NumberFormat("en-US") : null;
+      function show(n) { return fmt ? fmt.format(n) : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+      function paint() {
+        out.textContent = server === null ? "Total clicks: \u2026" : "Total clicks: " + show(server + inflight + buffered);
+      }
+      function take(data) {
+        var v = data && typeof data.total === "number" ? data.total : NaN;
+        if (v >= 0 && v === Math.floor(v)) { server = v; paint(); }
+      }
+      function call(opts) {
+        var ctl = window.AbortController ? new AbortController() : null;
+        var timer = setTimeout(function () { if (ctl) ctl.abort(); }, TIMEOUT_MS);
+        if (ctl && !opts.keepalive) opts.signal = ctl.signal;
+        opts.credentials = "same-origin";
+        return fetch(API, opts).then(function (res) {
+          return res.json().then(null, function () { return null; }).then(function (data) {
+            clearTimeout(timer);
+            return { status: res.status, ok: res.ok, headers: res.headers, data: data };
+          });
+        }).then(null, function (e) { clearTimeout(timer); throw e; });
+      }
+      function refresh() {
+        if (inflight) return; // a POST answer will bring the new total
+        call({ method: "GET", cache: "no-cache" }).then(function (x) {
+          if (x.ok && !inflight) take(x.data);
+        }, function () { /* quiet */ });
+      }
+      function flush(leaving) {
+        if (flushTimer) { clearTimeout(flushTimer); flushTimer = 0; }
+        if (!buffered || inflight || Date.now() < pauseUntil) {
+          if (buffered && !leaving) flushTimer = setTimeout(flush, Math.max(FLUSH_MS, pauseUntil - Date.now()));
+          return;
+        }
+        var n = Math.min(buffered, MAX_ADD);
+        buffered -= n;
+        inflight = n;
+        call({ method: "POST", keepalive: !!leaving, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ add: n }) })
+          .then(function (x) {
+            inflight = 0;
+            if (x.ok) {
+              take(x.data);
+            } else if (x.status === 429 || x.status >= 500) {
+              buffered += n; // keep for a later flush
+              var ra = parseInt(x.headers.get("Retry-After"), 10);
+              pauseUntil = Date.now() + (ra > 0 ? Math.min(ra, 600) * 1000 : 30000);
+            } // 4xx other than 429: the batch is refused; drop it
+            paint();
+          }, function () { inflight = 0; buffered += n; pauseUntil = Date.now() + 30000; paint(); })
+          .then(function () { if (buffered && !flushTimer) flushTimer = setTimeout(flush, FLUSH_MS); });
+      }
+      btn.addEventListener("click", function () {
+        buffered++;
+        paint();
+        if (!flushTimer && !inflight) flushTimer = setTimeout(flush, FLUSH_MS);
+      });
+      function startRefresh() { if (!refreshTimer) refreshTimer = setInterval(function () { if (!document.hidden) refresh(); }, REFRESH_MS); }
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) flush(true); else refresh();
+      });
+      window.addEventListener("pagehide", function () { flush(true); });
+      paint();
+      refresh();
+      startRefresh();
     })();
   </script>
   <script>

@@ -15,6 +15,11 @@ data/click-record.json
 data/click-record-hits.json
 data/click-record-salt.php
 data/click-record-salt.php.*.tmp
+# CHG-096: server-wide Total clicks store (created by api/click-total.php on the first POST)
+data/click-total.json
+data/click-total.json.*.tmp
+data/click-total.lock
+data/click-total-hits.json
 
 # CHG-076: Python byte-code from running tools/geo-build/build.py
 __pycache__/

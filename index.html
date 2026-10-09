@@ -763,6 +763,40 @@
       margin: 0 16px 8px;
     }
 
+    /* CHG-092: Art drawer (drawing canvas) below Music */
+    .art-wrap {
+      flex-shrink: 0;
+      margin: 0 16px 8px;
+    }
+    .art-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 10px; }
+    .art-group { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+    .art-sw {
+      width: 26px; height: 26px; padding: 0; border-radius: 50%; cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+    }
+    .art-sw[aria-pressed="true"], .art-custom.on { outline: 3px solid #f4c430; outline-offset: 2px; }
+    .art-custom {
+      width: 30px; height: 28px; padding: 0 2px; border-radius: 8px; cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.35); background: rgba(0, 0, 0, 0.25);
+    }
+    .art-btn {
+      min-width: 32px; height: 32px; padding: 0 8px; border-radius: 8px; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.25); background: rgba(0, 0, 0, 0.25);
+      color: #fff; font: inherit; font-size: 12px;
+    }
+    .art-btn[aria-pressed="true"] { border-color: #f4c430; background: rgba(244, 196, 48, 0.22); }
+    .art-btn:disabled { opacity: 0.45; cursor: default; }
+    .art-sw:focus-visible, .art-btn:focus-visible { outline: 2px solid #f4c430; outline-offset: 2px; }
+    .art-dot { display: block; background: #fff; border-radius: 50%; }
+    .art-sq { border-radius: 1px; }
+    .art-pad { width: 100%; max-width: 900px; }
+    #art-canvas {
+      display: block; width: 100%; height: auto; aspect-ratio: 16 / 10;
+      background: #f7f3e8; border-radius: 8px; cursor: crosshair;
+      touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+    }
+
     .lit-form {
       display: flex;
       gap: 8px;
@@ -1515,10 +1549,10 @@
       </button>
       <div class="drawer-body" id="how-panel">
         <p class="how-lede">Public system map: what a visitor can see and use. Tap the map to open it full size.</p>
-        <a class="how-map" href="/images/architecture-public.png?v=091" target="_blank" rel="noopener">
+        <a class="how-map" href="/images/architecture-public.png?v=092" target="_blank" rel="noopener">
           <picture>
-            <source srcset="/images/architecture-public.webp?v=091" type="image/webp">
-            <img src="/images/architecture-public.png?v=091" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit and bot counts, collaborators, flag stats, the click speed record, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat. The homepage also has a literature search: the visitor's browser asks Open Library, an outside book catalog, for books matching a title. The homepage also has a music keyboard that plays notes in the visitor's browser, with no outside requests.">
+            <source srcset="/images/architecture-public.webp?v=092" type="image/webp">
+            <img src="/images/architecture-public.png?v=092" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit and bot counts, collaborators, flag stats, the click speed record, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat. The homepage also has a literature search: the visitor's browser asks Open Library, an outside book catalog, for books matching a title. The homepage also has a music keyboard that plays notes in the visitor's browser, with no outside requests. The homepage also has an art canvas: visitors draw in their browser, nothing is stored or sent.">
           </picture>
         </a>
       </div>
@@ -1993,6 +2027,19 @@
             <label for="pno-vol">Volume <input type="range" id="pno-vol" min="0" max="1" step="0.05" value="0.5"></label>
           </div>
           <div class="pno" id="pno" role="group" aria-label="Piano"></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="art-wrap">
+      <section class="drawer glass" id="art-drawer" aria-label="Art">
+        <button type="button" class="drawer-toggle" id="art-toggle" aria-expanded="false" aria-controls="art-panel">
+          <span>Art <span style="opacity:0.6;font-weight:600;font-size:12px">· click to <span class="label-state">expand</span></span></span>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="drawer-body" id="art-panel">
+          <div class="art-bar" id="art-bar" role="toolbar" aria-label="Art tools"></div>
+          <div class="art-pad" id="art-pad"><canvas id="art-canvas" width="900" height="563" aria-label="Drawing canvas"></canvas></div>
         </div>
       </section>
     </div>
@@ -3210,6 +3257,259 @@
       document.addEventListener("visibilitychange", function () { if (document.hidden) stopAll(); });
       window.addEventListener("pagehide", stopAll);
       window.addEventListener("blur", stopAll);
+    })();
+  </script>
+  <script>
+    /* CHG-092: Art drawer. A drawing canvas that lives only in the visitor's browser.
+       Own script block. No network, nothing stored. Toolbar built with createElement. */
+    (function () {
+      var drawer = document.getElementById("art-drawer");
+      var btn = document.getElementById("art-toggle");
+      var bar = document.getElementById("art-bar");
+      var pad = document.getElementById("art-pad");
+      var cv = document.getElementById("art-canvas");
+      if (!drawer || !btn || !bar || !pad || !cv || !cv.getContext) return;
+      var ctx = cv.getContext("2d");
+      if (!ctx) return;
+      var PAPER = "#f7f3e8", RATIO = 0.625, MAX_UNDO = 20;
+      var COLORS = [["#111111", "Black"], ["#ffffff", "White"], ["#d62828", "Red"], ["#f77f00", "Orange"],
+        ["#ffd60a", "Yellow"], ["#2a9d3f", "Green"], ["#1e6fd9", "Blue"], ["#7b2cbf", "Purple"],
+        ["#8b5a2b", "Brown"], ["#8a8a8a", "Gray"], ["#1b2a4a", "Navy"], ["#f4c430", "Gold"]];
+      var SIZES = [2, 6, 12, 24];
+      var st = { color: COLORS[0][0], size: 6, tip: "round", erase: false };
+      var ops = [], base = null, cur = null, active = null, W = 0;
+
+      function el(tag, cls, text) {
+        var e = document.createElement(tag);
+        if (cls) e.className = cls;
+        if (text != null) e.textContent = text;
+        return e;
+      }
+      function tool(cls, label, title) {
+        var b = el("button", cls);
+        b.type = "button";
+        b.setAttribute("aria-label", label);
+        b.title = title || label;
+        return b;
+      }
+      function isOpen() { return drawer.classList.contains("open"); }
+
+      /* ---- toolbar ---- */
+      var swBtns = [], sizeBtns = [], tipBtns = [];
+      var gC = el("div", "art-group"); gC.setAttribute("role", "group"); gC.setAttribute("aria-label", "Colors");
+      var custom = document.createElement("input");
+      function press(list, on) { for (var i = 0; i < list.length; i++) list[i].setAttribute("aria-pressed", list[i] === on ? "true" : "false"); }
+      function pick(hex, b) {
+        st.color = hex; st.erase = false; eraser.setAttribute("aria-pressed", "false");
+        press(swBtns, b);
+        custom.classList.toggle("on", !b);
+      }
+      COLORS.forEach(function (c) {
+        var b = tool("art-sw", c[1]);
+        b.style.background = c[0];
+        b.setAttribute("data-c", c[0]);
+        b.addEventListener("click", function () { pick(c[0], b); });
+        swBtns.push(b); gC.appendChild(b);
+      });
+      custom.type = "color"; custom.className = "art-custom"; custom.value = "#3a86ff";
+      custom.setAttribute("aria-label", "Custom color"); custom.title = "Custom color";
+      custom.addEventListener("input", function () { pick(custom.value, null); });
+      gC.appendChild(custom);
+
+      var gS = el("div", "art-group"); gS.setAttribute("role", "group"); gS.setAttribute("aria-label", "Brush");
+      SIZES.forEach(function (n) {
+        var b = tool("art-btn", "Size " + n);
+        b.setAttribute("data-size", String(n));
+        var d = el("span", "art-dot"); d.style.width = d.style.height = n + "px";
+        b.appendChild(d);
+        b.addEventListener("click", function () { st.size = n; press(sizeBtns, b); });
+        sizeBtns.push(b); gS.appendChild(b);
+      });
+      [["round", "Round tip"], ["square", "Square tip"]].forEach(function (t) {
+        var b = tool("art-btn", t[1]);
+        b.setAttribute("data-tip", t[0]);
+        var d = el("span", "art-dot" + (t[0] === "square" ? " art-sq" : "")); d.style.width = d.style.height = "12px";
+        b.appendChild(d);
+        b.addEventListener("click", function () { st.tip = t[0]; press(tipBtns, b); });
+        tipBtns.push(b); gS.appendChild(b);
+      });
+      var eraser = tool("art-btn", "Eraser", "Erase");
+      eraser.id = "art-erase"; eraser.textContent = "Erase";
+      eraser.addEventListener("click", function () {
+        st.erase = !st.erase;
+        eraser.setAttribute("aria-pressed", st.erase ? "true" : "false");
+      });
+      gS.appendChild(eraser);
+
+      var gA = el("div", "art-group"); gA.setAttribute("role", "group"); gA.setAttribute("aria-label", "Actions");
+      var undoB = tool("art-btn", "Undo"); undoB.id = "art-undo"; undoB.textContent = "Undo";
+      var clearB = tool("art-btn", "Clear"); clearB.id = "art-clear"; clearB.textContent = "Clear";
+      var saveB = tool("art-btn", "Save as PNG", "Save"); saveB.id = "art-save"; saveB.textContent = "Save";
+      gA.appendChild(undoB); gA.appendChild(clearB); gA.appendChild(saveB);
+      bar.appendChild(gC); bar.appendChild(gS); bar.appendChild(gA);
+      press(swBtns, swBtns[0]); press(sizeBtns, sizeBtns[1]); press(tipBtns, tipBtns[0]);
+      eraser.setAttribute("aria-pressed", "false");
+
+      /* ---- drawing (normalised units: 1 = canvas width) ---- */
+      function paper(c, w, h) {
+        c.setTransform(1, 0, 0, 1, 0, 0);
+        c.globalCompositeOperation = "source-over";
+        c.fillStyle = PAPER;
+        c.fillRect(0, 0, w, h);
+      }
+      function look(c, op) {
+        c.strokeStyle = c.fillStyle = op.e ? PAPER : op.c;
+        c.lineCap = op.tip === "square" ? "square" : "round";
+        c.lineJoin = op.tip === "square" ? "miter" : "round";
+      }
+      function wid(op, p) { return op.sz * (op.pr ? 0.35 + 1.3 * p : 1); }
+      function mid(a, b) { return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]; }
+      function seg(c, op, i) {
+        var p = op.pts, a = i >= 2 ? mid(p[i - 2], p[i - 1]) : p[0], q = p[i - 1], b = mid(p[i - 1], p[i]);
+        c.lineWidth = wid(op, (q[2] + p[i][2]) / 2);
+        c.beginPath(); c.moveTo(a[0], a[1]); c.quadraticCurveTo(q[0], q[1], b[0], b[1]); c.stroke();
+      }
+      function tail(c, op) {
+        var p = op.pts, n = p.length, q = p[n - 1];
+        if (n === 1) {
+          var w = wid(op, q[2]);
+          if (op.tip === "square") c.fillRect(q[0] - w / 2, q[1] - w / 2, w, w);
+          else { c.beginPath(); c.arc(q[0], q[1], w / 2, 0, Math.PI * 2); c.fill(); }
+          return;
+        }
+        var a = mid(p[n - 2], q);
+        c.lineWidth = wid(op, q[2]);
+        c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(q[0], q[1]); c.stroke();
+      }
+      function drawOp(c, op, s, done) {
+        if (op.t === "c") { paper(c, c.canvas.width, c.canvas.height); return; }
+        c.setTransform(s, 0, 0, s, 0, 0);
+        look(c, op);
+        for (var i = 1; i < op.pts.length; i++) seg(c, op, i);
+        if (done) tail(c, op);
+      }
+      function render() {
+        paper(ctx, cv.width, cv.height);
+        if (base) ctx.drawImage(base, 0, 0, cv.width, cv.height);
+        for (var i = 0; i < ops.length; i++) drawOp(ctx, ops[i], cv.width, true);
+        if (cur) drawOp(ctx, cur, cv.width, false);
+      }
+      /* Steps older than the undo window are flattened into a bitmap snapshot. */
+      function bake() {
+        while (ops.length > MAX_UNDO) {
+          if (!base) {
+            base = document.createElement("canvas");
+            base.width = cv.width; base.height = cv.height;
+            paper(base.getContext("2d"), base.width, base.height);
+          }
+          drawOp(base.getContext("2d"), ops.shift(), base.width, true);
+        }
+      }
+      function sync() { undoB.disabled = !ops.length; }
+      function fit() {
+        var w = Math.floor(pad.clientWidth);
+        if (!w || !isOpen()) return;
+        var h = Math.round(w * RATIO), r = Math.min(window.devicePixelRatio || 1, 3);
+        var bw = Math.round(w * r), bh = Math.round(h * r);
+        cv.style.height = h + "px";
+        W = w;
+        if (bw === cv.width && bh === cv.height) return;
+        cv.width = bw; cv.height = bh;
+        render();
+      }
+      paper(ctx, cv.width, cv.height);
+      sync();
+
+      function pt(e) {
+        var r = cv.getBoundingClientRect(), p = e.pointerType === "pen" && e.pressure > 0 ? e.pressure : 0.5;
+        return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.width, p];
+      }
+      cv.addEventListener("pointerdown", function (e) {
+        if (!isOpen()) return;
+        e.preventDefault();
+        if (active !== null) return; /* one pointer draws, extra fingers are ignored */
+        if (e.pointerType === "mouse" && e.button !== 0) return;
+        fit();
+        if (!W) return;
+        active = e.pointerId;
+        try { cv.setPointerCapture(e.pointerId); } catch (x) {}
+        cur = { t: "s", c: st.color, e: st.erase, sz: st.size / W, tip: st.tip, pr: e.pointerType === "pen", pts: [pt(e)] };
+      });
+      cv.addEventListener("pointermove", function (e) {
+        if (e.pointerId !== active || !cur) return;
+        e.preventDefault();
+        var list = e.getCoalescedEvents ? e.getCoalescedEvents() : null;
+        if (!list || !list.length) list = [e];
+        ctx.setTransform(cv.width, 0, 0, cv.width, 0, 0);
+        look(ctx, cur);
+        for (var i = 0; i < list.length; i++) {
+          var q = pt(list[i]), last = cur.pts[cur.pts.length - 1];
+          if (Math.abs(q[0] - last[0]) + Math.abs(q[1] - last[1]) < 0.0008) continue;
+          cur.pts.push(q);
+          seg(ctx, cur, cur.pts.length - 1);
+        }
+      });
+      function finish(e) {
+        if (e.pointerId !== active) return;
+        active = null;
+        if (!cur) return;
+        ctx.setTransform(cv.width, 0, 0, cv.width, 0, 0);
+        look(ctx, cur); tail(ctx, cur);
+        ops.push(cur); cur = null;
+        bake(); sync();
+      }
+      cv.addEventListener("pointerup", finish);
+      cv.addEventListener("pointercancel", finish);
+      cv.addEventListener("lostpointercapture", finish);
+      cv.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+
+      function undo() {
+        if (!ops.length || cur) return;
+        ops.pop(); render(); sync();
+      }
+      undoB.addEventListener("click", undo);
+      clearB.addEventListener("click", function () {
+        if (cur) return;
+        if (!ops.length && !base) return;
+        if (ops.length && ops[ops.length - 1].t === "c") return;
+        ops.push({ t: "c" }); bake(); render(); sync();
+      });
+      saveB.addEventListener("click", function () {
+        if (!cv.toBlob || !window.URL || !URL.createObjectURL) return;
+        cv.toBlob(function (blob) {
+          if (!blob) return;
+          var u = URL.createObjectURL(blob), a = el("a");
+          a.href = u; a.download = "art.png"; a.style.display = "none";
+          document.body.appendChild(a); a.click(); a.parentNode.removeChild(a);
+          setTimeout(function () { URL.revokeObjectURL(u); }, 2000);
+        }, "image/png");
+      });
+
+      function typing(t) {
+        if (!t || !t.tagName) return false;
+        if (t.isContentEditable) return true;
+        var n = t.tagName;
+        if (n === "TEXTAREA" || n === "SELECT") return true;
+        return n === "INPUT" && !/^(range|button|checkbox|radio|submit|reset|color)$/i.test(t.type || "");
+      }
+      /* Ctrl+Z / Cmd+Z undo, only while Art is open, focus is not in a text box, and there is a step to undo. */
+      document.addEventListener("keydown", function (e) {
+        if (e.code !== "KeyZ" || !(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey) return;
+        if (!isOpen() || typing(e.target) || !ops.length) return;
+        e.preventDefault();
+        undo();
+      });
+
+      btn.addEventListener("click", function () {
+        var open = drawer.classList.toggle("open");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        var state = btn.querySelector(".label-state");
+        if (state) state.textContent = open ? "collapse" : "expand";
+        if (open) fit();
+      });
+      if (window.ResizeObserver) new ResizeObserver(fit).observe(pad);
+      window.addEventListener("resize", fit);
+      window.addEventListener("orientationchange", function () { setTimeout(fit, 200); });
     })();
   </script>
   <script>

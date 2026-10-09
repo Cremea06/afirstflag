@@ -684,6 +684,12 @@
       margin: 0 16px 8px;
     }
 
+    /* CHG-090: Music drawer (placeholder) between Literature and Collaborators */
+    .music-wrap {
+      flex-shrink: 0;
+      margin: 0 16px 8px;
+    }
+
     .lit-form {
       display: flex;
       gap: 8px;
@@ -1902,6 +1908,16 @@
       </section>
     </div>
 
+    <div class="music-wrap">
+      <section class="drawer glass" id="music-drawer" aria-label="Music">
+        <button type="button" class="drawer-toggle" id="music-toggle" aria-expanded="false" aria-controls="music-panel">
+          <span>Music <span style="opacity:0.6;font-weight:600;font-size:12px">· click to <span class="label-state">expand</span></span></span>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="drawer-body" id="music-panel"></div>
+      </section>
+    </div>
+
     <div class="collab-wrap">
       <section class="drawer glass" id="collab-drawer" aria-label="Collaborators (coming soon)">
         <button type="button" class="drawer-toggle" id="collab-toggle" aria-expanded="false" aria-controls="collab-panel">
@@ -2845,6 +2861,19 @@
     (function () {
       var drawer = document.getElementById("lit-drawer");
       var btn = document.getElementById("lit-toggle");
+      if (!drawer || !btn) return;
+      btn.addEventListener("click", function () {
+        var open = drawer.classList.toggle("open");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        var state = btn.querySelector(".label-state");
+        if (state) state.textContent = open ? "collapse" : "expand";
+      });
+    })();
+
+    /* CHG-090: Music drawer toggle (placeholder, no content yet). */
+    (function () {
+      var drawer = document.getElementById("music-drawer");
+      var btn = document.getElementById("music-toggle");
       if (!drawer || !btn) return;
       btn.addEventListener("click", function () {
         var open = drawer.classList.toggle("open");

@@ -684,6 +684,79 @@
       margin: 0 16px 8px;
     }
 
+    /* CHG-091: one-octave piano in the Music drawer (Web Audio, in the browser only) */
+    .pno-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 14px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: rgba(244, 247, 255, 0.85);
+    }
+    .pno-bar label { display: inline-flex; align-items: center; gap: 6px; }
+    .pno-bar input[type="range"] { width: 96px; accent-color: #f4c430; }
+    .pno-oct { display: inline-flex; align-items: center; gap: 6px; }
+    .pno-oct button {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(0, 0, 0, 0.25);
+      color: #fff;
+      font: inherit;
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .pno-oct button:disabled { opacity: 0.4; cursor: default; }
+    .pno {
+      position: relative;
+      display: flex;
+      width: 100%;
+      max-width: 448px;
+      height: 150px;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+    .pno-key {
+      margin: 0;
+      padding: 0 0 8px;
+      border: 1px solid rgba(0, 20, 60, 0.6);
+      font: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      cursor: pointer;
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pno-w {
+      flex: 1 1 0;
+      min-width: 0;
+      height: 100%;
+      border-radius: 0 0 8px 8px;
+      background: linear-gradient(#f4f7ff, #d9e0ee);
+      color: #1b2a4a;
+    }
+    .pno-b {
+      position: absolute;
+      top: 0;
+      width: 9%;
+      height: 60%;
+      z-index: 2;
+      border-radius: 0 0 6px 6px;
+      background: linear-gradient(#1a2440, #0a1020);
+      color: rgba(244, 247, 255, 0.8);
+      font-size: 10px;
+    }
+    .pno-key.on { background: #f4c430; color: #1b2a4a; }
+    .pno-key:focus-visible { outline: 2px solid #f4c430; outline-offset: -3px; }
+
     /* CHG-090: Music drawer (placeholder) between Literature and Collaborators */
     .music-wrap {
       flex-shrink: 0;
@@ -1442,10 +1515,10 @@
       </button>
       <div class="drawer-body" id="how-panel">
         <p class="how-lede">Public system map: what a visitor can see and use. Tap the map to open it full size.</p>
-        <a class="how-map" href="/images/architecture-public.png?v=088" target="_blank" rel="noopener">
+        <a class="how-map" href="/images/architecture-public.png?v=091" target="_blank" rel="noopener">
           <picture>
-            <source srcset="/images/architecture-public.webp?v=088" type="image/webp">
-            <img src="/images/architecture-public.png?v=088" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit and bot counts, collaborators, flag stats, the click speed record, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat. The homepage also has a literature search: the visitor's browser asks Open Library, an outside book catalog, for books matching a title.">
+            <source srcset="/images/architecture-public.webp?v=091" type="image/webp">
+            <img src="/images/architecture-public.png?v=091" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags. The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit and bot counts, collaborators, flag stats, the click speed record, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, and BTC address lookup, and stores no private keys. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, and an AI model provider for Neagle replies inside chat. Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat. The homepage also has a literature search: the visitor's browser asks Open Library, an outside book catalog, for books matching a title. The homepage also has a music keyboard that plays notes in the visitor's browser, with no outside requests.">
           </picture>
         </a>
       </div>
@@ -1914,7 +1987,13 @@
           <span>Music <span style="opacity:0.6;font-weight:600;font-size:12px">· click to <span class="label-state">expand</span></span></span>
           <span class="chev" aria-hidden="true">▾</span>
         </button>
-        <div class="drawer-body" id="music-panel"></div>
+        <div class="drawer-body" id="music-panel">
+          <div class="pno-bar">
+            <span class="pno-oct"><button type="button" id="pno-down" aria-label="Octave down">&minus;</button><span id="pno-oct" aria-live="polite">Octave 4</span><button type="button" id="pno-up" aria-label="Octave up">+</button></span>
+            <label for="pno-vol">Volume <input type="range" id="pno-vol" min="0" max="1" step="0.05" value="0.5"></label>
+          </div>
+          <div class="pno" id="pno" role="group" aria-label="Piano"></div>
+        </div>
       </section>
     </div>
 
@@ -2961,6 +3040,176 @@
       }
 
       form.addEventListener("submit", function (e) { e.preventDefault(); run(); });
+    })();
+  </script>
+  <script>
+    /* CHG-091: Music drawer piano. Own script block so it still works when an earlier block stops.
+       Sound is made in the browser with Web Audio. No files, no network, nothing stored. */
+    (function () {
+      var drawer = document.getElementById("music-drawer");
+      var wrap = document.getElementById("pno");
+      var vol = document.getElementById("pno-vol");
+      var octEl = document.getElementById("pno-oct");
+      var down = document.getElementById("pno-down");
+      var up = document.getElementById("pno-up");
+      if (!drawer || !wrap || !vol || !octEl || !down || !up) return;
+      var AC = window.AudioContext || window.webkitAudioContext;
+      var NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+      var CODES = ["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF", "KeyT", "KeyG", "KeyY", "KeyH", "KeyU", "KeyJ"];
+      var BLACK_AFTER = { 1: 0, 3: 1, 6: 3, 8: 4, 10: 5 };
+      var octave = 4, ctx = null, master = null, keys = [], voices = {}, ptr = {};
+
+      function audio() {
+        if (!AC) return null;
+        if (!ctx) {
+          try { ctx = new AC(); } catch (e) { ctx = null; return null; }
+          master = ctx.createGain();
+          master.gain.value = Number(vol.value);
+          master.connect(ctx.destination);
+        }
+        if (ctx.state === "suspended" && ctx.resume) {
+          var r = ctx.resume();
+          if (r && r.catch) r.catch(function () {});
+        }
+        return ctx;
+      }
+      function freq(i) { return 440 * Math.pow(2, (12 * (octave + 1) + i - 69) / 12); }
+
+      function voice(c, dest, f) {
+        var t = c.currentTime, g = c.createGain(), o1 = c.createOscillator(), o2 = c.createOscillator(), g2 = c.createGain();
+        o1.type = "triangle"; o1.frequency.value = f;
+        o2.type = "sine"; o2.frequency.value = f * 2; g2.gain.value = 0.15;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.3, t + 0.005);
+        g.gain.setTargetAtTime(0.12, t + 0.005, 0.3);
+        o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(dest);
+        o1.start(t); o2.start(t);
+        o1.onended = function () { o1.disconnect(); o2.disconnect(); g2.disconnect(); g.disconnect(); };
+        return { g: g, o1: o1, o2: o2, c: c };
+      }
+      function release(v) {
+        var t = v.c.currentTime, p = v.g.gain;
+        if (p.cancelAndHoldAtTime) p.cancelAndHoldAtTime(t);
+        else { var now = p.value; p.cancelScheduledValues(t); p.setValueAtTime(now, t); }
+        p.setTargetAtTime(0.0001, t, 0.08);
+        try { v.o1.stop(t + 0.45); v.o2.stop(t + 0.45); } catch (e) {}
+      }
+
+      function on(i, src) {
+        var k = keys[i];
+        if (!k) return;
+        k.srcs[src] = 1;
+        k.el.classList.add("on");
+        if (voices[i]) return;
+        var c = audio();
+        if (c) voices[i] = voice(c, master, freq(i));
+      }
+      function off(i, src) {
+        var k = keys[i];
+        if (!k) return;
+        delete k.srcs[src];
+        for (var s in k.srcs) return;
+        k.el.classList.remove("on");
+        if (voices[i]) { release(voices[i]); delete voices[i]; }
+      }
+      function stopAll() {
+        for (var i = 0; i < keys.length; i++) { keys[i].srcs = {}; keys[i].el.classList.remove("on"); }
+        for (var j in voices) release(voices[j]);
+        voices = {}; ptr = {};
+      }
+
+      for (var i = 0; i < 12; i++) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "pno-key " + (i in BLACK_AFTER ? "pno-b" : "pno-w");
+        b.setAttribute("data-i", String(i));
+        b.textContent = NAMES[i];
+        if (i in BLACK_AFTER) b.style.left = ((BLACK_AFTER[i] + 1) * 100 / 7 - 4.5).toFixed(3) + "%";
+        wrap.appendChild(b);
+        keys.push({ el: b, srcs: {} });
+      }
+      function labels() {
+        for (var i = 0; i < 12; i++) keys[i].el.setAttribute("aria-label", NAMES[i] + octave);
+        octEl.textContent = "Octave " + octave;
+        down.disabled = octave <= 2; up.disabled = octave >= 6;
+      }
+      labels();
+      function shift(d) {
+        var n = Math.max(2, Math.min(6, octave + d));
+        if (n === octave) return;
+        stopAll(); octave = n; labels();
+      }
+      down.addEventListener("click", function () { shift(-1); });
+      up.addEventListener("click", function () { shift(1); });
+      vol.addEventListener("input", function () {
+        if (master && ctx) master.gain.setTargetAtTime(Number(vol.value), ctx.currentTime, 0.02);
+      });
+
+      function keyAt(x, y) {
+        var e = document.elementFromPoint(x, y);
+        var k = e && e.closest ? e.closest(".pno-key") : null;
+        return k && wrap.contains(k) ? Number(k.getAttribute("data-i")) : -1;
+      }
+      wrap.addEventListener("pointerdown", function (e) {
+        var k = e.target.closest ? e.target.closest(".pno-key") : null;
+        if (!k || (e.pointerType === "mouse" && e.button !== 0)) return;
+        e.preventDefault();
+        if (k.releasePointerCapture && k.hasPointerCapture && k.hasPointerCapture(e.pointerId)) k.releasePointerCapture(e.pointerId);
+        var i = Number(k.getAttribute("data-i")), id = "p" + e.pointerId;
+        if (ptr[id] != null) off(ptr[id], id);
+        ptr[id] = i; on(i, id);
+      });
+      document.addEventListener("pointermove", function (e) {
+        var id = "p" + e.pointerId;
+        if (ptr[id] == null) return;
+        var i = keyAt(e.clientX, e.clientY);
+        if (i === ptr[id]) return;
+        off(ptr[id], id);
+        if (i < 0) { delete ptr[id]; return; }
+        ptr[id] = i; on(i, id);
+      });
+      function endPtr(e) {
+        var id = "p" + e.pointerId;
+        if (ptr[id] == null) return;
+        off(ptr[id], id); delete ptr[id];
+      }
+      document.addEventListener("pointerup", endPtr);
+      document.addEventListener("pointercancel", endPtr);
+      wrap.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+      wrap.addEventListener("click", function (e) {
+        var k = e.target.closest ? e.target.closest(".pno-key") : null;
+        if (!k || e.detail !== 0) return;
+        var i = Number(k.getAttribute("data-i"));
+        on(i, "click");
+        setTimeout(function () { off(i, "click"); }, 300);
+      });
+
+      function typing(t) {
+        if (!t || !t.tagName) return false;
+        if (t.isContentEditable) return true;
+        var n = t.tagName;
+        if (n === "TEXTAREA" || n === "SELECT") return true;
+        return n === "INPUT" && !/^(range|button|checkbox|radio|submit|reset|color)$/i.test(t.type || "");
+      }
+      document.addEventListener("keydown", function (e) {
+        var i = CODES.indexOf(e.code);
+        if (i < 0 || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+        if (!drawer.classList.contains("open") || typing(e.target)) return;
+        e.preventDefault();
+        on(i, "k");
+      });
+      document.addEventListener("keyup", function (e) {
+        var i = CODES.indexOf(e.code);
+        if (i >= 0) off(i, "k");
+      });
+
+      if (window.MutationObserver) {
+        new MutationObserver(function () { if (!drawer.classList.contains("open")) stopAll(); })
+          .observe(drawer, { attributes: true, attributeFilter: ["class"] });
+      }
+      document.addEventListener("visibilitychange", function () { if (document.hidden) stopAll(); });
+      window.addEventListener("pagehide", stopAll);
+      window.addEventListener("blur", stopAll);
     })();
   </script>
   <script>

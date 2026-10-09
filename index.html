@@ -1559,7 +1559,7 @@
             <span class="online-chip" id="live-click-count" aria-live="polite">Clicks: 0</span>
             <span class="online-chip" id="live-click-speed" aria-live="off">Speed: 0.0 clicks/s</span>
             <span class="online-chip" id="live-click-best" aria-live="polite">Best: 0.0 clicks/s</span>
-            <span class="online-chip" id="live-click-record" aria-live="polite" title="Best click speed on this site (all visitors)">Record: --</span>
+            <span class="online-chip" id="live-click-record" aria-live="polite" title="Best click speed on this site (all visitors)">Speed Record: --</span>
             <span class="online-chip" id="live-click-total" aria-live="off" title="Click counter presses on this site (all visitors)">Total clicks: …</span>
           </div>
           <div class="live-server-row" id="live-server-row" role="group" aria-label="Server">
@@ -3696,7 +3696,7 @@
         return (window.performance && performance.now) ? performance.now() : Date.now();
       }
       function paint() {
-        out.textContent = record === null ? "Record: --" : "Record: " + record.toFixed(1) + " clicks/s";
+        out.textContent = record === null ? "Speed Record: --" : "Speed Record: " + record.toFixed(1) + " clicks/s";
       }
       function take(data) {
         var v = data && typeof data.record === "number" ? data.record : NaN;

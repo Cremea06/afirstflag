@@ -1373,7 +1373,7 @@
       font-size: 13px;
     }
     .live-engine-row {
-      margin-top: 10px;
+      margin: 0 0 10px; /* CHG-093: Engine row sits at the top of the drawer */
     }
     .live-engine-row .search-note {
       margin: 0;
@@ -1492,6 +1492,16 @@
           <span class="chev" aria-hidden="true">▾</span>
         </button>
         <div class="drawer-body" id="live-state-panel">
+          <div class="live-engine-row engine-row" id="engine-row" aria-label="Page engine">
+            <span class="search-note">Engine</span>
+            <span class="engine-current" id="engine-js-current">Run page in JavaScript</span>
+            <a id="engine-js-link" href="/" hidden>Run page in JavaScript</a>
+            <span class="engine-current" id="engine-rust-current" hidden>Run page in Rust</span>
+            <a class="engine-link" data-engine="rust" href="/rust/">Run page in Rust</a>
+            <span class="engine-current" id="engine-c-current" hidden>Run page in C</span>
+            <a class="engine-link" data-engine="c" href="/c/">Run page in C</a>
+            <span class="engine-chip" id="engine-chip" role="status">Engine: JavaScript</span>
+          </div>
           <div class="live-visits-row">
             <div id="live-countries" class="online-chip" title="ISO 3166-1 alpha-2 codes (249)">Countries: 249</div>
             <div id="live-remaining" class="online-chip" title="Of 249, not seen here yet">Remaining countries: …</div>
@@ -1513,16 +1523,6 @@
               </div>
             </form>
             <p class="role-hint" id="live-cmd-hint" aria-live="polite"></p>
-          </div>
-          <div class="live-engine-row engine-row" id="engine-row" aria-label="Page engine">
-            <span class="search-note">Engine</span>
-            <span class="engine-current" id="engine-js-current">Run page in JavaScript</span>
-            <a id="engine-js-link" href="/" hidden>Run page in JavaScript</a>
-            <span class="engine-current" id="engine-rust-current" hidden>Run page in Rust</span>
-            <a class="engine-link" data-engine="rust" href="/rust/">Run page in Rust</a>
-            <span class="engine-current" id="engine-c-current" hidden>Run page in C</span>
-            <a class="engine-link" data-engine="c" href="/c/">Run page in C</a>
-            <span class="engine-chip" id="engine-chip" role="status">Engine: JavaScript</span>
           </div>
           <div class="live-click-row" id="live-click-row" role="group" aria-label="Click counter">
             <button type="button" class="btn primary" id="live-click-btn">Click counter</button>

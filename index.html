@@ -1643,7 +1643,7 @@
           </div>
           <div class="window-cta">
             <div id="flags-left" class="flags-left-chip" aria-live="polite">Flags available</div>
-            <a class="btn primary" href="https://buy.stripe.com/3cI3cu9aq45JbmO2Fl2sM01" target="_blank" rel="noopener">BUY FLAG NOW</a>
+            <a class="btn primary" id="buyflag-btn" href="https://buy.stripe.com/3cI3cu9aq45JbmO2Fl2sM01" target="_blank" rel="noopener">BUY FLAG NOW</a>
           </div>
         </div>
         <!-- CHG-067: card 3 (rotation: pottery, flag, card 3). Copy of stand-in for now; edit this block to reword. No IDs; buy button stays inert. -->
@@ -4141,15 +4141,37 @@
         el.textContent = "X: " + x + ", Y: " + y;
       }
       var speech = document.getElementById("speechroom-btn");
+      /* CHG-101: also green over BUY FLAG NOW, but only while the flag card is the one showing
+         (not the pottery stand-in or card 3, and not mid-collapse). */
+      var red = document.querySelector(".window.red");
+      function flagCardShowing() {
+        if (!red) return false;
+        var c = red.classList;
+        return c.contains("is-live") && c.contains("open") && !c.contains("show-standin") && !c.contains("show-card3");
+      }
+      function isGreen(t) {
+        if (!t || !t.closest) return false;
+        if (speech && t.closest("#speechroom-btn")) return true;
+        return !!(t.closest("#buyflag-btn") && flagCardShowing());
+      }
+      var lastX = -1, lastY = -1;
+      if (red && window.MutationObserver) {
+        /* cards rotate under a still pointer: re-check what is under it */
+        new MutationObserver(function () {
+          if (lastX < 0) return;
+          el.classList.toggle("on-speechroom", isGreen(document.elementFromPoint(lastX, lastY)));
+        }).observe(red, { attributes: true, attributeFilter: ["class"] });
+      }
       window.addEventListener("pointermove", function (e) {
         /* CHG-095: green while over the SPEECHROOM button */
-        var on = !!(speech && e.target && e.target.closest && e.target.closest("#speechroom-btn"));
+        lastX = e.clientX; lastY = e.clientY;
+        var on = isGreen(e.target);
         el.classList.toggle("on-speechroom", on);
         x = Math.round(e.clientX);
         y = Math.round(e.clientY);
         if (!queued) { queued = true; window.requestAnimationFrame(paint); }
       }, { passive: true });
-      document.documentElement.addEventListener("pointerleave", function () { el.classList.remove("on-speechroom"); });
+      document.documentElement.addEventListener("pointerleave", function () { lastX = -1; el.classList.remove("on-speechroom"); });
     })();
   </script>
 </body>

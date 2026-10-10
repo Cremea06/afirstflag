@@ -1410,6 +1410,38 @@
       color: rgba(244, 247, 255, 0.65);
       font-weight: 600;
     }
+    /* CHG-103: engine links as glass pill buttons; the current engine is a dimmed, pressed-in pill */
+    .engine-row a.engine-link:not([hidden]),
+    .engine-row #engine-js-link:not([hidden]),
+    .engine-row .engine-current:not([hidden]) {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 1.2;
+      text-decoration: none;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .engine-row a.engine-link,
+    .engine-row #engine-js-link {
+      color: #e8efff;
+      border: 1px solid rgba(207, 224, 255, 0.45);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .engine-row a.engine-link:hover, .engine-row a.engine-link:focus-visible,
+    .engine-row #engine-js-link:hover, .engine-row #engine-js-link:focus-visible {
+      color: #fff;
+      border-color: #fff;
+      background: rgba(255, 255, 255, 0.16);
+    }
+    .engine-row .engine-current {
+      color: rgba(244, 247, 255, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.25);
+      cursor: default;
+    }
     .engine-chip {
       display: inline-block;
       padding: 3px 10px;

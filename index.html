@@ -1551,6 +1551,7 @@
             <span class="engine-current" id="engine-c-current" hidden>Run page in C</span>
             <a class="engine-link" data-engine="c" href="/c/">Run page in C</a>
             <span class="engine-chip" id="engine-chip" role="status">Engine: JavaScript</span>
+            <span class="engine-chip" id="stream-chip" title="Checking this browser and connection">Live-stream hardware: …</span>
           </div>
           <div class="live-visits-row">
             <div id="live-countries" class="online-chip" title="ISO 3166-1 alpha-2 codes (249)">Countries: 249</div>
@@ -4172,6 +4173,40 @@
         if (!queued) { queued = true; window.requestAnimationFrame(paint); }
       }, { passive: true });
       document.documentElement.addEventListener("pointerleave", function () { lastX = -1; el.classList.remove("on-speechroom"); });
+    })();
+  </script>
+  <script>
+    /* CHG-102: "Live-stream hardware: Ready | Inadequate". Browser-only check; nothing stored or sent.
+       Ready needs all of: live video support (WebRTC + camera/mic API), 4+ CPU cores when reported,
+       and, where the browser reports its connection (Chrome/Edge/Android): 4g class, no data saver,
+       about 5 Mbps or more down and about 300 ms or less delay. Browsers that do not report a
+       connection (Safari/Firefox) are judged on the rest. */
+    (function () {
+      var el = document.getElementById("stream-chip");
+      if (!el) return;
+      var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      function check() {
+        var bad = [], good = [];
+        var rtc = typeof window.RTCPeerConnection === "function";
+        var gum = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+        if (rtc && gum) good.push("live video supported"); else bad.push("no live video support");
+        var cores = navigator.hardwareConcurrency;
+        if (cores) { if (cores >= 4) good.push(cores + " cores"); else bad.push("only " + cores + " cores"); }
+        if (conn) {
+          if (conn.saveData) bad.push("data saver on");
+          if (conn.effectiveType) { if (conn.effectiveType === "4g") good.push("fast connection class"); else bad.push("slow connection (" + conn.effectiveType + ")"); }
+          if (conn.downlink > 0) { if (conn.downlink >= 5) good.push("~" + conn.downlink + " Mbps down"); else bad.push("~" + conn.downlink + " Mbps down"); }
+          if (conn.rtt > 0) { if (conn.rtt <= 300) good.push("~" + conn.rtt + " ms delay"); else bad.push("~" + conn.rtt + " ms delay"); }
+        } else {
+          good.push("connection speed not reported by this browser");
+        }
+        var ready = bad.length === 0;
+        el.textContent = "Live-stream hardware: " + (ready ? "Ready" : "Inadequate");
+        el.setAttribute("data-state", ready ? "ready" : "inadequate");
+        el.title = (ready ? good : bad.concat(good)).join(" · ");
+      }
+      check();
+      if (conn && conn.addEventListener) conn.addEventListener("change", check);
     })();
   </script>
 </body>

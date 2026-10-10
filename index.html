@@ -1423,6 +1423,9 @@
       line-height: 1.2;
       text-decoration: none;
       transition: background 0.15s, border-color 0.15s, color 0.15s;
+      justify-content: center;
+      box-sizing: border-box;
+      width: 7.6em; /* CHG-104: all three engine buttons the same width */
     }
     .engine-row a.engine-link,
     .engine-row #engine-js-link {
@@ -1576,12 +1579,12 @@
         <div class="drawer-body" id="live-state-panel">
           <div class="live-engine-row engine-row" id="engine-row" aria-label="Page engine">
             <span class="search-note">Engine</span>
-            <span class="engine-current" id="engine-js-current">Run page in JavaScript</span>
-            <a id="engine-js-link" href="/" hidden>Run page in JavaScript</a>
-            <span class="engine-current" id="engine-rust-current" hidden>Run page in Rust</span>
-            <a class="engine-link" data-engine="rust" href="/rust/">Run page in Rust</a>
-            <span class="engine-current" id="engine-c-current" hidden>Run page in C</span>
-            <a class="engine-link" data-engine="c" href="/c/">Run page in C</a>
+            <span class="engine-current" id="engine-js-current" title="Run page in JavaScript">JavaScript</span>
+            <a id="engine-js-link" href="/" title="Run page in JavaScript" hidden>JavaScript</a>
+            <span class="engine-current" id="engine-rust-current" title="Run page in Rust" hidden>Rust</span>
+            <a class="engine-link" data-engine="rust" href="/rust/" title="Run page in Rust">Rust</a>
+            <span class="engine-current" id="engine-c-current" title="Run page in C" hidden>C</span>
+            <a class="engine-link" data-engine="c" href="/c/" title="Run page in C">C</a>
             <span class="engine-chip" id="engine-chip" role="status">Engine: JavaScript</span>
             <span class="engine-chip" id="stream-chip" title="Checking this browser and connection">Live-stream hardware: …</span>
           </div>

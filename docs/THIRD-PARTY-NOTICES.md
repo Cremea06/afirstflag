@@ -31,6 +31,7 @@ Last reviewed: 2026-10-02 (CHG-059).
 | Google STUN | WebRTC | Google terms: review open |
 | DB-IP IP to Country Lite (release 2026-10) | Data for the visitor country pill, bundled as `geo/ip-country.bin` (repacked) | CC BY 4.0, attribution required (see below) |
 | Open Library (Internet Archive) | Book search in the Literature drawer, called from the visitor's browser | Catalog data CC0 / public domain; covers per Open Library cover guidelines (see below) |
+| Google Safe Browsing (Lookup API v4) | Link check in the search window, called by the chat server (no URLs stored) | Safe Browsing API terms; non-commercial use; "Advisory provided by Google" (see below) |
 
 ## DB-IP IP to Country Lite (CHG-076)
 
@@ -61,3 +62,15 @@ Last reviewed: 2026-10-02 (CHG-059).
   so those services see the visitor's IP address and the search words.
 
 Do not copy this file into a product that implies those vendors endorse afirstflag.
+
+## Google Safe Browsing (CHG-106)
+
+- Service: Safe Browsing Lookup API v4 (threatMatches:find), called by the chat server (/api/safe-link), clientId "afirstflag".
+- Terms: https://developers.google.com/safe-browsing/terms and usage rules https://developers.google.com/safe-browsing/v4/usage-limits
+  (non-commercial use only; commercial use should move to Google Web Risk).
+- Warnings that come from Google use qualifying words (suspected, may), carry "Advisory provided by Google" linking to
+  https://developers.google.com/safe-browsing/v4/advisory, and link to antiphishing.org / Google Search Central / the
+  Unwanted Software Policy. Lookalike and red-flag warnings are ours and never carry the Google line.
+- User protection notice (shown under the search box before use, and in the Gratitude card): no check is perfect;
+  some risky sites may not be identified and some safe sites may be identified in error.
+

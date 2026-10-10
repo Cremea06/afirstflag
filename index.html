@@ -828,9 +828,10 @@
 
     /* CHG-111: YouTube and Twitch side by side (switch removed). Two equal 16:9 columns with a 16px gap; side by side
        only when each column can be >= 400px (Twitch minimum), i.e. container >= 816px; otherwise stacked (YouTube on top). */
-    .ls-player.ls-grid { max-width: 1240px; container-type: inline-size; container-name: lsgrid; }
-    .ls-cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
-    .ls-col { min-width: 0; }
+    /* CHG-112: frames capped at Twitch's minimum, 400x300 each (816px for the pair); stacked frames stay 400 wide, centered */
+    .ls-player.ls-grid { max-width: 816px; container-type: inline-size; container-name: lsgrid; }
+    .ls-cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; justify-items: center; }
+    .ls-col { min-width: 0; width: 100%; max-width: 400px; }
     @container lsgrid (min-width: 816px) {
       .ls-cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
       .ls-cols .ls-frame { min-height: 300px; } /* both facades share Twitch's 300px floor so heights match */

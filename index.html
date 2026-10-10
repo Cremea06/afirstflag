@@ -826,17 +826,17 @@
     .ls-watch { font-size: 12px; margin: 4px 0 0; }
     .ls-watch a { color: rgba(244, 247, 255, 0.72); }
 
-    /* CHG-109: Live Stream source switch (YouTube | Twitch) as CHG-103 glass pills; the selected source is the pressed-in pill */
-    .ls-switch { display: flex; justify-content: center; gap: 8px; margin: 0 auto 10px; max-width: 720px; }
-    .ls-switch button {
-      display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; width: 7.6em;
-      padding: 6px 14px; border-radius: 999px; font: inherit; font-weight: 700; font-size: 13px; line-height: 1.2; cursor: pointer;
-      color: #e8efff; border: 1px solid rgba(207, 224, 255, 0.45); background: rgba(255, 255, 255, 0.06);
-      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    /* CHG-111: YouTube and Twitch side by side (switch removed). Two equal 16:9 columns with a 16px gap; side by side
+       only when each column can be >= 400px (Twitch minimum), i.e. container >= 816px; otherwise stacked (YouTube on top). */
+    .ls-player.ls-grid { max-width: 1240px; container-type: inline-size; container-name: lsgrid; }
+    .ls-cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .ls-col { min-width: 0; }
+    @container lsgrid (min-width: 816px) {
+      .ls-cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .ls-cols .ls-frame { min-height: 300px; } /* both facades share Twitch's 300px floor so heights match */
     }
-    .ls-switch button:hover, .ls-switch button:focus-visible { color: #fff; border-color: #fff; background: rgba(255, 255, 255, 0.16); }
-    .ls-switch button:focus-visible { outline: 3px solid #f4c430; outline-offset: 2px; }
-    .ls-switch button[aria-pressed="true"] { color: rgba(244, 247, 255, 0.55); border-color: rgba(255, 255, 255, 0.15); background: rgba(0, 0, 0, 0.25); cursor: default; }
+    .ls-cols.ls-side { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } /* JS fallback without container queries */
+    .ls-cols.ls-side .ls-frame { min-height: 300px; }
     /* Twitch minimum embed size is 400x300: keep 16:9 but never under 300px tall (narrower than 400px -> fallback link, see script) */
     .ls-frame.ls-tw { min-height: 300px; }
     .ls-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 14px; text-align: center; color: #e8edf5; font-size: 14px; }
@@ -2253,20 +2253,23 @@
           <span class="chev" aria-hidden="true">▾</span>
         </button>
         <div class="drawer-body" id="ls-panel">
-          <div class="ls-switch" id="ls-switch" role="group" aria-label="Stream source">
-            <button type="button" id="ls-src-yt" data-src="yt" aria-pressed="true">YouTube</button>
-            <button type="button" id="ls-src-tw" data-src="tw" aria-pressed="false">Twitch</button>
-          </div>
-          <div class="ls-player">
-            <div class="ls-frame" id="ls-frame"></div>
-            <div class="ls-credits" id="ls-credits-yt">
-            <p class="ls-credit">“<a href="https://www.youtube.com/watch?v=J6G-B1DoDAU" target="_blank" rel="noopener">1990s Raining in Tokyo at Midnight | Lofi Rain Ambience for Relaxation &amp; Quiet Focus</a>” by <a href="https://www.youtube.com/@thelastcassette-on" target="_blank" rel="noopener">The Last Cassette</a> on YouTube</p>
-            <p class="ls-watch"><a href="https://www.youtube.com/watch?v=J6G-B1DoDAU" target="_blank" rel="noopener">Watch on YouTube</a></p>
+          <div class="ls-player ls-grid">
+            <div class="ls-cols" id="ls-cols">
+              <div class="ls-col" id="ls-col-yt">
+                <div class="ls-frame" id="ls-frame"></div>
+                <div class="ls-credits" id="ls-credits-yt">
+                <p class="ls-credit">“<a href="https://www.youtube.com/watch?v=J6G-B1DoDAU" target="_blank" rel="noopener">1990s Raining in Tokyo at Midnight | Lofi Rain Ambience for Relaxation &amp; Quiet Focus</a>” by <a href="https://www.youtube.com/@thelastcassette-on" target="_blank" rel="noopener">The Last Cassette</a> on YouTube</p>
+                <p class="ls-watch"><a href="https://www.youtube.com/watch?v=J6G-B1DoDAU" target="_blank" rel="noopener">Watch on YouTube</a></p>
+                </div>
+              </div>
+              <div class="ls-col" id="ls-col-tw">
+                <div class="ls-frame ls-tw" id="ls-frame-tw"></div>
+                <div class="ls-credits" id="ls-credits-tw">
+                  <p class="ls-credit"><a href="https://www.twitch.tv/zackrawrr" target="_blank" rel="noopener">zackrawrr on Twitch</a></p>
+                  <p class="ls-watch"><a href="https://www.twitch.tv/zackrawrr" target="_blank" rel="noopener">Watch on Twitch</a></p>
+                </div>
+              </div>
             </div>
-            <template id="ls-credits-tw-tpl"><div class="ls-credits" id="ls-credits-tw">
-              <p class="ls-credit"><a href="https://www.twitch.tv/zackrawrr" target="_blank" rel="noopener">zackrawrr on Twitch</a></p>
-              <p class="ls-watch"><a href="https://www.twitch.tv/zackrawrr" target="_blank" rel="noopener">Watch on Twitch</a></p>
-            </div></template>
           </div>
         </div>
       </section>
@@ -3913,19 +3916,22 @@
   <script>
     /* CHG-108: Live Stream drawer. Click-to-load facade: nothing loads from YouTube or Google until Play.
        Play inserts a youtube-nocookie iframe; collapsing removes it so audio stops. Own script block.
-       CHG-109: second source, Twitch channel zackrawrr, same facade. The YouTube|Twitch switch removes any running
-       player so only one exists at a time. Twitch needs every parent domain; under Twitch's 400px minimum width
-       a "Watch on Twitch" link is shown instead of an undersized player. */
+       CHG-109: Twitch channel zackrawrr, same facade. Twitch needs every parent domain; under Twitch's 400px
+       minimum width a "Watch on Twitch" link is shown instead of an undersized player.
+       CHG-111: source switch removed; YouTube (left) and Twitch (right) each have their own facade and Play and may
+       both run. Collapsing removes both. Layout is a CSS container query; a ResizeObserver class toggle is the fallback. */
     (function () {
       var drawer = document.getElementById("ls-drawer");
       var btn = document.getElementById("ls-toggle");
       var box = document.getElementById("ls-frame");
-      if (!drawer || !btn || !box) return;
+      var twBox = document.getElementById("ls-frame-tw");
+      var cols = document.getElementById("ls-cols");
+      if (!drawer || !btn || !box || !twBox) return;
       var TITLE = "1990s Raining in Tokyo at Midnight | Lofi Rain Ambience for Relaxation & Quiet Focus";
       var SRC = "https://www.youtube-nocookie.com/embed/J6G-B1DoDAU?autoplay=1&rel=0&modestbranding=1&playsinline=1";
       var TW_CHANNEL = "zackrawrr";
       var TW_URL = "https://www.twitch.tv/zackrawrr";
-      var TW_MIN_W = 400;
+      var TW_MIN_W = 400, GAP = 16;
       /* Live: exactly afirstflag.com + www.afirstflag.com. "localhost" is appended only for local testing. */
       function twitchParents(host) {
         var p = ["afirstflag.com", "www.afirstflag.com"];
@@ -3936,39 +3942,36 @@
         return "https://player.twitch.tv/?channel=" + TW_CHANNEL +
           twitchParents(host).map(function (d) { return "&parent=" + d; }).join("") + "&autoplay=true&muted=false";
       }
-      window.AFF_LS = { twitchParents: twitchParents, twitchSrc: twitchSrc };
-      var source = "yt";
-      var ytCredits = document.getElementById("ls-credits-yt");
-      var twTpl = document.getElementById("ls-credits-tw-tpl");
-      var twCredits = twTpl && twTpl.content ? twTpl.content.firstElementChild.cloneNode(true) : null;
-      var srcBtns = [document.getElementById("ls-src-yt"), document.getElementById("ls-src-tw")];
+      window.AFF_LS = { twitchParents: twitchParents, twitchSrc: twitchSrc, minSideBySide: TW_MIN_W * 2 + GAP };
       function el(tag, cls, text) {
         var e = document.createElement(tag);
         if (cls) e.className = cls;
         if (text != null) e.textContent = text;
         return e;
       }
-      function facade() {
+      function ytFacade() {
         box.textContent = "";
-        box.classList.toggle("ls-tw", source === "tw");
         var b = el("button", "ls-facade");
         b.type = "button";
-        if (source === "tw") {
-          b.id = "ls-play-tw";
-          b.setAttribute("aria-label", "Play " + TW_CHANNEL + " on Twitch (loads from Twitch)");
-          b.appendChild(el("span", "ls-play")).setAttribute("aria-hidden", "true");
-          b.appendChild(el("span", "ls-title", TW_CHANNEL));
-          b.appendChild(el("span", "ls-note", "Loads from Twitch when you press play"));
-          b.addEventListener("click", playTwitch);
-        } else {
-          b.id = "ls-play";
-          b.setAttribute("aria-label", "Play " + TITLE + " (loads from YouTube)");
-          b.appendChild(el("span", "ls-play")).setAttribute("aria-hidden", "true");
-          b.appendChild(el("span", "ls-title", TITLE));
-          b.appendChild(el("span", "ls-note", "Loads from YouTube when you press play"));
-          b.addEventListener("click", play);
-        }
+        b.id = "ls-play";
+        b.setAttribute("aria-label", "Play " + TITLE + " (loads from YouTube)");
+        b.appendChild(el("span", "ls-play")).setAttribute("aria-hidden", "true");
+        b.appendChild(el("span", "ls-title", TITLE));
+        b.appendChild(el("span", "ls-note", "Loads from YouTube when you press play"));
+        b.addEventListener("click", play);
         box.appendChild(b);
+      }
+      function twFacade() {
+        twBox.textContent = "";
+        var b = el("button", "ls-facade");
+        b.type = "button";
+        b.id = "ls-play-tw";
+        b.setAttribute("aria-label", "Play " + TW_CHANNEL + " on Twitch (loads from Twitch)");
+        b.appendChild(el("span", "ls-play")).setAttribute("aria-hidden", "true");
+        b.appendChild(el("span", "ls-title", TW_CHANNEL));
+        b.appendChild(el("span", "ls-note", "Loads from Twitch when you press play"));
+        b.addEventListener("click", playTwitch);
+        twBox.appendChild(b);
       }
       function play() {
         var f = document.createElement("iframe");
@@ -3983,48 +3986,45 @@
         try { f.focus(); } catch (e) {}
       }
       function twFallback() {
-        box.textContent = "";
+        twBox.textContent = "";
         var d = el("div", "ls-fallback");
         d.id = "ls-tw-fallback";
         d.appendChild(el("span", null, "This screen is narrower than Twitch's minimum player size (400 × 300)."));
         var a = el("a", null, "Watch " + TW_CHANNEL + " on Twitch");
         a.href = TW_URL; a.target = "_blank"; a.rel = "noopener";
         d.appendChild(a);
-        box.appendChild(d);
+        twBox.appendChild(d);
         try { a.focus(); } catch (e) {}
       }
       function playTwitch() {
-        if (box.clientWidth < TW_MIN_W) { twFallback(); return; }
+        if (twBox.clientWidth < TW_MIN_W) { twFallback(); return; }
         var f = document.createElement("iframe");
         f.src = twitchSrc(location.hostname);
         f.title = TW_CHANNEL + " on Twitch";
         f.setAttribute("allow", "autoplay; fullscreen");
         f.setAttribute("allowfullscreen", "");
         f.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
-        box.textContent = "";
-        box.appendChild(f);
+        twBox.textContent = "";
+        twBox.appendChild(f);
         try { f.focus(); } catch (e) {}
       }
-      function setSource(s) {
-        if (s === source) return;
-        source = s;
-        srcBtns.forEach(function (x) { if (x) x.setAttribute("aria-pressed", x.getAttribute("data-src") === s ? "true" : "false"); });
-        var cur = s === "tw" ? ytCredits : twCredits, next = s === "tw" ? twCredits : ytCredits;
-        if (cur && next && cur.parentNode) cur.parentNode.replaceChild(next, cur);
-        facade(); /* removes any running player */
+      /* fallback for browsers without container queries: toggle .ls-side from the grid's own width */
+      var cq = window.CSS && CSS.supports && CSS.supports("container-type", "inline-size");
+      function layout() {
+        if (!cq && cols) cols.classList.toggle("ls-side", cols.clientWidth >= TW_MIN_W * 2 + GAP);
+        /* a running Twitch player squeezed under the minimum width (rotation/resize) swaps to the link */
+        if (twBox.querySelector("iframe") && twBox.clientWidth < TW_MIN_W) twFallback();
       }
-      srcBtns.forEach(function (x) { if (x) x.addEventListener("click", function () { setSource(x.getAttribute("data-src")); }); });
-      /* if a running Twitch player gets squeezed under the minimum width (rotation/resize), swap to the link */
-      window.addEventListener("resize", function () {
-        if (source === "tw" && box.querySelector("iframe") && box.clientWidth < TW_MIN_W) twFallback();
-      });
-      facade();
+      if (window.ResizeObserver && cols) new ResizeObserver(layout).observe(cols);
+      window.addEventListener("resize", layout);
+      ytFacade(); twFacade(); layout();
       btn.addEventListener("click", function () {
         var open = drawer.classList.toggle("open");
         btn.setAttribute("aria-expanded", open ? "true" : "false");
         var state = btn.querySelector(".label-state");
         if (state) state.textContent = open ? "collapse" : "expand";
-        if (!open) facade();
+        if (!open) { ytFacade(); twFacade(); }
+        else layout();
       });
     })();
   </script>

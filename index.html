@@ -4211,7 +4211,7 @@
     })();
   </script>
   <script>
-    /* CHG-102: "Live-stream hardware: Ready | Inadequate". Browser-only check; nothing stored or sent.
+    /* CHG-102: "Live-stream hardware: Adequate | Inadequate" (CHG-105: was Ready). Browser-only check; nothing stored or sent.
        Ready needs all of: live video support (WebRTC + camera/mic API), 4+ CPU cores when reported,
        and, where the browser reports its connection (Chrome/Edge/Android): 4g class, no data saver,
        about 5 Mbps or more down and about 300 ms or less delay. Browsers that do not report a
@@ -4236,7 +4236,7 @@
           good.push("connection speed not reported by this browser");
         }
         var ready = bad.length === 0;
-        el.textContent = "Live-stream hardware: " + (ready ? "Ready" : "Inadequate");
+        el.textContent = "Live-stream hardware: " + (ready ? "Adequate" : "Inadequate");
         el.setAttribute("data-state", ready ? "ready" : "inadequate");
         el.title = (ready ? good : bad.concat(good)).join(" · ");
       }

@@ -85,3 +85,17 @@ Do not copy this file into a product that implies those vendors endorse afirstfl
   https://developers.google.com/youtube/terms/developer-policies. The player's branding and links are not altered or covered.
 - Privacy: click-to-load. Nothing loads from YouTube/Google (no thumbnail) until the visitor presses play; the iframe then autoplays
   once, is fully visible, and is removed when the drawer closes. Referrer sent via strict-origin-when-cross-origin.
+
+## Twitch embedded player (CHG-109)
+
+- Service: Twitch non-interactive iframe embed (https://player.twitch.tv/?channel=zackrawrr&parent=afirstflag.com&parent=www.afirstflag.com&autoplay=true&muted=false),
+  second source of the Live Stream drawer behind a YouTube | Twitch switch. Twitch Interactive, Inc. is an Amazon company.
+- Content: live channel zackrawrr (https://www.twitch.tv/zackrawrr). Credit line "zackrawrr on Twitch" plus "Watch on Twitch" sits
+  under the player. When the channel is offline, Twitch's own offline screen shows.
+- Terms: Twitch Developer Services Agreement https://legal.twitch.com/legal/developer-agreement/, Embedded Experiences Requirements
+  https://dev.twitch.tv/docs/embed/, Terms of Service https://legal.twitch.com/legal/terms-of-service/. Twitch's own player is used
+  unmodified; its controls, ads, and Twitch marks are not covered or obscured. Every serving domain is listed as a parent. The player is
+  at least 400x300 (16:9, min height 300); below 400px wide a "Watch on Twitch" link is shown instead of an undersized player.
+  Autoplay runs only after the visitor presses play on a visible player. No Twitch logo or thumbnail is copied or hotlinked.
+- Privacy: click-to-load. Nothing loads from Twitch/Amazon until play; switching source or closing the drawer removes the iframe.
+  Referrer sent via strict-origin-when-cross-origin. Privacy Notice https://legal.twitch.com/legal/privacy-notice/.

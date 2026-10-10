@@ -795,6 +795,37 @@
       margin: 0 16px 8px;
     }
 
+    /* CHG-108: Live Stream drawer (YouTube, click-to-load facade) below Art */
+    .ls-wrap {
+      flex-shrink: 0;
+      margin: 0 16px 8px;
+    }
+    .ls-player { max-width: 720px; margin: 0 auto; }
+    .ls-frame {
+      position: relative; width: 100%; aspect-ratio: 16 / 9; min-height: 200px;
+      background: #0b0f17; border-radius: 10px; overflow: hidden;
+    }
+    .ls-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .ls-facade {
+      position: absolute; inset: 0; width: 100%; height: 100%; border: 0; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+      padding: 14px; color: #e8edf5; font: inherit; text-align: center;
+      background: radial-gradient(ellipse at 50% 40%, #1c2536 0%, #0b0f17 70%);
+    }
+    .ls-play {
+      width: 72px; height: 50px; border-radius: 14px; background: rgba(255,255,255,0.14); border: 2px solid rgba(255,255,255,0.7);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .ls-play::after { content: ""; border-style: solid; border-width: 11px 0 11px 19px; border-color: transparent transparent transparent #fff; margin-left: 4px; }
+    .ls-facade:hover .ls-play, .ls-facade:focus-visible .ls-play { background: rgba(255,255,255,0.26); }
+    .ls-facade:focus-visible { outline: 3px solid #f4c430; outline-offset: -3px; }
+    .ls-title { font-weight: 700; font-size: 15px; max-width: 90%; overflow-wrap: anywhere; }
+    .ls-note { font-size: 12px; opacity: 0.75; }
+    .ls-credit { font-size: 13px; margin: 8px 0 0; color: rgba(244, 247, 255, 0.85); overflow-wrap: anywhere; }
+    .ls-credit a { color: inherit; }
+    .ls-watch { font-size: 12px; margin: 4px 0 0; }
+    .ls-watch a { color: rgba(244, 247, 255, 0.72); }
+
     /* CHG-092: Art drawer (drawing canvas) below Music */
     .art-wrap {
       flex-shrink: 0;
@@ -2085,6 +2116,15 @@
                 </dl>
                 <p class="thanks"><a href="https://developers.google.com/safe-browsing/v4/advisory" target="_blank" rel="noopener">Advisory provided by Google</a>. Google works to provide the most accurate and up-to-date information about unsafe web resources. However, Google cannot guarantee that its information is comprehensive and error-free: some risky sites may not be identified, and some safe sites may be identified in error.</p>
               </article>
+              <article class="tcard" style="border-top-color:#fbbf24">
+                <h4>YouTube</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Embedded player (privacy-enhanced mode) in the Live Stream drawer, loaded only when a visitor presses play</dd>
+                  <dt>Maintainer</dt><dd><a href="https://www.youtube.com" target="_blank" rel="noopener">YouTube (Google)</a></dd>
+                  <dt>License</dt><dd><a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms of Service</a>; <a href="https://developers.google.com/youtube/terms/api-services-terms-of-service" target="_blank" rel="noopener">YouTube API Services Terms</a></dd>
+                </dl>
+                <p class="thanks">Thank you to <a href="https://www.youtube.com/@thelastcassette-on" target="_blank" rel="noopener">The Last Cassette</a> for the stream “<a href="https://www.youtube.com/watch?v=J6G-B1DoDAU" target="_blank" rel="noopener">1990s Raining in Tokyo at Midnight | Lofi Rain Ambience for Relaxation &amp; Quiet Focus</a>”.</p>
+              </article>
             </div>
           </section>
 
@@ -2176,6 +2216,22 @@
               <p class="art-pub-cap" id="art-pub-cap">Nothing published yet</p>
               <p class="art-pub-msg" id="art-pub-msg" role="status" aria-live="polite"></p>
             </aside>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="ls-wrap">
+      <section class="drawer glass" id="ls-drawer" aria-label="Live Stream">
+        <button type="button" class="drawer-toggle" id="ls-toggle" aria-expanded="false" aria-controls="ls-panel">
+          <span>Live Stream <span style="opacity:0.6;font-weight:600;font-size:12px">· click to <span class="label-state">expand</span></span></span>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="drawer-body" id="ls-panel">
+          <div class="ls-player">
+            <div class="ls-frame" id="ls-frame"></div>
+            <p class="ls-credit">“<a href="https://www.youtube.com/watch?v=J6G-B1DoDAU" target="_blank" rel="noopener">1990s Raining in Tokyo at Midnight | Lofi Rain Ambience for Relaxation &amp; Quiet Focus</a>” by <a href="https://www.youtube.com/@thelastcassette-on" target="_blank" rel="noopener">The Last Cassette</a> on YouTube</p>
+            <p class="ls-watch"><a href="https://www.youtube.com/watch?v=J6G-B1DoDAU" target="_blank" rel="noopener">Watch on YouTube</a></p>
           </div>
         </div>
       </section>
@@ -3817,6 +3873,56 @@
       if (window.ResizeObserver) new ResizeObserver(fit).observe(pad);
       window.addEventListener("resize", fit);
       window.addEventListener("orientationchange", function () { setTimeout(fit, 200); });
+    })();
+  </script>
+  <script>
+    /* CHG-108: Live Stream drawer. Click-to-load facade: nothing loads from YouTube or Google until Play.
+       Play inserts a youtube-nocookie iframe; collapsing removes it so audio stops. Own script block. */
+    (function () {
+      var drawer = document.getElementById("ls-drawer");
+      var btn = document.getElementById("ls-toggle");
+      var box = document.getElementById("ls-frame");
+      if (!drawer || !btn || !box) return;
+      var TITLE = "1990s Raining in Tokyo at Midnight | Lofi Rain Ambience for Relaxation & Quiet Focus";
+      var SRC = "https://www.youtube-nocookie.com/embed/J6G-B1DoDAU?autoplay=1&rel=0&modestbranding=1&playsinline=1";
+      function el(tag, cls, text) {
+        var e = document.createElement(tag);
+        if (cls) e.className = cls;
+        if (text != null) e.textContent = text;
+        return e;
+      }
+      function facade() {
+        box.textContent = "";
+        var b = el("button", "ls-facade");
+        b.type = "button";
+        b.id = "ls-play";
+        b.setAttribute("aria-label", "Play " + TITLE + " (loads from YouTube)");
+        b.appendChild(el("span", "ls-play")).setAttribute("aria-hidden", "true");
+        b.appendChild(el("span", "ls-title", TITLE));
+        b.appendChild(el("span", "ls-note", "Loads from YouTube when you press play"));
+        b.addEventListener("click", play);
+        box.appendChild(b);
+      }
+      function play() {
+        var f = document.createElement("iframe");
+        f.src = SRC;
+        f.title = TITLE;
+        f.setAttribute("allow", "autoplay; encrypted-media; picture-in-picture; fullscreen");
+        f.setAttribute("allowfullscreen", "");
+        f.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+        f.setAttribute("loading", "lazy");
+        box.textContent = "";
+        box.appendChild(f);
+        try { f.focus(); } catch (e) {}
+      }
+      facade();
+      btn.addEventListener("click", function () {
+        var open = drawer.classList.toggle("open");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        var state = btn.querySelector(".label-state");
+        if (state) state.textContent = open ? "collapse" : "expand";
+        if (!open) facade();
+      });
     })();
   </script>
   <script>

@@ -74,3 +74,14 @@ Do not copy this file into a product that implies those vendors endorse afirstfl
 - User protection notice (shown under the search box before use, and in the Gratitude card): no check is perfect;
   some risky sites may not be identified and some safe sites may be identified in error.
 
+## YouTube embedded player (CHG-108)
+
+- Service: YouTube IFrame embed in privacy-enhanced mode (https://www.youtube-nocookie.com/embed/J6G-B1DoDAU), Live Stream drawer.
+- Content: "1990s Raining in Tokyo at Midnight | Lofi Rain Ambience for Relaxation & Quiet Focus" by The Last Cassette
+  (https://www.youtube.com/@thelastcassette-on), watch page https://www.youtube.com/watch?v=J6G-B1DoDAU. Embedding is enabled by
+  the owner (oEmbed 200). Credit line with links to the video and channel, plus "Watch on YouTube", sits under the player.
+- Terms: YouTube Terms of Service https://www.youtube.com/t/terms, YouTube API Services Terms
+  https://developers.google.com/youtube/terms/api-services-terms-of-service and Developer Policies
+  https://developers.google.com/youtube/terms/developer-policies. The player's branding and links are not altered or covered.
+- Privacy: click-to-load. Nothing loads from YouTube/Google (no thumbnail) until the visitor presses play; the iframe then autoplays
+  once, is fully visible, and is removed when the drawer closes. Referrer sent via strict-origin-when-cross-origin.

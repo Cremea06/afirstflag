@@ -53,6 +53,7 @@ Last reviewed: 2026-10-02 (CHG-059), against Shop `main` d3ea766 and Nest `main`
   Catalog data CC0 / public domain; covers from covers.openlibrary.org under their cover guidelines.
 - YouTube (embedded player, privacy-enhanced mode youtube-nocookie.com): Live Stream drawer, loaded only after the visitor presses play (CHG-108). Stream by The Last Cassette (https://www.youtube.com/@thelastcassette-on).
 - Twitch (embedded player, player.twitch.tv; Twitch Interactive, an Amazon company): second source in the Live Stream drawer, loaded only after the visitor picks Twitch and presses play (CHG-109). Channel zackrawrr (https://www.twitch.tv/zackrawrr).
+- Rumble (embedded player, rumble.com/embed): third frame in the Live Stream drawer, loaded only after the visitor presses play (CHG-113). Video by Nicholas J. Fuentes (https://rumble.com/c/nickjfuentes).
 - GitHub: source hosting
 - Namecheap: domain, DNS, mail forwarding, and shared web hosting for afirstflag.com
 - Let's Encrypt (ISRG): TLS certificate for the chat site

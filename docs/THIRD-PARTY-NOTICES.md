@@ -99,3 +99,16 @@ Do not copy this file into a product that implies those vendors endorse afirstfl
   Autoplay runs only after the visitor presses play on a visible player. No Twitch logo or thumbnail is copied or hotlinked.
 - Privacy: click-to-load. Nothing loads from Twitch/Amazon until play; switching source or closing the drawer removes the iframe.
   Referrer sent via strict-origin-when-cross-origin. Privacy Notice https://legal.twitch.com/legal/privacy-notice/.
+
+## Rumble embedded player (CHG-113)
+
+- Service: Rumble iframe embed https://rumble.com/embed/v7dy3re/, exactly the iframe src returned by Rumble's official oEmbed
+  (https://rumble.com/api/Media/oembed.json?url=https://rumble.com/v7g4gow-america-first-ep.-1754.html). Third frame of the Live Stream drawer.
+  No autoplay parameter is added (none is officially documented); the visitor may need to press play again inside Rumble's player.
+- Content: "FUENTES VS JIANG DEBATE RECAP??? Federal Agent And Chinese Spy COLLIDE | America First Ep. 1754" by Nicholas J. Fuentes (https://rumble.com/c/nickjfuentes), watch page https://rumble.com/v7g4gow-america-first-ep.-1754.html.
+  Credit line with links to the watch page and the channel, plus "Watch on Rumble", sits under the player.
+- Terms: Rumble Terms and Conditions https://rumble.com/s/terms (the Rumble Player may be used on third-party sites; Rumble does not
+  endorse content shown through it). Rumble's own player is used unmodified; its controls, ads, and marks are not covered or obscured.
+  No Rumble logo or thumbnail is copied or hotlinked (the oEmbed thumbnail on rumble.cloud is deliberately not used).
+- Privacy: click-to-load. Nothing loads from rumble.com or its CDNs (rumble.cloud etc.) until play; closing the drawer removes the
+  iframe. Referrer sent via strict-origin-when-cross-origin. Privacy Policy https://rumble.com/s/privacy.

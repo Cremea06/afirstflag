@@ -922,6 +922,9 @@
     .ls-frame.ls-tw { min-height: 300px; }
     .ls-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 14px; text-align: center; color: #e8edf5; font-size: 14px; }
     .ls-fallback a { color: #f4c430; font-weight: 700; }
+    /* CHG-125: how many site visitors are watching each stream (site sessions only, never the platform audience) */
+    .ls-viewers { font-size: 12px; margin: 6px 0 0; min-height: 1em; color: rgba(244, 247, 255, 0.72); }
+    .ls-viewers:empty { display: none; }
 
     /* CHG-092: Art drawer (drawing canvas) below Music */
     .art-wrap {
@@ -1811,10 +1814,10 @@
       </button>
       <div class="drawer-body" id="how-panel">
         <p class="how-lede">Public system map: what a visitor can see and use. Tap the map to open it full size.</p>
-        <a class="how-map" href="/images/architecture-public.png?v=124" target="_blank" rel="noopener">
+        <a class="how-map" href="/images/architecture-public.png?v=125" target="_blank" rel="noopener">
           <picture>
-            <source srcset="/images/architecture-public.webp?v=124" type="image/webp">
-            <img src="/images/architecture-public.png?v=124" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags (rev 18). The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit and bot counts, collaborators, flag stats, the click speed record, art publish, music publish, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, BTC address lookup, and a link safety check, and stores no private keys. Each registered chat member also has a read-only public profile page on the chat (chat.afirstflag.com/u/name) that shows only the username, the Member tier, and the join date. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, an AI model provider for Neagle replies inside chat, Google Safe Browsing for the link safety check, and YouTube, Twitch, and Rumble as live stream players (they load only after you press play). Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat. The homepage also has a literature search: the visitor's browser asks Open Library, an outside book catalog, for books matching a title. The homepage also has a music keyboard that plays notes in the visitor's browser, with no outside requests. The homepage also has an art canvas: visitors draw in their browser, and can publish one drawing that replaces the previous one. Visitors can also publish one music recording that replaces the previous one. The homepage also has a Live Stream drawer: visitors can play a YouTube, Twitch, or Rumble stream, each loading only after they press play.">
+            <source srcset="/images/architecture-public.webp?v=125" type="image/webp">
+            <img src="/images/architecture-public.png?v=125" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags (rev 19). The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit and bot counts, collaborators, flag stats, the click speed record, art publish, music publish, stream viewers, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, BTC address lookup, and a link safety check, and stores no private keys. Each registered chat member also has a read-only public profile page on the chat (chat.afirstflag.com/u/name) that shows only the username, the Member tier, and the join date. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, an AI model provider for Neagle replies inside chat, Google Safe Browsing for the link safety check, and YouTube, Twitch, and Rumble as live stream players (they load only after you press play). Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat. The homepage also has a literature search: the visitor's browser asks Open Library, an outside book catalog, for books matching a title. The homepage also has a music keyboard that plays notes in the visitor's browser, with no outside requests. The homepage also has an art canvas: visitors draw in their browser, and can publish one drawing that replaces the previous one. Visitors can also publish one music recording that replaces the previous one. The homepage also has a Live Stream drawer: visitors can play a YouTube, Twitch, or Rumble stream, each loading only after they press play. The Live Stream drawer shows how many site visitors are watching each stream, counted on the site only.">
           </picture>
         </a>
       </div>
@@ -2381,6 +2384,7 @@
             <div class="ls-cols" id="ls-cols">
               <div class="ls-col" id="ls-col-yt">
                 <div class="ls-frame" id="ls-frame"></div>
+                <p class="ls-viewers" id="ls-viewers-yt" aria-live="polite"></p>
                 <div class="ls-credits" id="ls-credits-yt">
                 <p class="ls-credit">“<a href="https://www.youtube.com/watch?v=J6G-B1DoDAU" target="_blank" rel="noopener">1990s Raining in Tokyo at Midnight | Lofi Rain Ambience for Relaxation &amp; Quiet Focus</a>” by <a href="https://www.youtube.com/@thelastcassette-on" target="_blank" rel="noopener">The Last Cassette</a> on YouTube</p>
                 <p class="ls-watch"><a href="https://www.youtube.com/watch?v=J6G-B1DoDAU" target="_blank" rel="noopener">Watch on YouTube</a></p>
@@ -2388,6 +2392,7 @@
               </div>
               <div class="ls-col" id="ls-col-tw">
                 <div class="ls-frame ls-tw" id="ls-frame-tw"></div>
+                <p class="ls-viewers" id="ls-viewers-tw" aria-live="polite"></p>
                 <div class="ls-credits" id="ls-credits-tw">
                   <p class="ls-credit"><a href="https://www.twitch.tv/zackrawrr" target="_blank" rel="noopener">zackrawrr on Twitch</a></p>
                   <p class="ls-watch"><a href="https://www.twitch.tv/zackrawrr" target="_blank" rel="noopener">Watch on Twitch</a></p>
@@ -2395,6 +2400,7 @@
               </div>
               <div class="ls-col ls-col-ru" id="ls-col-ru">
                 <div class="ls-frame ls-ru" id="ls-frame-ru"></div>
+                <p class="ls-viewers" id="ls-viewers-ru" aria-live="polite"></p>
                 <div class="ls-credits" id="ls-credits-ru">
                   <p class="ls-credit">“<a href="https://rumble.com/v7g4gow-america-first-ep.-1754.html" target="_blank" rel="noopener">FUENTES VS JIANG DEBATE RECAP??? Federal Agent And Chinese Spy COLLIDE | America First Ep. 1754</a>” by <a href="https://rumble.com/c/nickjfuentes" target="_blank" rel="noopener">Nicholas J. Fuentes</a> on Rumble</p>
                   <p class="ls-watch"><a href="https://rumble.com/v7g4gow-america-first-ep.-1754.html" target="_blank" rel="noopener">Watch on Rumble</a></p>
@@ -4685,6 +4691,80 @@
           twitchParents(host).map(function (d) { return "&parent=" + d; }).join("") + "&autoplay=true&muted=false";
       }
       window.AFF_LS = { twitchParents: twitchParents, twitchSrc: twitchSrc, minSideBySide: TW_MIN_W * 2 + GAP, minThreeAcross: TW_MIN_W * 3 + GAP * 2, rumbleSrc: RU_SRC };
+      /* CHG-125: viewer counts for OUR site only. A random 128-bit sid lives in memory for this page load (no cookie,
+         no storage). Heartbeats start only after Play (an embed is loaded): one now, then every 30 s, paused while the
+         tab is hidden; "none" goes by sendBeacon when the stream is closed or the page is left. The counts are polled
+         only while the drawer is open. One sid counts for one stream: the one played last that is still loaded. */
+      var sv = (function () {
+        var API = "/api/stream-viewers.php", BEAT_MS = 30000, POLL_MS = 30000;
+        var frames = { youtube: box, twitch: twBox, rumble: ruBox };
+        var outs = { youtube: document.getElementById("ls-viewers-yt"), twitch: document.getElementById("ls-viewers-tw"),
+          rumble: document.getElementById("ls-viewers-ru") };
+        var sid = null, cur = null, order = [], beatT = null, pollT = null, isOpen = false;
+        function newSid() {
+          var a = new Uint8Array(16);
+          (window.crypto || window.msCrypto).getRandomValues(a);
+          var h = "";
+          for (var i = 0; i < a.length; i++) h += (a[i] < 16 ? "0" : "") + a[i].toString(16);
+          return h;
+        }
+        function show(c) {
+          if (!c) return;
+          for (var k in outs) {
+            if (!outs[k]) continue;
+            var n = typeof c[k] === "number" && c[k] > 0 ? Math.floor(c[k]) : 0;
+            outs[k].textContent = n > 0 ? n + " watching here" : "";
+          }
+        }
+        function beat() {
+          if (!cur || document.hidden) return;
+          try {
+            fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin",
+              body: JSON.stringify({ sid: sid, stream: cur }) })
+              .then(function (r) { return r.ok ? r.json() : null; }).then(show, function () {});
+          } catch (e) {}
+        }
+        function leave() {
+          if (!sid) return;
+          var body = JSON.stringify({ sid: sid, stream: "none" });
+          var sent = false;
+          try { sent = navigator.sendBeacon && navigator.sendBeacon(API, new Blob([body], { type: "application/json" })); } catch (e) {}
+          if (!sent) { try { fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: body, keepalive: true }); } catch (e) {} }
+        }
+        function stopBeat() { if (beatT) { clearInterval(beatT); beatT = null; } }
+        function startBeat() { stopBeat(); if (cur && !document.hidden) { beat(); beatT = setInterval(beat, BEAT_MS); } }
+        function poll() {
+          if (!isOpen || document.hidden) return;
+          try { fetch(API, { credentials: "same-origin" }).then(function (r) { return r.ok ? r.json() : null; }).then(show, function () {}); } catch (e) {}
+        }
+        function loaded(k) { return !!(frames[k] && frames[k].querySelector("iframe")); }
+        /* after an embed was removed (drawer closed, Twitch fallback): move to another loaded one, or leave */
+        function check() {
+          order = order.filter(loaded);
+          var next = order.length ? order[order.length - 1] : null;
+          if (next === cur) return;
+          if (next) { cur = next; startBeat(); }
+          else if (cur) { cur = null; stopBeat(); leave(); }
+        }
+        function watch(k) {
+          if (!sid) sid = newSid();
+          order = order.filter(function (x) { return x !== k; });
+          order.push(k);
+          cur = k;
+          startBeat();
+        }
+        function drawer(open) {
+          isOpen = open;
+          if (pollT) { clearInterval(pollT); pollT = null; }
+          if (open) { poll(); pollT = setInterval(poll, POLL_MS); }
+        }
+        document.addEventListener("visibilitychange", function () {
+          if (document.hidden) stopBeat(); else { startBeat(); poll(); }
+        });
+        window.addEventListener("pagehide", function () { if (cur) leave(); });
+        window.addEventListener("pageshow", function (e) { if (e.persisted && cur) startBeat(); });
+        return { watch: watch, check: check, drawer: drawer };
+      })();
       function el(tag, cls, text) {
         var e = document.createElement(tag);
         if (cls) e.className = cls;
@@ -4738,6 +4818,7 @@
         ruBox.textContent = "";
         ruBox.appendChild(f);
         try { f.focus(); } catch (e) {}
+        sv.watch("rumble");
       }
       function play() {
         var f = document.createElement("iframe");
@@ -4750,6 +4831,7 @@
         box.textContent = "";
         box.appendChild(f);
         try { f.focus(); } catch (e) {}
+        sv.watch("youtube");
       }
       function twFallback() {
         twBox.textContent = "";
@@ -4761,6 +4843,7 @@
         d.appendChild(a);
         twBox.appendChild(d);
         try { a.focus(); } catch (e) {}
+        sv.check();
       }
       function playTwitch() {
         if (twBox.clientWidth < TW_MIN_W) { twFallback(); return; }
@@ -4773,6 +4856,7 @@
         twBox.textContent = "";
         twBox.appendChild(f);
         try { f.focus(); } catch (e) {}
+        sv.watch("twitch");
       }
       /* fallback for browsers without container queries: toggle .ls-side from the grid's own width */
       var cq = window.CSS && CSS.supports && CSS.supports("container-type", "inline-size");
@@ -4792,8 +4876,9 @@
         btn.setAttribute("aria-expanded", open ? "true" : "false");
         var state = btn.querySelector(".label-state");
         if (state) state.textContent = open ? "collapse" : "expand";
-        if (!open) { ytFacade(); twFacade(); ruFacade(); }
+        if (!open) { ytFacade(); twFacade(); ruFacade(); sv.check(); }
         else layout();
+        sv.drawer(open);
       });
     })();
   </script>

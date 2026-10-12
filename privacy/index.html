@@ -88,6 +88,11 @@
 <p>If you press Publish and confirm, your recording is sent to our server as a MIDI file (the notes, their timing, and the sound and sustain settings, no audio) and becomes public: every visitor to the site can play it. Published recordings are anonymous; no name or account is attached, and any names or text in the file are removed. Only the latest recording is kept, and it is kept only until the next Publish replaces it (there is no history of earlier recordings). The published recording never plays on its own; it plays only when a visitor presses its Play button.</p>
 <p>To limit abuse, your IP address is used only as a salted, hashed key for rate limiting (at most one publish per 30 seconds and 20 per day). The raw IP address is not stored, and these hashed entries are discarded after 24 hours.</p>
 
+<div><h3>Live stream viewer count</h3></div>
+<p>The Live Stream drawer shows how many visitors to this site are watching each stream (YouTube, Twitch or Rumble). Only visitors to our site are counted, never the platforms' own audiences. Nothing is sent to us until you press play on a stream.</p>
+<p>When you press play, your browser makes a random session id for that page only (it is kept in memory, not in a cookie or browser storage, and is new on every page load) and tells our server every 30 seconds which stream you are watching. The id is not linked to you or to anything else. When you close the stream or leave the page, your browser says so and your entry is removed; otherwise it is dropped about 75 seconds after the last update. Nothing is sent to YouTube, Twitch or Rumble by this feature.</p>
+<p>To limit abuse, your IP address is used only as a salted, hashed key for rate limiting and to cap how many sessions one network can add. The raw IP address is not stored, and these hashed entries are discarded within 24 hours.</p>
+
 <div><h3>Music keyboard (MIDI)</h3></div>
 <p>The Music drawer can play from a MIDI keyboard connected to your device. Only when you press Connect MIDI does your browser ask your permission to use MIDI devices; we never ask for system exclusive (SysEx) access.</p>
 <p>The notes you play on a MIDI keyboard stay in your browser and are turned into sound there. Nothing is sent to us or to anyone else, and nothing is stored. You can withdraw the permission at any time in your browser's site settings.</p>

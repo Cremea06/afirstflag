@@ -56,3 +56,11 @@ data/music-latest.mid.*.tmp
 data/music-latest.json.*.tmp
 data/music-publish.lock
 data/music-publish-hits.json
+
+# CHG-125: Live Stream viewer counts, created on the server by api/stream-viewers.php (never commit; delete
+# data/stream-viewers.json to clear the counts)
+data/stream-viewers.json
+data/stream-viewers.json.*.tmp
+data/stream-viewers.lock
+data/stream-viewers-hits.json
+data/stream-viewers-hits.json.*.tmp

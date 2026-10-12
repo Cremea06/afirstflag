@@ -2325,7 +2325,7 @@
           </div>
           <div class="pno-bar pno-bar2">
             <span class="pno-grp" role="group" aria-label="Recording"><button type="button" class="pno-pill pno-rec" id="pno-rec" aria-pressed="false">Record</button><button type="button" class="pno-pill" id="pno-play" aria-pressed="false" aria-label="Play recording" disabled>Play</button><button type="button" class="pno-pill" id="pno-clear" disabled>Clear</button></span>
-            <span class="pno-grp" role="group" aria-label="Song"><select id="pno-song" class="pno-sel" aria-label="Song"><option value="mary">Mary Had a Little Lamb</option><option value="twinkle">Twinkle Twinkle Little Star</option><option value="ode">Ode to Joy</option></select><button type="button" class="pno-pill" id="pno-song-play" aria-pressed="false" aria-label="Play song">Play</button><button type="button" class="pno-pill" id="pno-song-follow" aria-pressed="false">Follow</button></span>
+            <span class="pno-grp" role="group" aria-label="Song"><select id="pno-song" class="pno-sel" aria-label="Song"><option value="mary">Mary Had a Little Lamb</option><option value="twinkle">Twinkle Twinkle Little Star</option><option value="ode">Ode to Joy</option><option value="grace">Amazing Grace</option><option value="america">America the Beautiful</option><option value="green">Greensleeves</option><option value="elise">Für Elise</option></select><button type="button" class="pno-pill" id="pno-song-play" aria-pressed="false" aria-label="Play song">Play</button><button type="button" class="pno-pill" id="pno-song-follow" aria-pressed="false">Follow</button></span>
             <span class="pno-status" id="pno-status" aria-live="polite"></span>
           </div>
           <div class="pno" id="pno" role="group" aria-label="Piano"></div>
@@ -3863,7 +3863,10 @@
       bpmUI();
 
       /* Starter songs (public-domain melodies). Notes are semitones above C of the shown octave
-         (all fit 0..11), with lengths in beats; Play uses the metronome BPM. */
+         (all fit 0..11), with lengths in beats; Play uses the metronome BPM.
+         CHG-119: four more (public domain, transcribed by hand from the tunes). Their values may go below 0
+         or above 11: Play sounds the real pitch from the shown octave (keys light when it is on screen);
+         Follow marks the key with the same note name (pitch class) and accepts it in any octave. */
       var SONGS = {
         mary: [[4,1],[2,1],[0,1],[2,1],[4,1],[4,1],[4,2],[2,1],[2,1],[2,2],[4,1],[7,1],[7,2],
                [4,1],[2,1],[0,1],[2,1],[4,1],[4,1],[4,1],[4,1],[2,1],[2,1],[4,1],[2,1],[0,4]],
@@ -3871,8 +3874,30 @@
                   [7,1],[7,1],[5,1],[5,1],[4,1],[4,1],[2,2],[7,1],[7,1],[5,1],[5,1],[4,1],[4,1],[2,2],
                   [0,1],[0,1],[7,1],[7,1],[9,1],[9,1],[7,2],[5,1],[5,1],[4,1],[4,1],[2,1],[2,1],[0,2]],
         ode: [[4,1],[4,1],[5,1],[7,1],[7,1],[5,1],[4,1],[2,1],[0,1],[0,1],[2,1],[4,1],[4,1.5],[2,0.5],[2,2],
-              [4,1],[4,1],[5,1],[7,1],[7,1],[5,1],[4,1],[2,1],[0,1],[0,1],[2,1],[4,1],[2,1.5],[0,0.5],[0,2]]
+              [4,1],[4,1],[5,1],[7,1],[7,1],[5,1],[4,1],[2,1],[0,1],[0,1],[2,1],[4,1],[2,1.5],[0,0.5],[0,2]],
+        /* CHG-119: Amazing Grace (New Britain, 1835), 3/4, in C: G3 .. G4 */
+        grace: [[-5,1],[0,2],[4,0.5],[0,0.5],[4,2],[2,1],[0,2],[-3,1],[-5,2],
+                [-5,1],[0,2],[4,0.5],[0,0.5],[4,2],[2,1],[7,3],
+                [4,1],[7,2],[4,0.5],[0,0.5],[4,2],[2,1],[0,2],[-3,1],[-5,2],
+                [-5,1],[0,2],[4,0.5],[0,0.5],[4,2],[2,1],[0,3]],
+        /* CHG-119: America the Beautiful (Materna, Samuel A. Ward, 1882), 4/4, in C: D4 .. E5 */
+        america: [[7,1],[7,1.5],[4,0.5],[4,1],[7,1],[7,1.5],[2,0.5],[2,1],[4,1],[5,1],[7,1],[9,1],[11,1],[7,3],
+                  [7,1],[7,1.5],[4,0.5],[4,1],[7,1],[7,1.5],[2,0.5],[2,1],[14,1],[13,1],[14,1],[16,1],[9,1],[14,3],
+                  [7,1],[16,1.5],[16,0.5],[14,1],[12,1],[12,1.5],[11,0.5],[11,1],[12,1],[14,1],[11,1],[9,1],[7,1],[12,3],
+                  [12,1],[12,1.5],[9,0.5],[9,1],[12,1],[12,1.5],[7,0.5],[7,1],[7,1],[9,1],[12,1],[7,1],[14,1],[12,3]],
+        /* CHG-119: Greensleeves (traditional), first strain, 3/4 (quarter = 1 beat), A minor: F#3 .. F4 */
+        green: [[-3,1],[0,2],[2,1],[4,1.5],[5,0.5],[4,1],[2,2],[-1,1],[-5,1.5],[-3,0.5],[-1,1],
+                [0,2],[-3,1],[-3,1.5],[-4,0.5],[-3,1],[-1,2],[-4,1],[-8,2],[-3,1],
+                [0,2],[2,1],[4,1.5],[5,0.5],[4,1],[2,2],[-1,1],[-5,1.5],[-3,0.5],[-1,1],
+                [0,1.5],[-1,0.5],[-3,1],[-4,1.5],[-6,0.5],[-4,1],[-3,3]],
+        /* CHG-119: Für Elise (Beethoven, WoO 59), opening phrase to the first cadence; 3/8 with
+           sixteenth = 0.5 beat; rests folded into the note before; values from C4: A3 .. E5 */
+        elise: [[16,0.5],[15,0.5],[16,0.5],[15,0.5],[16,0.5],[11,0.5],[14,0.5],[12,0.5],[9,1.5],
+                [0,0.5],[4,0.5],[9,0.5],[11,1.5],[4,0.5],[8,0.5],[11,0.5],[12,1.5],[4,0.5],
+                [16,0.5],[15,0.5],[16,0.5],[15,0.5],[16,0.5],[11,0.5],[14,0.5],[12,0.5],[9,1.5],
+                [0,0.5],[4,0.5],[9,0.5],[11,1.5],[4,0.5],[12,0.5],[11,0.5],[9,3]]
       };
+      function pc(n) { return ((n % 12) + 12) % 12; } /* CHG-119 */
       var songSel = $("pno-song"), songPlay = $("pno-song-play"), songFollow = $("pno-song-follow");
       var song = {
         mode: "", idx: 0, timers: [], notes: null,
@@ -3880,7 +3905,7 @@
         name: function () { return songSel && songSel.selectedIndex >= 0 ? songSel.options[songSel.selectedIndex].text : ""; },
         mark: function () {
           for (var i = 0; i < keys.length; i++) keys[i].el.classList.remove("next");
-          if (song.mode === "follow" && song.notes && song.idx < song.notes.length) keys[song.notes[song.idx][0]].el.classList.add("next");
+          if (song.mode === "follow" && song.notes && song.idx < song.notes.length) keys[pc(song.notes[song.idx][0])].el.classList.add("next"); /* CHG-119: pitch class */
         },
         stop: function () {
           song.timers.forEach(clearTimeout); song.timers = [];
@@ -3909,7 +3934,7 @@
         },
         hit: function (m, src) {
           if (song.mode !== "follow" || src === "play" || src === "song") return;
-          if (((m % 12) + 12) % 12 !== song.notes[song.idx][0]) return;
+          if (pc(m) !== pc(song.notes[song.idx][0])) return; /* CHG-119 */
           song.idx++;
           if (song.idx >= song.notes.length) { var nm = song.name(); song.stop(); say(nm + ": well done!"); return; }
           song.mark(); say("Follow: " + song.name() + " · note " + (song.idx + 1) + " of " + song.notes.length);

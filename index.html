@@ -2325,7 +2325,7 @@
           </div>
           <div class="pno-bar pno-bar2">
             <span class="pno-grp" role="group" aria-label="Recording"><button type="button" class="pno-pill pno-rec" id="pno-rec" aria-pressed="false">Record</button><button type="button" class="pno-pill" id="pno-play" aria-pressed="false" aria-label="Play recording" disabled>Play</button><button type="button" class="pno-pill" id="pno-clear" disabled>Clear</button></span>
-            <span class="pno-grp" role="group" aria-label="Song"><select id="pno-song" class="pno-sel" aria-label="Song"><option value="mary">Mary Had a Little Lamb</option><option value="twinkle">Twinkle Twinkle Little Star</option><option value="ode">Ode to Joy</option><option value="grace">Amazing Grace</option><option value="america">America the Beautiful</option><option value="green">Greensleeves</option><option value="elise">Für Elise</option><option value="elise_synth">Für Elise (Synth)</option></select><button type="button" class="pno-pill" id="pno-song-play" aria-pressed="false" aria-label="Play song">Play</button><button type="button" class="pno-pill" id="pno-song-follow" aria-pressed="false">Follow</button></span>
+            <span class="pno-grp" role="group" aria-label="Song"><select id="pno-song" class="pno-sel" aria-label="Song"><option value="grace" selected>Amazing Grace</option><option value="america">America the Beautiful</option><option value="green">Greensleeves</option><option value="elise">Für Elise</option><option value="elise_synth">Für Elise (Synth)</option></select><button type="button" class="pno-pill" id="pno-song-play" aria-pressed="false" aria-label="Play song">Play</button><button type="button" class="pno-pill" id="pno-song-follow" aria-pressed="false">Follow</button></span>
             <span class="pno-status" id="pno-status" aria-live="polite"></span>
           </div>
           <div class="pno" id="pno" role="group" aria-label="Piano"></div>
@@ -3868,13 +3868,7 @@
          or above 11: Play sounds the real pitch from the shown octave (keys light when it is on screen);
          Follow marks the key with the same note name (pitch class) and accepts it in any octave. */
       var SONGS = {
-        mary: [[4,1],[2,1],[0,1],[2,1],[4,1],[4,1],[4,2],[2,1],[2,1],[2,2],[4,1],[7,1],[7,2],
-               [4,1],[2,1],[0,1],[2,1],[4,1],[4,1],[4,1],[4,1],[2,1],[2,1],[4,1],[2,1],[0,4]],
-        twinkle: [[0,1],[0,1],[7,1],[7,1],[9,1],[9,1],[7,2],[5,1],[5,1],[4,1],[4,1],[2,1],[2,1],[0,2],
-                  [7,1],[7,1],[5,1],[5,1],[4,1],[4,1],[2,2],[7,1],[7,1],[5,1],[5,1],[4,1],[4,1],[2,2],
-                  [0,1],[0,1],[7,1],[7,1],[9,1],[9,1],[7,2],[5,1],[5,1],[4,1],[4,1],[2,1],[2,1],[0,2]],
-        ode: [[4,1],[4,1],[5,1],[7,1],[7,1],[5,1],[4,1],[2,1],[0,1],[0,1],[2,1],[4,1],[4,1.5],[2,0.5],[2,2],
-              [4,1],[4,1],[5,1],[7,1],[7,1],[5,1],[4,1],[2,1],[0,1],[0,1],[2,1],[4,1],[2,1.5],[0,0.5],[0,2]],
+        /* CHG-121: Mary Had a Little Lamb, Twinkle Twinkle Little Star and Ode to Joy removed. */
         /* CHG-119: Amazing Grace (New Britain, 1835), 3/4, in C: G3 .. G4 */
         grace: [[-5,1],[0,2],[4,0.5],[0,0.5],[4,2],[2,1],[0,2],[-3,1],[-5,2],
                 [-5,1],[0,2],[4,0.5],[0,0.5],[4,2],[2,1],[7,3],
@@ -3932,7 +3926,7 @@
       function bassBus() { if (!bassG) { bassG = ctx.createGain(); bassG.gain.value = 0.55; bassG.connect(master); } return bassG; } /* CHG-120 */
       var song = {
         mode: "", idx: 0, timers: [], notes: null, prior: null, bassV: [],
-        list: function () { return SONGS[songSel ? songSel.value : "mary"] || SONGS.mary; },
+        list: function () { return SONGS[songSel ? songSel.value : "grace"] || SONGS.grace; }, /* CHG-121: default Amazing Grace */
         name: function () { return songSel && songSel.selectedIndex >= 0 ? songSel.options[songSel.selectedIndex].text : ""; },
         mark: function () {
           for (var i = 0; i < keys.length; i++) keys[i].el.classList.remove("next");

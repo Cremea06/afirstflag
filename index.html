@@ -2322,6 +2322,7 @@
             <span class="pno-grp" id="pno-sound" role="group" aria-label="Sound"><span class="pno-lbl">Sound</span><button type="button" class="pno-pill" data-sound="piano" aria-pressed="true">Piano</button><button type="button" class="pno-pill" data-sound="organ" aria-pressed="false">Organ</button><button type="button" class="pno-pill" data-sound="synth" aria-pressed="false">Soft synth</button><button type="button" class="pno-pill" data-sound="chime" aria-pressed="false">Chime</button></span>
             <button type="button" class="pno-pill" id="pno-sus" aria-pressed="false" title="Or hold Space">Sustain</button>
             <span class="pno-grp" role="group" aria-label="Metronome"><button type="button" class="pno-pill" id="pno-metro" aria-pressed="false">Metronome</button><label for="pno-bpm"><input type="range" id="pno-bpm" min="40" max="200" step="1" value="100"> <span id="pno-bpm-val">100</span> BPM</label></span>
+            <button type="button" class="pno-pill" id="pno-midi" aria-live="polite">Connect MIDI</button><!-- CHG-122: Web MIDI input, asked only on click -->
           </div>
           <div class="pno-bar pno-bar2">
             <span class="pno-grp" role="group" aria-label="Recording"><button type="button" class="pno-pill pno-rec" id="pno-rec" aria-pressed="false">Record</button><button type="button" class="pno-pill" id="pno-play" aria-pressed="false" aria-label="Play recording" disabled>Play</button><button type="button" class="pno-pill" id="pno-clear" disabled>Clear</button></span>
@@ -3555,7 +3556,7 @@
       /* CHG-118: notes are tracked by MIDI pitch (held[m] = sources holding it), so recordings,
          playback and songs keep their real pitch when the octave changes. */
       var octave = 4, ctx = null, master = null, keys = [], voices = {}, held = {}, ptr = {};
-      var sound = "piano", susBtn = false, susSpace = false, sustained = {};
+      var sound = "piano", susBtn = false, susSpace = false, susPedal = false, sustained = {}; /* CHG-122: susPedal = MIDI CC64 */
 
       function audio() {
         if (!AC) return null;
@@ -3617,7 +3618,7 @@
         p.setTargetAtTime(0.0001, t, tc);
         v.osc.forEach(function (o) { try { o.stop(t + end); } catch (e) {} });
       }
-      function sustainOn() { return susBtn || susSpace; }
+      function sustainOn() { return susBtn || susSpace || susPedal; }
 
       function paint(m) {
         var i = m - base();
@@ -3625,7 +3626,7 @@
         var any = false; for (var s in held[m] || {}) { any = true; break; }
         keys[i].el.classList.toggle("on", any);
       }
-      function nOn(m, src) {
+      function nOn(m, src, vel) { /* CHG-122: optional vel 0..1 (MIDI velocity) scales this voice's gain */
         var h = held[m] || (held[m] = {}), first = true;
         for (var s in h) { first = false; break; }
         h[src] = 1; paint(m);
@@ -3633,7 +3634,12 @@
         if (voices[m]) return;
         if (sustained[m]) { release(sustained[m], false); delete sustained[m]; }
         var c = audio();
-        if (c) voices[m] = voice(c, master, mfreq(m));
+        if (!c) return;
+        if (vel == null) { voices[m] = voice(c, master, mfreq(m)); return; }
+        var vg = c.createGain(); vg.gain.value = Math.max(0.05, Math.min(1, vel)); vg.connect(master);
+        var v = voice(c, vg, mfreq(m)), o0 = v.osc[0], done = o0.onended;
+        o0.onended = function () { if (done) done(); vg.disconnect(); };
+        v.vel = vg.gain.value; voices[m] = v;
       }
       function nOff(m, src) {
         var h = held[m];
@@ -3654,7 +3660,7 @@
       function stopNotes() {
         for (var m in held) for (var s in held[m]) nOff(Number(m), s);
         for (var j in voices) release(voices[j], false);
-        voices = {}; held = {}; ptr = {}; susSpace = false; damp();
+        voices = {}; held = {}; ptr = {}; susSpace = false; susPedal = false; damp();
         for (var i = 0; i < keys.length; i++) keys[i].el.classList.remove("on");
       }
 
@@ -3754,7 +3760,7 @@
         nOn(keyM[e.code], "k" + i);
       });
       document.addEventListener("keyup", function (e) {
-        if (e.code === "Space" && susSpace) { susSpace = false; if (!susBtn) damp(); susUI(); return; }
+        if (e.code === "Space" && susSpace) { susSpace = false; if (!sustainOn()) damp(); susUI(); return; } /* CHG-122: pedal may still hold */
         var i = CODES.indexOf(e.code);
         if (i >= 0 && keyM[e.code] != null) { nOff(keyM[e.code], "k" + i); delete keyM[e.code]; }
       });
@@ -3985,6 +3991,66 @@
       if (songFollow) songFollow.addEventListener("click", function () { song.mode === "follow" ? song.stop() : song.follow(); });
       if (songSel) songSel.addEventListener("change", function () { if (song.mode) song.stop(); });
 
+      /* CHG-122: Web MIDI input. requestMIDIAccess({ sysex: false }) only on a click of #pno-midi.
+         Note on/off from every input and channel play nOn/nOff at the real pitch (src "midi:<id>"),
+         so they light keys, record and count in Follow like any key. CC64 holds sustain (susPedal).
+         Ignored while Music is closed. Nothing stored or sent. */
+      var midiBtn = $("pno-midi"), midiAcc = null, midiWait = false;
+      function midiLabel(t, title) { if (midiBtn) { midiBtn.textContent = t; if (title) midiBtn.title = title; else midiBtn.removeAttribute("title"); } }
+      function midiRelease(src) { for (var m in held) if (held[m][src]) nOff(Number(m), src); }
+      function midiMsg(src) {
+        return function (e) {
+          var d = e && e.data;
+          if (!d || d.length < 2 || !drawer.classList.contains("open")) return;
+          var st = d[0] & 0xf0, a = d[1] & 0x7f, b = d.length > 2 ? d[2] & 0x7f : 0;
+          if (st === 0x90 && b > 0) nOn(a, src, b / 127);
+          else if (st === 0x80 || st === 0x90) nOff(a, src);
+          else if (st === 0xb0 && a === 64) {
+            var on = b >= 64;
+            if (on === susPedal) return;
+            susPedal = on; if (!sustainOn()) damp(); susUI();
+          } /* pitch bend and other messages ignored */
+        };
+      }
+      var midiSeen = {};
+      function midiBind() {
+        if (!midiAcc) return;
+        var names = [], live = {};
+        midiAcc.inputs.forEach(function (inp) {
+          if (inp.state === "disconnected") return;
+          var src = "midi:" + inp.id; live[src] = 1;
+          inp.onmidimessage = midiMsg(src); names.push(inp.name || "MIDI device");
+        });
+        for (var s in midiSeen) if (!live[s]) midiRelease(s); /* unplugged: let go of its notes */
+        midiSeen = live;
+        if (!names.length) midiLabel("No MIDI device found");
+        else if (names.length === 1) midiLabel("MIDI: " + names[0]);
+        else midiLabel("MIDI: " + names.length + " devices", names.join(", "));
+        press(midiBtn, names.length > 0);
+      }
+      if (midiBtn) {
+        if (typeof navigator.requestMIDIAccess !== "function" || !window.isSecureContext) {
+          midiBtn.disabled = true;
+          midiLabel("MIDI not supported in this browser", "Web MIDI works in Chrome, Edge and Firefox on desktop; not in Safari");
+        } else {
+          midiBtn.addEventListener("click", function () {
+            if (midiAcc) { midiBind(); return; }
+            if (midiWait) return;
+            midiWait = true; midiLabel("Connecting MIDI…");
+            var pr;
+            try { pr = navigator.requestMIDIAccess({ sysex: false }); } catch (e) { pr = Promise.reject(e); }
+            Promise.resolve(pr).then(function (acc) {
+              midiWait = false; midiAcc = acc;
+              acc.onstatechange = function () { midiBind(); };
+              midiBind();
+            }, function () {
+              midiWait = false; press(midiBtn, false);
+              midiLabel("MIDI blocked", "Allow MIDI devices for this site in the browser's site settings, then click again");
+            });
+          });
+        }
+      }
+
       function stopAll() {
         stopPlay(); recStop(); song.stop(); metStop(); susSpace = false; susUI(); stopNotes();
       }
@@ -4000,7 +4066,8 @@
         return { octave: octave, sound: sound, sustain: sustainOn(), held: Object.keys(held).map(Number),
           voices: Object.keys(voices).length, sustained: Object.keys(sustained).length,
           recording: recOn, playing: playing, events: take.slice(), metro: met.on, clicks: met.clicks,
-          bpm: bpm(), song: song.mode, songIdx: song.idx, ctx: ctx ? ctx.state : null };
+          bpm: bpm(), song: song.mode, songIdx: song.idx, ctx: ctx ? ctx.state : null,
+          pedal: susPedal, vel: Object.keys(voices).map(function (k) { return [Number(k), voices[k].vel == null ? null : voices[k].vel]; }) }; /* CHG-122 */
       } };
     })();
   </script>

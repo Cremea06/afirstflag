@@ -2326,6 +2326,7 @@
           </div>
           <div class="pno-bar pno-bar2">
             <span class="pno-grp" role="group" aria-label="Recording"><button type="button" class="pno-pill pno-rec" id="pno-rec" aria-pressed="false">Record</button><button type="button" class="pno-pill" id="pno-play" aria-pressed="false" aria-label="Play recording" disabled>Play</button><button type="button" class="pno-pill" id="pno-clear" disabled>Clear</button></span>
+            <span class="pno-grp" role="group" aria-label="Save recording"><button type="button" class="pno-pill" id="pno-save-mid" aria-label="Save recording as MIDI file" disabled>Save .mid</button><button type="button" class="pno-pill" id="pno-save-wav" aria-label="Save recording as WAV audio" disabled>Save .wav</button></span><!-- CHG-123: exports made in the browser -->
             <span class="pno-grp" role="group" aria-label="Song"><select id="pno-song" class="pno-sel" aria-label="Song"><option value="grace" selected>Amazing Grace</option><option value="america">America the Beautiful</option><option value="green">Greensleeves</option><option value="elise">Für Elise</option><option value="elise_synth">Für Elise (Synth)</option></select><button type="button" class="pno-pill" id="pno-song-play" aria-pressed="false" aria-label="Play song">Play</button><button type="button" class="pno-pill" id="pno-song-follow" aria-pressed="false">Follow</button></span>
             <span class="pno-status" id="pno-status" aria-live="polite"></span>
           </div>
@@ -3577,8 +3578,8 @@
 
       /* CHG-118: one voice per sound. Each returns { g, osc[], extra[], c } so release() stays shared. */
       function osc(c, type, f) { var o = c.createOscillator(); o.type = type; o.frequency.value = f; return o; }
-      function voice(c, dest, f) {
-        var t = c.currentTime, g = c.createGain(), list = [], extra = [];
+      function voice(c, dest, f, at) { /* CHG-123: optional start time (offline WAV render) */
+        var t = at != null ? at : c.currentTime, g = c.createGain(), list = [], extra = [];
         g.gain.setValueAtTime(0.0001, t);
         if (sound === "organ") {
           [[1, 1], [2, 0.5], [3, 0.25], [4, 0.12]].forEach(function (h) {
@@ -3611,8 +3612,8 @@
         return { g: g, osc: list, c: c };
       }
       /* CHG-118: Sustain = ~1.5 s ring-out (time constant 0.5 s) instead of 0.08 s. */
-      function release(v, long) {
-        var t = v.c.currentTime, p = v.g.gain, tc = long ? 0.5 : 0.08, end = long ? 2.6 : 0.45;
+      function release(v, long, at) { /* CHG-123: optional time (offline WAV render) */
+        var t = at != null ? at : v.c.currentTime, p = v.g.gain, tc = long ? 0.5 : 0.08, end = long ? 2.6 : 0.45;
         if (p.cancelAndHoldAtTime) p.cancelAndHoldAtTime(t);
         else { var now = p.value; p.cancelScheduledValues(t); p.setValueAtTime(now, t); }
         p.setTargetAtTime(0.0001, t, tc);
@@ -3630,7 +3631,7 @@
         var h = held[m] || (held[m] = {}), first = true;
         for (var s in h) { first = false; break; }
         h[src] = 1; paint(m);
-        if (first) { rec("on", m, src); song.hit(m, src); }
+        if (first) { rec("on", m, src, vel); song.hit(m, src); } /* CHG-123: keep MIDI velocity */
         if (voices[m]) return;
         if (sustained[m]) { release(sustained[m], false); delete sustained[m]; }
         var c = audio();
@@ -3784,6 +3785,8 @@
       var MAX_MS = 120000, MAX_EV = 2000;
       var take = [], recOn = false, recT0 = 0, recTimer = null, playTimers = [], playing = false;
       var recBtn = $("pno-rec"), playBtn = $("pno-play"), clearBtn = $("pno-clear");
+      var midSave = $("pno-save-mid"), wavSave = $("pno-save-wav"), rendering = false; /* CHG-123 */
+      var OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
       function now() { return (window.performance && performance.now) ? performance.now() : Date.now(); }
       function secs(ms) { return Math.max(0, Math.round(ms / 1000)); }
       function takeLen() { return take.length ? take[take.length - 1].t : 0; }
@@ -3791,10 +3794,14 @@
         press(recBtn, recOn); press(playBtn, playing);
         if (playBtn) playBtn.disabled = recOn || !take.length;
         if (clearBtn) clearBtn.disabled = recOn || !take.length;
+        if (midSave) midSave.disabled = recOn || !take.length; /* CHG-123 */
+        if (wavSave) wavSave.disabled = recOn || !take.length || rendering || !OAC;
       }
-      function rec(kind, m, src) {
+      function rec(kind, m, src, vel) {
         if (!recOn || src === "play" || src === "song") return;
-        take.push({ t: Math.round(now() - recT0), m: m, on: kind === "on" });
+        var ev = { t: Math.round(now() - recT0), m: m, on: kind === "on" };
+        if (vel != null) ev.v = Math.max(0, Math.min(1, vel)); /* CHG-123: velocity 0..1 for Save .mid / .wav */
+        take.push(ev);
         if (take.length >= MAX_EV - 12) recStop("limit");
       }
       function recStart() {
@@ -3834,6 +3841,94 @@
       if (recBtn) recBtn.addEventListener("click", function () { recOn ? recStop() : recStart(); });
       if (playBtn) playBtn.addEventListener("click", function () { playing ? stopPlay() : startPlay(); });
       if (clearBtn) clearBtn.addEventListener("click", function () { stopPlay(); take = []; say("Recording cleared"); recUI(); });
+
+      /* CHG-123: Save .mid / Save .wav. Built in the browser from the in-memory take; downloaded through
+         a Blob object URL and an <a download>. No network, nothing stored. */
+      function stamp() {
+        var d = new Date(), p = function (n) { return (n < 10 ? "0" : "") + n; };
+        return "afirstflag-recording-" + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + "-" + p(d.getHours()) + p(d.getMinutes());
+      }
+      function download(bytes, type, name) {
+        var url = URL.createObjectURL(new Blob([bytes], { type: type })), a = document.createElement("a");
+        a.href = url; a.download = name; a.style.display = "none";
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+      }
+      var GM = { piano: 0, organ: 19, synth: 89, chime: 14 }; /* GM programs: Grand Piano, Church Organ, Warm Pad, Tubular Bells */
+      function midiFile() {
+        var PPQ = 480, tempo = Math.round(60000000 / bpm()), tk = [], last = 0;
+        function vlq(n) { var b = [n & 0x7f]; while ((n >>= 7)) b.unshift((n & 0x7f) | 0x80); return b; }
+        function ev(ms, data) {
+          var tick = Math.round(ms * PPQ * 1000 / tempo); if (tick < last) tick = last;
+          tk.push.apply(tk, vlq(tick - last)); tk.push.apply(tk, data); last = tick;
+        }
+        var name = "afirstflag recording";
+        ev(0, [0xff, 0x03, name.length].concat(name.split("").map(function (c) { return c.charCodeAt(0); })));
+        ev(0, [0xff, 0x51, 3, (tempo >> 16) & 255, (tempo >> 8) & 255, tempo & 255]);
+        ev(0, [0xff, 0x58, 4, 4, 2, 24, 8]);
+        ev(0, [0xc0, GM[sound] || 0]);
+        if (sustainOn()) ev(0, [0xb0, 64, 127]);
+        take.forEach(function (e) {
+          if (e.m < 0 || e.m > 127) return;
+          if (e.on) ev(e.t, [0x90, e.m, e.v == null ? 100 : Math.max(1, Math.round(e.v * 127))]);
+          else ev(e.t, [0x80, e.m, 64]);
+        });
+        if (sustainOn()) ev(takeLen(), [0xb0, 64, 0]);
+        ev(takeLen(), [0xff, 0x2f, 0]);
+        var n = tk.length, head = [0x4d, 0x54, 0x68, 0x64, 0, 0, 0, 6, 0, 0, 0, 1, PPQ >> 8, PPQ & 255,
+          0x4d, 0x54, 0x72, 0x6b, (n >>> 24) & 255, (n >> 16) & 255, (n >> 8) & 255, n & 255];
+        return new Uint8Array(head.concat(tk));
+      }
+      function wavFile(buf) {
+        var ch = buf.numberOfChannels, len = buf.length, rate = buf.sampleRate, data = [], peak = 0, i, c, o;
+        for (c = 0; c < ch; c++) { data.push(buf.getChannelData(c)); for (i = 0; i < len; i++) peak = Math.max(peak, Math.abs(data[c][i])); }
+        var k = peak > 0.89 ? 0.89 / peak : 1, size = len * ch * 2, out = new DataView(new ArrayBuffer(44 + size));
+        function str(o, s) { for (var j = 0; j < s.length; j++) out.setUint8(o + j, s.charCodeAt(j)); }
+        str(0, "RIFF"); out.setUint32(4, 36 + size, true); str(8, "WAVE"); str(12, "fmt ");
+        out.setUint32(16, 16, true); out.setUint16(20, 1, true); out.setUint16(22, ch, true);
+        out.setUint32(24, rate, true); out.setUint32(28, rate * ch * 2, true); out.setUint16(32, ch * 2, true);
+        out.setUint16(34, 16, true); str(36, "data"); out.setUint32(40, size, true);
+        for (i = 0, o = 44; i < len; i++) for (c = 0; c < ch; c++, o += 2) {
+          var x = Math.max(-1, Math.min(1, data[c][i] * k)); out.setInt16(o, x < 0 ? x * 32768 : x * 32767, true);
+        }
+        return out.buffer;
+      }
+      function renderWav(done) {
+        var sus = sustainOn(), rate = 44100, secsLen = takeLen() / 1000 + (sus ? 3 : 1.2);
+        var oc = new OAC(1, Math.ceil(rate * secsLen), rate), out = oc.createGain(), on = {}, ring = {};
+        out.gain.value = 0.8; out.connect(oc.destination);
+        take.forEach(function (e) {
+          if (e.m < 0) return;
+          var t = e.t / 1000 + 0.01;
+          if (e.on) {
+            if (on[e.m]) return;
+            if (ring[e.m]) { release(ring[e.m], false, t); delete ring[e.m]; }
+            var vg = oc.createGain(); vg.gain.value = e.v == null ? 1 : Math.max(0.05, Math.min(1, e.v)); vg.connect(out);
+            on[e.m] = voice(oc, vg, mfreq(e.m), t);
+          } else if (on[e.m]) {
+            release(on[e.m], sus, t); if (sus) ring[e.m] = on[e.m]; delete on[e.m];
+          }
+        });
+        var tEnd = takeLen() / 1000 + 0.01;
+        for (var m in on) release(on[m], sus, tEnd);
+        var p = oc.startRendering(), fin = function (b) { done(b ? wavFile(b) : null); };
+        if (p && p.then) p.then(fin, function () { done(null); }); else oc.oncomplete = function (e) { fin(e.renderedBuffer); };
+      }
+      if (midSave) midSave.addEventListener("click", function () {
+        if (!take.length || recOn) return;
+        download(midiFile(), "audio/midi", stamp() + ".mid"); say("Saved .mid");
+      });
+      if (wavSave) wavSave.addEventListener("click", function () {
+        if (!take.length || recOn || rendering || !OAC) return;
+        rendering = true; recUI(); say("Rendering .wav…");
+        var name = stamp() + ".wav";
+        try {
+          renderWav(function (bytes) {
+            rendering = false; recUI();
+            if (bytes) { download(bytes, "audio/wav", name); say("Saved .wav"); } else say("Could not render .wav");
+          });
+        } catch (e) { rendering = false; recUI(); say("Could not render .wav"); }
+      });
       recUI();
 
       /* Metronome: Web Audio clicks scheduled ~0.12 s ahead; beat 1 of 4 accented; through master volume. */

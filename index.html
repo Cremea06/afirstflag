@@ -826,6 +826,32 @@
     .pno-key.on { background: #f4c430; color: #1b2a4a; }
     .pno-key:focus-visible { outline: 2px solid #f4c430; outline-offset: -3px; }
 
+    /* CHG-118: Music drawer extra controls (glass pills like the octave buttons; gold when pressed) */
+    .pno-bar2 { gap: 8px 12px; }
+    .pno-grp { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+    .pno-lbl { opacity: 0.85; }
+    .pno-pill, .pno-sel {
+      min-height: 32px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(0, 0, 0, 0.25);
+      color: #fff;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .pno-sel { max-width: 100%; padding-right: 8px; }
+    .pno-sel option { color: #1b2a4a; }
+    .pno-pill[aria-pressed="true"] { background: rgba(244, 196, 48, 0.2); border-color: #f4c430; color: #f4c430; }
+    .pno-pill.pno-rec[aria-pressed="true"] { background: rgba(200, 40, 60, 0.35); border-color: #ff6b7a; color: #fff; }
+    .pno-pill:disabled { opacity: 0.4; cursor: default; }
+    .pno-pill:focus-visible, .pno-sel:focus-visible { outline: 2px solid #f4c430; outline-offset: 2px; }
+    .pno-status { min-height: 1em; font-size: 12px; font-style: italic; color: #f4c430; }
+    .pno-status:empty { display: none; }
+    .pno-key.next { box-shadow: inset 0 0 0 3px #f4c430; }
+    .pno-key.next.on { box-shadow: none; }
+
     /* CHG-090: Music drawer (placeholder) between Literature and Collaborators */
     .music-wrap {
       flex-shrink: 0;
@@ -2291,6 +2317,17 @@
             <span class="pno-oct"><button type="button" id="pno-down" aria-label="Octave down">&minus;</button><span id="pno-oct" aria-live="polite">Octave 4</span><button type="button" id="pno-up" aria-label="Octave up">+</button></span>
             <label for="pno-vol">Volume <input type="range" id="pno-vol" min="0" max="1" step="0.05" value="0.5"></label>
           </div>
+          <!-- CHG-118: second and third control rows (sound, sustain, metronome; record and songs). Wrap on phones. -->
+          <div class="pno-bar pno-bar2">
+            <span class="pno-grp" id="pno-sound" role="group" aria-label="Sound"><span class="pno-lbl">Sound</span><button type="button" class="pno-pill" data-sound="piano" aria-pressed="true">Piano</button><button type="button" class="pno-pill" data-sound="organ" aria-pressed="false">Organ</button><button type="button" class="pno-pill" data-sound="synth" aria-pressed="false">Soft synth</button><button type="button" class="pno-pill" data-sound="chime" aria-pressed="false">Chime</button></span>
+            <button type="button" class="pno-pill" id="pno-sus" aria-pressed="false" title="Or hold Space">Sustain</button>
+            <span class="pno-grp" role="group" aria-label="Metronome"><button type="button" class="pno-pill" id="pno-metro" aria-pressed="false">Metronome</button><label for="pno-bpm"><input type="range" id="pno-bpm" min="40" max="200" step="1" value="100"> <span id="pno-bpm-val">100</span> BPM</label></span>
+          </div>
+          <div class="pno-bar pno-bar2">
+            <span class="pno-grp" role="group" aria-label="Recording"><button type="button" class="pno-pill pno-rec" id="pno-rec" aria-pressed="false">Record</button><button type="button" class="pno-pill" id="pno-play" aria-pressed="false" aria-label="Play recording" disabled>Play</button><button type="button" class="pno-pill" id="pno-clear" disabled>Clear</button></span>
+            <span class="pno-grp" role="group" aria-label="Song"><select id="pno-song" class="pno-sel" aria-label="Song"><option value="mary">Mary Had a Little Lamb</option><option value="twinkle">Twinkle Twinkle Little Star</option><option value="ode">Ode to Joy</option></select><button type="button" class="pno-pill" id="pno-song-play" aria-pressed="false" aria-label="Play song">Play</button><button type="button" class="pno-pill" id="pno-song-follow" aria-pressed="false">Follow</button></span>
+            <span class="pno-status" id="pno-status" aria-live="polite"></span>
+          </div>
           <div class="pno" id="pno" role="group" aria-label="Piano"></div>
         </div>
       </section>
@@ -3498,7 +3535,10 @@
   </script>
   <script>
     /* CHG-091: Music drawer piano. Own script block so it still works when an earlier block stops.
-       Sound is made in the browser with Web Audio. No files, no network, nothing stored. */
+       Sound is made in the browser with Web Audio. No files, no network, nothing stored.
+       CHG-118: adds Sound (Piano / Organ / Soft synth / Chime), Sustain (button or hold Space),
+       Record / Play / Clear (in memory only), a Web Audio metronome and starter songs (Play / Follow).
+       Still browser-only: no network, nothing stored or sent. */
     (function () {
       var drawer = document.getElementById("music-drawer");
       var wrap = document.getElementById("pno");
@@ -3507,11 +3547,15 @@
       var down = document.getElementById("pno-down");
       var up = document.getElementById("pno-up");
       if (!drawer || !wrap || !vol || !octEl || !down || !up) return;
+      var $ = function (id) { return document.getElementById(id); };
       var AC = window.AudioContext || window.webkitAudioContext;
       var NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
       var CODES = ["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF", "KeyT", "KeyG", "KeyY", "KeyH", "KeyU", "KeyJ"];
       var BLACK_AFTER = { 1: 0, 3: 1, 6: 3, 8: 4, 10: 5 };
-      var octave = 4, ctx = null, master = null, keys = [], voices = {}, ptr = {};
+      /* CHG-118: notes are tracked by MIDI pitch (held[m] = sources holding it), so recordings,
+         playback and songs keep their real pitch when the octave changes. */
+      var octave = 4, ctx = null, master = null, keys = [], voices = {}, held = {}, ptr = {};
+      var sound = "piano", susBtn = false, susSpace = false, sustained = {};
 
       function audio() {
         if (!AC) return null;
@@ -3527,49 +3571,91 @@
         }
         return ctx;
       }
-      function freq(i) { return 440 * Math.pow(2, (12 * (octave + 1) + i - 69) / 12); }
+      function base() { return 12 * (octave + 1); }
+      function mfreq(m) { return 440 * Math.pow(2, (m - 69) / 12); }
 
+      /* CHG-118: one voice per sound. Each returns { g, osc[], extra[], c } so release() stays shared. */
+      function osc(c, type, f) { var o = c.createOscillator(); o.type = type; o.frequency.value = f; return o; }
       function voice(c, dest, f) {
-        var t = c.currentTime, g = c.createGain(), o1 = c.createOscillator(), o2 = c.createOscillator(), g2 = c.createGain();
-        o1.type = "triangle"; o1.frequency.value = f;
-        o2.type = "sine"; o2.frequency.value = f * 2; g2.gain.value = 0.15;
+        var t = c.currentTime, g = c.createGain(), list = [], extra = [];
         g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(0.3, t + 0.005);
-        g.gain.setTargetAtTime(0.12, t + 0.005, 0.3);
-        o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(dest);
-        o1.start(t); o2.start(t);
-        o1.onended = function () { o1.disconnect(); o2.disconnect(); g2.disconnect(); g.disconnect(); };
-        return { g: g, o1: o1, o2: o2, c: c };
+        if (sound === "organ") {
+          [[1, 1], [2, 0.5], [3, 0.25], [4, 0.12]].forEach(function (h) {
+            var o = osc(c, "sine", f * h[0]), hg = c.createGain(); hg.gain.value = h[1];
+            o.connect(hg); hg.connect(g); list.push(o); extra.push(hg);
+          });
+          g.gain.exponentialRampToValueAtTime(0.16, t + 0.02);
+        } else if (sound === "synth") {
+          var lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = Math.min(4000, f * 4); lp.Q.value = 0.7;
+          var a = osc(c, "sawtooth", f), b = osc(c, "sawtooth", f); b.detune.value = 7;
+          a.connect(lp); b.connect(lp); lp.connect(g); list.push(a, b); extra.push(lp);
+          g.gain.exponentialRampToValueAtTime(0.12, t + 0.08);
+          g.gain.setTargetAtTime(0.09, t + 0.08, 0.4);
+        } else if (sound === "chime") {
+          var p = osc(c, "sine", f), q = osc(c, "sine", f * 2.76), qg = c.createGain(); qg.gain.value = 0.3;
+          p.connect(g); q.connect(qg); qg.connect(g); list.push(p, q); extra.push(qg);
+          g.gain.exponentialRampToValueAtTime(0.3, t + 0.003);
+          g.gain.setTargetAtTime(0.0001, t + 0.003, 0.6);
+        } else {
+          var o1 = osc(c, "triangle", f), o2 = osc(c, "sine", f * 2), g2 = c.createGain(); g2.gain.value = 0.15;
+          o1.connect(g); o2.connect(g2); g2.connect(g); list.push(o1, o2); extra.push(g2);
+          g.gain.exponentialRampToValueAtTime(0.3, t + 0.005);
+          g.gain.setTargetAtTime(0.12, t + 0.005, 0.3);
+        }
+        g.connect(dest);
+        list.forEach(function (o) { o.start(t); });
+        list[0].onended = function () {
+          list.forEach(function (o) { o.disconnect(); }); extra.forEach(function (n) { n.disconnect(); }); g.disconnect();
+        };
+        return { g: g, osc: list, c: c };
       }
-      function release(v) {
-        var t = v.c.currentTime, p = v.g.gain;
+      /* CHG-118: Sustain = ~1.5 s ring-out (time constant 0.5 s) instead of 0.08 s. */
+      function release(v, long) {
+        var t = v.c.currentTime, p = v.g.gain, tc = long ? 0.5 : 0.08, end = long ? 2.6 : 0.45;
         if (p.cancelAndHoldAtTime) p.cancelAndHoldAtTime(t);
         else { var now = p.value; p.cancelScheduledValues(t); p.setValueAtTime(now, t); }
-        p.setTargetAtTime(0.0001, t, 0.08);
-        try { v.o1.stop(t + 0.45); v.o2.stop(t + 0.45); } catch (e) {}
+        p.setTargetAtTime(0.0001, t, tc);
+        v.osc.forEach(function (o) { try { o.stop(t + end); } catch (e) {} });
       }
+      function sustainOn() { return susBtn || susSpace; }
 
-      function on(i, src) {
-        var k = keys[i];
-        if (!k) return;
-        k.srcs[src] = 1;
-        k.el.classList.add("on");
-        if (voices[i]) return;
+      function paint(m) {
+        var i = m - base();
+        if (i < 0 || i > 11) return;
+        var any = false; for (var s in held[m] || {}) { any = true; break; }
+        keys[i].el.classList.toggle("on", any);
+      }
+      function nOn(m, src) {
+        var h = held[m] || (held[m] = {}), first = true;
+        for (var s in h) { first = false; break; }
+        h[src] = 1; paint(m);
+        if (first) { rec("on", m, src); song.hit(m, src); }
+        if (voices[m]) return;
+        if (sustained[m]) { release(sustained[m], false); delete sustained[m]; }
         var c = audio();
-        if (c) voices[i] = voice(c, master, freq(i));
+        if (c) voices[m] = voice(c, master, mfreq(m));
       }
-      function off(i, src) {
-        var k = keys[i];
-        if (!k) return;
-        delete k.srcs[src];
-        for (var s in k.srcs) return;
-        k.el.classList.remove("on");
-        if (voices[i]) { release(voices[i]); delete voices[i]; }
+      function nOff(m, src) {
+        var h = held[m];
+        if (!h || !h[src]) return;
+        delete h[src];
+        for (var s in h) return;
+        delete held[m]; paint(m); rec("off", m, src);
+        var v = voices[m];
+        if (!v) return;
+        delete voices[m];
+        if (sustainOn()) { release(v, true); sustained[m] = v; } else release(v, false);
       }
-      function stopAll() {
-        for (var i = 0; i < keys.length; i++) { keys[i].srcs = {}; keys[i].el.classList.remove("on"); }
-        for (var j in voices) release(voices[j]);
-        voices = {}; ptr = {};
+      function on(i, src) { if (keys[i]) nOn(base() + i, src); }
+      function off(i, src) { if (keys[i]) nOff(base() + i, src); }
+      function damp() { for (var m in sustained) release(sustained[m], false); sustained = {}; }
+      /* CHG-118: stopNotes is the old CHG-091 stopAll (also used by the octave buttons);
+         stopAll now also stops playback, recording, the metronome and the song. */
+      function stopNotes() {
+        for (var m in held) for (var s in held[m]) nOff(Number(m), s);
+        for (var j in voices) release(voices[j], false);
+        voices = {}; held = {}; ptr = {}; susSpace = false; damp();
+        for (var i = 0; i < keys.length; i++) keys[i].el.classList.remove("on");
       }
 
       for (var i = 0; i < 12; i++) {
@@ -3580,7 +3666,7 @@
         b.textContent = NAMES[i];
         if (i in BLACK_AFTER) b.style.left = ((BLACK_AFTER[i] + 1) * 100 / 7 - 4.5).toFixed(3) + "%";
         wrap.appendChild(b);
-        keys.push({ el: b, srcs: {} });
+        keys.push({ el: b });
       }
       function labels() {
         for (var i = 0; i < 12; i++) keys[i].el.setAttribute("aria-label", NAMES[i] + octave);
@@ -3591,7 +3677,7 @@
       function shift(d) {
         var n = Math.max(2, Math.min(6, octave + d));
         if (n === octave) return;
-        stopAll(); octave = n; labels();
+        stopNotes(); octave = n; labels(); song.mark();
       }
       down.addEventListener("click", function () { shift(-1); });
       up.addEventListener("click", function () { shift(1); });
@@ -3604,28 +3690,29 @@
         var k = e && e.closest ? e.closest(".pno-key") : null;
         return k && wrap.contains(k) ? Number(k.getAttribute("data-i")) : -1;
       }
+      /* pointers keep the pitch they started on, so off() matches even if the octave moves */
       wrap.addEventListener("pointerdown", function (e) {
         var k = e.target.closest ? e.target.closest(".pno-key") : null;
         if (!k || (e.pointerType === "mouse" && e.button !== 0)) return;
         e.preventDefault();
         if (k.releasePointerCapture && k.hasPointerCapture && k.hasPointerCapture(e.pointerId)) k.releasePointerCapture(e.pointerId);
-        var i = Number(k.getAttribute("data-i")), id = "p" + e.pointerId;
-        if (ptr[id] != null) off(ptr[id], id);
-        ptr[id] = i; on(i, id);
+        var m = base() + Number(k.getAttribute("data-i")), id = "p" + e.pointerId;
+        if (ptr[id] != null) nOff(ptr[id], id);
+        ptr[id] = m; nOn(m, id);
       });
       document.addEventListener("pointermove", function (e) {
         var id = "p" + e.pointerId;
         if (ptr[id] == null) return;
-        var i = keyAt(e.clientX, e.clientY);
-        if (i === ptr[id]) return;
-        off(ptr[id], id);
-        if (i < 0) { delete ptr[id]; return; }
-        ptr[id] = i; on(i, id);
+        var i = keyAt(e.clientX, e.clientY), m = i < 0 ? -1 : base() + i;
+        if (m === ptr[id]) return;
+        nOff(ptr[id], id);
+        if (m < 0) { delete ptr[id]; return; }
+        ptr[id] = m; nOn(m, id);
       });
       function endPtr(e) {
         var id = "p" + e.pointerId;
         if (ptr[id] == null) return;
-        off(ptr[id], id); delete ptr[id];
+        nOff(ptr[id], id); delete ptr[id];
       }
       document.addEventListener("pointerup", endPtr);
       document.addEventListener("pointercancel", endPtr);
@@ -3633,9 +3720,9 @@
       wrap.addEventListener("click", function (e) {
         var k = e.target.closest ? e.target.closest(".pno-key") : null;
         if (!k || e.detail !== 0) return;
-        var i = Number(k.getAttribute("data-i"));
-        on(i, "click");
-        setTimeout(function () { off(i, "click"); }, 300);
+        var m = base() + Number(k.getAttribute("data-i"));
+        nOn(m, "click");
+        setTimeout(function () { nOff(m, "click"); }, 300);
       });
 
       function typing(t) {
@@ -3645,25 +3732,210 @@
         if (n === "TEXTAREA" || n === "SELECT") return true;
         return n === "INPUT" && !/^(range|button|checkbox|radio|submit|reset|color)$/i.test(t.type || "");
       }
+      /* CHG-118: Space = hold sustain, only while Music is open, not typing, and not on a control
+         that Space would press (piano keys excepted). */
+      function spaceOk(t) {
+        if (typing(t)) return false;
+        if (t && t.closest && t.closest(".pno-key")) return true;
+        return !(t && t.closest && t.closest("button, a, select, input, summary, [role=button], [tabindex]"));
+      }
+      var keyM = {};
       document.addEventListener("keydown", function (e) {
+        if (e.code === "Space" && !e.ctrlKey && !e.metaKey && !e.altKey && drawer.classList.contains("open") && spaceOk(e.target)) {
+          e.preventDefault();
+          if (!e.repeat) { susSpace = true; susUI(); }
+          return;
+        }
         var i = CODES.indexOf(e.code);
         if (i < 0 || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
         if (!drawer.classList.contains("open") || typing(e.target)) return;
         e.preventDefault();
-        on(i, "k");
+        keyM[e.code] = base() + i;
+        nOn(keyM[e.code], "k" + i);
       });
       document.addEventListener("keyup", function (e) {
+        if (e.code === "Space" && susSpace) { susSpace = false; if (!susBtn) damp(); susUI(); return; }
         var i = CODES.indexOf(e.code);
-        if (i >= 0) off(i, "k");
+        if (i >= 0 && keyM[e.code] != null) { nOff(keyM[e.code], "k" + i); delete keyM[e.code]; }
       });
 
+      /* ---- CHG-118 controls ---- */
+      var status = $("pno-status");
+      function say(s) { if (status) status.textContent = s; }
+      function press(el, v) { if (el) el.setAttribute("aria-pressed", v ? "true" : "false"); }
+
+      Array.prototype.forEach.call(document.querySelectorAll("#pno-sound [data-sound]"), function (el) {
+        el.addEventListener("click", function () {
+          sound = el.getAttribute("data-sound");
+          Array.prototype.forEach.call(document.querySelectorAll("#pno-sound [data-sound]"), function (x) { press(x, x === el); });
+        });
+      });
+      var susEl = $("pno-sus");
+      function susUI() { press(susEl, sustainOn()); }
+      if (susEl) susEl.addEventListener("click", function () { susBtn = !susBtn; if (!sustainOn()) damp(); susUI(); });
+
+      /* Record / Play / Clear: events { t ms, m pitch, on } kept in memory only (max 2 min / 2000 events). */
+      var MAX_MS = 120000, MAX_EV = 2000;
+      var take = [], recOn = false, recT0 = 0, recTimer = null, playTimers = [], playing = false;
+      var recBtn = $("pno-rec"), playBtn = $("pno-play"), clearBtn = $("pno-clear");
+      function now() { return (window.performance && performance.now) ? performance.now() : Date.now(); }
+      function secs(ms) { return Math.max(0, Math.round(ms / 1000)); }
+      function takeLen() { return take.length ? take[take.length - 1].t : 0; }
+      function recUI() {
+        press(recBtn, recOn); press(playBtn, playing);
+        if (playBtn) playBtn.disabled = recOn || !take.length;
+        if (clearBtn) clearBtn.disabled = recOn || !take.length;
+      }
+      function rec(kind, m, src) {
+        if (!recOn || src === "play" || src === "song") return;
+        take.push({ t: Math.round(now() - recT0), m: m, on: kind === "on" });
+        if (take.length >= MAX_EV - 12) recStop("limit");
+      }
+      function recStart() {
+        stopPlay(); song.stop();
+        take = []; recOn = true; recT0 = now();
+        for (var m in held) take.push({ t: 0, m: Number(m), on: true });
+        recTimer = setInterval(function () {
+          var el = now() - recT0;
+          if (el >= MAX_MS) { recStop("limit"); return; }
+          say("Recording " + secs(el) + " s");
+        }, 250);
+        say("Recording 0 s"); recUI();
+      }
+      function recStop(why) {
+        if (!recOn) return;
+        var t = Math.round(now() - recT0);
+        for (var m in held) take.push({ t: t, m: Number(m), on: false });
+        recOn = false; clearInterval(recTimer); recTimer = null;
+        if (take.length) take.push({ t: t, m: -1, on: false }); /* end marker keeps trailing silence */
+        say(take.length ? "Recorded " + secs(t) + " s" + (why === "limit" ? " (limit reached)" : "") : "Nothing recorded");
+        recUI();
+      }
+      function stopPlay() {
+        playTimers.forEach(clearTimeout); playTimers = [];
+        if (playing) { for (var m in held) nOff(Number(m), "play"); playing = false; if (take.length) say("Recorded " + secs(takeLen()) + " s"); }
+        recUI();
+      }
+      function startPlay() {
+        if (!take.length || recOn) return;
+        stopPlay(); song.stop(); audio(); playing = true; say("Playing " + secs(takeLen()) + " s");
+        take.forEach(function (ev) {
+          playTimers.push(setTimeout(function () { if (ev.m >= 0) (ev.on ? nOn : nOff)(ev.m, "play"); }, ev.t));
+        });
+        playTimers.push(setTimeout(function () { stopPlay(); }, takeLen() + 30));
+        recUI();
+      }
+      if (recBtn) recBtn.addEventListener("click", function () { recOn ? recStop() : recStart(); });
+      if (playBtn) playBtn.addEventListener("click", function () { playing ? stopPlay() : startPlay(); });
+      if (clearBtn) clearBtn.addEventListener("click", function () { stopPlay(); take = []; say("Recording cleared"); recUI(); });
+      recUI();
+
+      /* Metronome: Web Audio clicks scheduled ~0.12 s ahead; beat 1 of 4 accented; through master volume. */
+      var metBtn = $("pno-metro"), bpmEl = $("pno-bpm"), bpmOut = $("pno-bpm-val");
+      var met = { on: false, timer: null, next: 0, beat: 0, clicks: 0 };
+      function bpm() { var v = Math.round(Number(bpmEl && bpmEl.value) || 100); return Math.max(40, Math.min(200, v)); }
+      function click(t, accent) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = "square"; o.frequency.value = accent ? 1600 : 1000;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(accent ? 0.35 : 0.2, t + 0.002);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+        o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.06);
+        o.onended = function () { o.disconnect(); g.disconnect(); };
+        met.clicks++;
+      }
+      function metTick() {
+        while (met.next < ctx.currentTime + 0.12) {
+          click(met.next, met.beat === 0);
+          met.beat = (met.beat + 1) % 4;
+          met.next += 60 / bpm();
+        }
+      }
+      function metStart() {
+        if (!audio()) return;
+        met.on = true; met.beat = 0; met.next = ctx.currentTime + 0.05;
+        metTick(); met.timer = setInterval(metTick, 25); press(metBtn, true);
+      }
+      function metStop() { met.on = false; clearInterval(met.timer); met.timer = null; press(metBtn, false); }
+      if (metBtn) metBtn.addEventListener("click", function () { met.on ? metStop() : metStart(); });
+      function bpmUI() { if (bpmOut) bpmOut.textContent = String(bpm()); }
+      if (bpmEl) bpmEl.addEventListener("input", bpmUI);
+      bpmUI();
+
+      /* Starter songs (public-domain melodies). Notes are semitones above C of the shown octave
+         (all fit 0..11), with lengths in beats; Play uses the metronome BPM. */
+      var SONGS = {
+        mary: [[4,1],[2,1],[0,1],[2,1],[4,1],[4,1],[4,2],[2,1],[2,1],[2,2],[4,1],[7,1],[7,2],
+               [4,1],[2,1],[0,1],[2,1],[4,1],[4,1],[4,1],[4,1],[2,1],[2,1],[4,1],[2,1],[0,4]],
+        twinkle: [[0,1],[0,1],[7,1],[7,1],[9,1],[9,1],[7,2],[5,1],[5,1],[4,1],[4,1],[2,1],[2,1],[0,2],
+                  [7,1],[7,1],[5,1],[5,1],[4,1],[4,1],[2,2],[7,1],[7,1],[5,1],[5,1],[4,1],[4,1],[2,2],
+                  [0,1],[0,1],[7,1],[7,1],[9,1],[9,1],[7,2],[5,1],[5,1],[4,1],[4,1],[2,1],[2,1],[0,2]],
+        ode: [[4,1],[4,1],[5,1],[7,1],[7,1],[5,1],[4,1],[2,1],[0,1],[0,1],[2,1],[4,1],[4,1.5],[2,0.5],[2,2],
+              [4,1],[4,1],[5,1],[7,1],[7,1],[5,1],[4,1],[2,1],[0,1],[0,1],[2,1],[4,1],[2,1.5],[0,0.5],[0,2]]
+      };
+      var songSel = $("pno-song"), songPlay = $("pno-song-play"), songFollow = $("pno-song-follow");
+      var song = {
+        mode: "", idx: 0, timers: [], notes: null,
+        list: function () { return SONGS[songSel ? songSel.value : "mary"] || SONGS.mary; },
+        name: function () { return songSel && songSel.selectedIndex >= 0 ? songSel.options[songSel.selectedIndex].text : ""; },
+        mark: function () {
+          for (var i = 0; i < keys.length; i++) keys[i].el.classList.remove("next");
+          if (song.mode === "follow" && song.notes && song.idx < song.notes.length) keys[song.notes[song.idx][0]].el.classList.add("next");
+        },
+        stop: function () {
+          song.timers.forEach(clearTimeout); song.timers = [];
+          if (song.mode === "play") for (var m in held) nOff(Number(m), "song");
+          song.mode = ""; song.notes = null; song.mark(); press(songPlay, false); press(songFollow, false);
+        },
+        play: function () {
+          stopPlay(); song.stop(); if (!audio()) return;
+          song.mode = "play"; song.notes = song.list(); press(songPlay, true);
+          var beat = 60000 / bpm(), t = 0;
+          song.notes.forEach(function (n) {
+            var at = t, len = n[1] * beat;
+            song.timers.push(setTimeout(function () {
+              var m = base() + n[0]; nOn(m, "song");
+              song.timers.push(setTimeout(function () { nOff(m, "song"); }, Math.max(60, len * 0.85)));
+            }, at));
+            t += len;
+          });
+          song.timers.push(setTimeout(function () { song.stop(); say(song.name() + ": done"); }, t + 50));
+          say("Playing " + song.name());
+        },
+        follow: function () {
+          stopPlay(); song.stop();
+          song.mode = "follow"; song.notes = song.list(); song.idx = 0; press(songFollow, true);
+          song.mark(); say("Follow: " + song.name() + " · note 1 of " + song.notes.length);
+        },
+        hit: function (m, src) {
+          if (song.mode !== "follow" || src === "play" || src === "song") return;
+          if (((m % 12) + 12) % 12 !== song.notes[song.idx][0]) return;
+          song.idx++;
+          if (song.idx >= song.notes.length) { var nm = song.name(); song.stop(); say(nm + ": well done!"); return; }
+          song.mark(); say("Follow: " + song.name() + " · note " + (song.idx + 1) + " of " + song.notes.length);
+        }
+      };
+      if (songPlay) songPlay.addEventListener("click", function () { song.mode === "play" ? song.stop() : song.play(); });
+      if (songFollow) songFollow.addEventListener("click", function () { song.mode === "follow" ? song.stop() : song.follow(); });
+      if (songSel) songSel.addEventListener("change", function () { if (song.mode) song.stop(); });
+
+      function stopAll() {
+        stopPlay(); recStop(); song.stop(); metStop(); susSpace = false; susUI(); stopNotes();
+      }
       if (window.MutationObserver) {
         new MutationObserver(function () { if (!drawer.classList.contains("open")) stopAll(); })
           .observe(drawer, { attributes: true, attributeFilter: ["class"] });
       }
       document.addEventListener("visibilitychange", function () { if (document.hidden) stopAll(); });
       window.addEventListener("pagehide", stopAll);
-      window.addEventListener("blur", stopAll);
+      window.addEventListener("blur", function () { susSpace = false; susUI(); stopNotes(); }); /* CHG-118: blur only lets go of notes */
+      /* CHG-118: read-only state for tests (no controls exposed) */
+      window.AFF_PNO = { state: function () {
+        return { octave: octave, sound: sound, sustain: sustainOn(), held: Object.keys(held).map(Number),
+          voices: Object.keys(voices).length, sustained: Object.keys(sustained).length,
+          recording: recOn, playing: playing, events: take.slice(), metro: met.on, clicks: met.clicks,
+          bpm: bpm(), song: song.mode, songIdx: song.idx, ctx: ctx ? ctx.state : null };
+      } };
     })();
   </script>
   <script>

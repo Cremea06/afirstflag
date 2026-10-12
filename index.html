@@ -747,10 +747,22 @@
 
     /* Built With Gratitude — g10 drawer under role bar */
 
-    /* CHG-126: Quick Safety Check drawer (client-side only: no requests, no storage). Large text, high contrast,
+    /* CHG-126 / CHG-127: Quick Safety Check (client-side only: no requests, no storage). Button sits above the BTC search
+       in the How it works right-hand window; the panel opens in a <dialog>. Large text, high contrast,
        icon + text label on every line so colour is never the only signal. */
-    .qsc-wrap { flex-shrink: 0; margin: 0 16px 8px; }
-    #qsc-toggle { font-size: 18px; }
+    .window.blue .btn.qsc-open {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.45);
+      font-size: 14px;
+      padding-top: 9px; padding-bottom: 9px;
+    }
+    .qsc-dialog {
+      border: 0; padding: 0; margin: auto; border-radius: 14px; background: #ffffff; color: #111111;
+      width: min(820px, calc(100vw - 24px)); max-height: calc(100vh - 32px); overflow: auto;
+    }
+    .qsc-dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
+    .qsc-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px 0; }
+    .qsc-head h2 { font-size: 24px; margin: 0; color: #111111; }
     .qsc-card {
       background: #ffffff; color: #111111; border-radius: 12px; padding: 18px 20px;
       font-size: 20px; line-height: 1.5; max-width: 820px; margin: 0 auto;
@@ -762,11 +774,12 @@
     .qsc-icon { flex: 0 0 auto; width: 34px; height: 34px; margin-top: 2px; }
     .qsc-label { font-weight: 800; }
     .qsc-close { margin: 16px 0 0; font-size: 18px; color: #222222; }
-    .qsc-again {
+    .qsc-again, .qsc-x {
       margin-top: 14px; font: inherit; font-size: 20px; font-weight: 700; padding: 10px 18px;
       border-radius: 10px; border: 2px solid #111111; background: #ffffff; color: #111111; cursor: pointer;
     }
-    .qsc-card :focus-visible, #qsc-toggle:focus-visible { outline: 3px solid #ffbf00; outline-offset: 2px; }
+    .qsc-x { margin-top: 0; font-size: 18px; padding: 8px 16px; }
+    .qsc-dialog :focus-visible, .qsc-open:focus-visible { outline: 3px solid #ffbf00; outline-offset: 2px; }
 
     /* CHG-088: Literature drawer (book search, Open Library, from the browser) */
     .lit-wrap {
@@ -1922,6 +1935,17 @@
           </ul>
         </div>
         <div class="window-cta">
+          <button type="button" class="btn qsc-open" id="qsc-toggle" aria-haspopup="dialog" aria-controls="qsc-dialog">Quick Safety Check</button>
+          <dialog class="qsc-dialog" id="qsc-dialog" aria-labelledby="qsc-title">
+            <div class="qsc-head">
+              <h2 id="qsc-title">Quick Safety Check</h2>
+              <button type="button" class="qsc-x" id="qsc-x">Close</button>
+            </div>
+            <div class="qsc-card">
+              <div id="qsc-results" aria-live="polite" aria-atomic="true"></div>
+              <button type="button" class="qsc-again" id="qsc-again">Check again</button>
+            </div>
+          </dialog>
           <form class="search-row" id="btc-lookup-form" action="#" method="post" role="search">
             <input type="search" id="btc-lookup-address" name="address" autocomplete="off" spellcheck="false" placeholder="Paste a Bitcoin address or a link" aria-label="Bitcoin public address or web link to check">
             <button type="submit" class="btn" id="btc-lookup-submit">SEARCH</button>
@@ -2316,21 +2340,6 @@
               <div class="ph">B1</div>
               <div class="ph">B2</div>
             </div>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <div class="qsc-wrap">
-      <section class="drawer glass" id="qsc-drawer" aria-label="Quick Safety Check">
-        <button type="button" class="drawer-toggle" id="qsc-toggle" aria-expanded="false" aria-controls="qsc-panel">
-          <span>Quick Safety Check</span>
-          <span class="chev" aria-hidden="true">▾</span>
-        </button>
-        <div class="drawer-body" id="qsc-panel">
-          <div class="qsc-card">
-            <div id="qsc-results" aria-live="polite" aria-atomic="true"></div>
-            <button type="button" class="qsc-again" id="qsc-again">Check again</button>
           </div>
         </div>
       </section>
@@ -5480,15 +5489,16 @@
     })();
   </script>
   <script>
-    /* CHG-126: Quick Safety Check. Runs entirely in the browser: reads location.protocol, the browser version,
+    /* CHG-126 / CHG-127: Quick Safety Check (dialog from the How it works BTC window). Runs entirely in the browser: reads location.protocol, the browser version,
        navigator.cookieEnabled and navigator.onLine. No network requests, no storage, textContent only. */
     (function () {
       var MIN_VERSION = { chrome: 130, edge: 130, firefox: 130, safari: 17 };
-      var drawer = document.getElementById("qsc-drawer");
+      var dlg = document.getElementById("qsc-dialog");
+      var xbtn = document.getElementById("qsc-x");
       var btn = document.getElementById("qsc-toggle");
       var out = document.getElementById("qsc-results");
       var again = document.getElementById("qsc-again");
-      if (!drawer || !btn || !out) return;
+      if (!dlg || !btn || !out) return;
       var SVGNS = "http://www.w3.org/2000/svg";
       var TIPS = [
         ["Pause before you click.", "Unexpected messages that create urgency (\u201cyour account will be closed,\u201d \u201cpackage stuck,\u201d \u201cgrandson in trouble\u201d) are almost always scams."],
@@ -5614,11 +5624,15 @@
         out.textContent = "";
         out.appendChild(frag);
       }
+      /* CHG-127: the button toggles a modal <dialog>; Esc (native cancel) and Close shut it, focus returns to the button. */
+      function closeDlg() { if (dlg.open) dlg.close(); }
       btn.addEventListener("click", function () {
-        var open = drawer.classList.toggle("open");
-        btn.setAttribute("aria-expanded", open ? "true" : "false");
-        if (open) run();
+        if (dlg.open) { closeDlg(); return; }
+        run();
+        if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
       });
+      if (xbtn) xbtn.addEventListener("click", closeDlg);
+      dlg.addEventListener("close", function () { btn.focus(); });
       if (again) again.addEventListener("click", run);
     })();
   </script>

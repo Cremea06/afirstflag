@@ -747,6 +747,27 @@
 
     /* Built With Gratitude — g10 drawer under role bar */
 
+    /* CHG-126: Quick Safety Check drawer (client-side only: no requests, no storage). Large text, high contrast,
+       icon + text label on every line so colour is never the only signal. */
+    .qsc-wrap { flex-shrink: 0; margin: 0 16px 8px; }
+    #qsc-toggle { font-size: 18px; }
+    .qsc-card {
+      background: #ffffff; color: #111111; border-radius: 12px; padding: 18px 20px;
+      font-size: 20px; line-height: 1.5; max-width: 820px; margin: 0 auto;
+    }
+    .qsc-card h3 { font-size: 22px; margin: 18px 0 8px; color: #111111; }
+    .qsc-summary { font-size: 22px; font-weight: 700; margin: 0 0 6px; }
+    .qsc-list { list-style: none; margin: 0; padding: 0; }
+    .qsc-item { display: flex; gap: 12px; align-items: flex-start; margin: 0 0 12px; }
+    .qsc-icon { flex: 0 0 auto; width: 34px; height: 34px; margin-top: 2px; }
+    .qsc-label { font-weight: 800; }
+    .qsc-close { margin: 16px 0 0; font-size: 18px; color: #222222; }
+    .qsc-again {
+      margin-top: 14px; font: inherit; font-size: 20px; font-weight: 700; padding: 10px 18px;
+      border-radius: 10px; border: 2px solid #111111; background: #ffffff; color: #111111; cursor: pointer;
+    }
+    .qsc-card :focus-visible, #qsc-toggle:focus-visible { outline: 3px solid #ffbf00; outline-offset: 2px; }
+
     /* CHG-088: Literature drawer (book search, Open Library, from the browser) */
     .lit-wrap {
       flex-shrink: 0;
@@ -2295,6 +2316,21 @@
               <div class="ph">B1</div>
               <div class="ph">B2</div>
             </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="qsc-wrap">
+      <section class="drawer glass" id="qsc-drawer" aria-label="Quick Safety Check">
+        <button type="button" class="drawer-toggle" id="qsc-toggle" aria-expanded="false" aria-controls="qsc-panel">
+          <span>Quick Safety Check</span>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="drawer-body" id="qsc-panel">
+          <div class="qsc-card">
+            <div id="qsc-results" aria-live="polite" aria-atomic="true"></div>
+            <button type="button" class="qsc-again" id="qsc-again">Check again</button>
           </div>
         </div>
       </section>
@@ -5441,6 +5477,149 @@
       }
       check();
       if (conn && conn.addEventListener) conn.addEventListener("change", check);
+    })();
+  </script>
+  <script>
+    /* CHG-126: Quick Safety Check. Runs entirely in the browser: reads location.protocol, the browser version,
+       navigator.cookieEnabled and navigator.onLine. No network requests, no storage, textContent only. */
+    (function () {
+      var MIN_VERSION = { chrome: 130, edge: 130, firefox: 130, safari: 17 };
+      var drawer = document.getElementById("qsc-drawer");
+      var btn = document.getElementById("qsc-toggle");
+      var out = document.getElementById("qsc-results");
+      var again = document.getElementById("qsc-again");
+      if (!drawer || !btn || !out) return;
+      var SVGNS = "http://www.w3.org/2000/svg";
+      var TIPS = [
+        ["Pause before you click.", "Unexpected messages that create urgency (\u201cyour account will be closed,\u201d \u201cpackage stuck,\u201d \u201cgrandson in trouble\u201d) are almost always scams."],
+        ["Never share a one-time code", "that arrives by text or email with anyone who contacts you."],
+        ["Check the website address carefully.", "Scammers often use names that look almost right (e.g., \u201caf1rstflag.com\u201d or \u201ca-firstflag.com\u201d)."],
+        ["Banks, government agencies, and tech support", "will not call or email you asking for passwords or remote access."],
+        ["If something feels wrong, stop", "and ask someone you trust before you click, download, or send money."],
+        ["Real companies never ask you to pay with gift cards or Bitcoin", "to fix a problem."]
+      ];
+      var LABEL = { good: "Good:", caution: "Caution:", problem: "Problem:", info: "Tip:" };
+      function el(tag, cls, text) {
+        var e = document.createElement(tag);
+        if (cls) e.className = cls;
+        if (text != null) e.textContent = text;
+        return e;
+      }
+      function svg(tag, attrs) {
+        var e = document.createElementNS(SVGNS, tag);
+        for (var k in attrs) e.setAttribute(k, attrs[k]);
+        return e;
+      }
+      function icon(kind) {
+        var s = svg("svg", { "class": "qsc-icon", viewBox: "0 0 32 32", "aria-hidden": "true", focusable: "false" });
+        if (kind === "good") {
+          s.appendChild(svg("circle", { cx: 16, cy: 16, r: 15, fill: "#0a7d2c" }));
+          s.appendChild(svg("path", { d: "M9 16.5l5 5 9-11", fill: "none", stroke: "#fff", "stroke-width": 3.5, "stroke-linecap": "round", "stroke-linejoin": "round" }));
+        } else if (kind === "caution") {
+          s.appendChild(svg("path", { d: "M16 2L31 29H1z", fill: "#ffcc00", stroke: "#111", "stroke-width": 1.5, "stroke-linejoin": "round" }));
+          s.appendChild(svg("rect", { x: 14.5, y: 11, width: 3, height: 10, rx: 1, fill: "#111" }));
+          s.appendChild(svg("circle", { cx: 16, cy: 25, r: 1.8, fill: "#111" }));
+        } else if (kind === "problem") {
+          s.appendChild(svg("circle", { cx: 16, cy: 16, r: 15, fill: "#b00020" }));
+          s.appendChild(svg("path", { d: "M10.5 10.5l11 11M21.5 10.5l-11 11", stroke: "#fff", "stroke-width": 3.5, "stroke-linecap": "round" }));
+        } else {
+          s.appendChild(svg("circle", { cx: 16, cy: 16, r: 15, fill: "#0b5cad" }));
+          s.appendChild(svg("rect", { x: 14.5, y: 13.5, width: 3, height: 10, rx: 1, fill: "#fff" }));
+          s.appendChild(svg("circle", { cx: 16, cy: 9, r: 2, fill: "#fff" }));
+        }
+        return s;
+      }
+      function item(kind, bold, text) {
+        var li = el("li", "qsc-item qsc-" + kind);
+        li.setAttribute("data-kind", kind);
+        li.appendChild(icon(kind));
+        var p = el("div");
+        p.appendChild(el("span", "qsc-label", LABEL[kind] + " "));
+        if (bold) { p.appendChild(el("strong", null, bold)); p.appendChild(document.createTextNode(" ")); }
+        p.appendChild(document.createTextNode(text));
+        li.appendChild(p);
+        return li;
+      }
+      /* Returns { name, major } or null when unknown. userAgentData first (Chromium), then the UA string. */
+      function browserVersion() {
+        var d = navigator.userAgentData;
+        if (d && d.brands && d.brands.length) {
+          for (var i = 0; i < d.brands.length; i++) {
+            var b = d.brands[i];
+            if (b.brand === "Microsoft Edge") return { name: "edge", major: parseInt(b.version, 10) };
+          }
+          for (i = 0; i < d.brands.length; i++) {
+            if (d.brands[i].brand === "Google Chrome") return { name: "chrome", major: parseInt(d.brands[i].version, 10) };
+          }
+        }
+        var ua = navigator.userAgent || "", m;
+        if ((m = /Edg(?:e|A|iOS)?\/(\d+)/.exec(ua))) return { name: "edge", major: +m[1] };
+        if ((m = /(?:Firefox|FxiOS)\/(\d+)/.exec(ua))) return { name: "firefox", major: +m[1] };
+        if (/OPR\/|Opera|SamsungBrowser|YaBrowser|Vivaldi/.test(ua)) return null;
+        if ((m = /(?:Chrome|CriOS)\/(\d+)/.exec(ua))) return { name: "chrome", major: +m[1] };
+        if (/Safari\//.test(ua) && (m = /Version\/(\d+)/.exec(ua))) return { name: "safari", major: +m[1] };
+        return null;
+      }
+      function run() {
+        var checks = [];
+        if (location.protocol === "http:") {
+          checks.push(["problem", "This page is not secure. Do not enter passwords or personal information."]);
+        } else {
+          checks.push(["good", "This page is secure. You should see a padlock near the address. Look for that padlock on any site before you type a password."]);
+        }
+        var v = browserVersion();
+        if (!v || !isFinite(v.major) || !MIN_VERSION[v.name]) {
+          checks.push(["info", "Keep your browser updated; updates fix security holes."]);
+        } else if (v.major >= MIN_VERSION[v.name]) {
+          checks.push(["good", "Your browser looks up to date. Newer versions include important security fixes."]);
+        } else {
+          checks.push(["caution", "Your browser may be a bit old. Please update it when you can, or ask someone to help."]);
+        }
+        checks.push(navigator.cookieEnabled
+          ? ["good", "Cookies are turned on. Most websites need them to keep you signed in."]
+          : ["caution", "Cookies are turned off. Some pages may not work correctly until you turn them back on."]);
+        checks.push(navigator.onLine
+          ? ["good", "You appear to be connected to the internet."]
+          : ["caution", "Your device thinks it is offline. Check your Wi-Fi or mobile data."]);
+        var worst = "good";
+        checks.forEach(function (c) {
+          if (c[0] === "problem") worst = "problem";
+          else if (c[0] === "caution" && worst !== "problem") worst = "caution";
+        });
+        var summary = worst === "problem"
+          ? "This page or your browser has a problem that could put your information at risk."
+          : worst === "caution"
+            ? "A couple of things need attention. Please read the notes below."
+            : "Everything looks fine right now. Please read the tips.";
+        var frag = document.createDocumentFragment();
+        var sum = el("p", "qsc-summary");
+        sum.id = "qsc-summary";
+        sum.setAttribute("data-kind", worst);
+        sum.appendChild(icon(worst));
+        sum.lastChild.style.verticalAlign = "middle";
+        sum.lastChild.style.marginRight = "10px";
+        sum.appendChild(document.createTextNode(summary));
+        frag.appendChild(sum);
+        frag.appendChild(el("h3", null, "Safety tips"));
+        var tl = el("ul", "qsc-list");
+        tl.id = "qsc-tips";
+        TIPS.forEach(function (t) { tl.appendChild(item("info", t[0], t[1])); });
+        frag.appendChild(tl);
+        frag.appendChild(el("h3", null, "Your browser right now"));
+        var cl = el("ul", "qsc-list");
+        cl.id = "qsc-checks";
+        checks.forEach(function (c) { cl.appendChild(item(c[0], null, c[1])); });
+        frag.appendChild(cl);
+        frag.appendChild(el("p", "qsc-close", "This check only looks at information already in your browser. It doesn't scan your computer or send anything anywhere."));
+        out.textContent = "";
+        out.appendChild(frag);
+      }
+      btn.addEventListener("click", function () {
+        var open = drawer.classList.toggle("open");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        if (open) run();
+      });
+      if (again) again.addEventListener("click", run);
     })();
   </script>
 </body>

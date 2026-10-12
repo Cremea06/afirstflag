@@ -2325,7 +2325,7 @@
           </div>
           <div class="pno-bar pno-bar2">
             <span class="pno-grp" role="group" aria-label="Recording"><button type="button" class="pno-pill pno-rec" id="pno-rec" aria-pressed="false">Record</button><button type="button" class="pno-pill" id="pno-play" aria-pressed="false" aria-label="Play recording" disabled>Play</button><button type="button" class="pno-pill" id="pno-clear" disabled>Clear</button></span>
-            <span class="pno-grp" role="group" aria-label="Song"><select id="pno-song" class="pno-sel" aria-label="Song"><option value="mary">Mary Had a Little Lamb</option><option value="twinkle">Twinkle Twinkle Little Star</option><option value="ode">Ode to Joy</option><option value="grace">Amazing Grace</option><option value="america">America the Beautiful</option><option value="green">Greensleeves</option><option value="elise">Für Elise</option></select><button type="button" class="pno-pill" id="pno-song-play" aria-pressed="false" aria-label="Play song">Play</button><button type="button" class="pno-pill" id="pno-song-follow" aria-pressed="false">Follow</button></span>
+            <span class="pno-grp" role="group" aria-label="Song"><select id="pno-song" class="pno-sel" aria-label="Song"><option value="mary">Mary Had a Little Lamb</option><option value="twinkle">Twinkle Twinkle Little Star</option><option value="ode">Ode to Joy</option><option value="grace">Amazing Grace</option><option value="america">America the Beautiful</option><option value="green">Greensleeves</option><option value="elise">Für Elise</option><option value="elise_synth">Für Elise (Synth)</option></select><button type="button" class="pno-pill" id="pno-song-play" aria-pressed="false" aria-label="Play song">Play</button><button type="button" class="pno-pill" id="pno-song-follow" aria-pressed="false">Follow</button></span>
             <span class="pno-status" id="pno-status" aria-live="polite"></span>
           </div>
           <div class="pno" id="pno" role="group" aria-label="Piano"></div>
@@ -3895,12 +3895,43 @@
         elise: [[16,0.5],[15,0.5],[16,0.5],[15,0.5],[16,0.5],[11,0.5],[14,0.5],[12,0.5],[9,1.5],
                 [0,0.5],[4,0.5],[9,0.5],[11,1.5],[4,0.5],[8,0.5],[11,0.5],[12,1.5],[4,0.5],
                 [16,0.5],[15,0.5],[16,0.5],[15,0.5],[16,0.5],[11,0.5],[14,0.5],[12,0.5],[9,1.5],
-                [0,0.5],[4,0.5],[9,0.5],[11,1.5],[4,0.5],[12,0.5],[11,0.5],[9,3]]
+                [0,0.5],[4,0.5],[9,0.5],[11,1.5],[4,0.5],[12,0.5],[11,0.5],[9,3]],
+        /* CHG-120: "Für Elise (Synth)", an original arrangement for this site of Beethoven's
+           public-domain theme (not based on any existing remix). A minor, 4/4, eighth = 0.5 beat,
+           130 BPM, 80 beats (20 bars, ~37 s). Sections: call (syncopated motif + jump to A5) · response an
+           octave down · call to C · response to A3 · original bridge (F G Am E7 arpeggios) · call ·
+           response · finale (double-time motif, Am-E7 run, A cadence to A5). */
+        elise_synth: [
+          [16,0.5],[15,0.5],[16,0.75],[15,0.25],[16,0.5],[11,0.5],[14,0.5],[12,0.5],[9,1],[12,0.5],[16,0.5],[21,2],
+          [4,0.5],[3,0.5],[4,0.75],[3,0.25],[4,0.5],[-1,0.5],[2,0.5],[0,0.5],[-3,1],[0,0.5],[4,0.5],[8,0.5],[11,1.5],
+          [16,0.5],[15,0.5],[16,0.75],[15,0.25],[16,0.5],[11,0.5],[14,0.5],[12,0.5],[9,0.5],[11,0.5],[12,0.5],[16,0.5],[12,1],[11,1],
+          [4,0.5],[3,0.5],[4,0.5],[11,0.5],[12,0.5],[11,0.5],[9,1],[4,0.5],[8,0.5],[9,1],[-3,2],
+          [5,0.5],[9,0.5],[12,0.5],[17,0.5],[16,0.5],[12,0.5],[9,1],
+          [7,0.5],[11,0.5],[14,0.5],[19,0.5],[17,0.5],[14,0.5],[11,1],
+          [9,0.5],[12,0.5],[16,0.5],[21,0.5],[19,0.5],[16,0.5],[12,1],
+          [8,0.5],[11,0.5],[14,0.5],[17,0.5],[16,1],[15,0.5],[16,0.5],
+          [16,0.5],[15,0.5],[16,0.75],[15,0.25],[16,0.5],[11,0.5],[14,0.5],[12,0.5],[9,1],[12,0.5],[16,0.5],[21,2],
+          [4,0.5],[3,0.5],[4,0.75],[3,0.25],[4,0.5],[-1,0.5],[2,0.5],[0,0.5],[-3,1],[0,0.5],[4,0.5],[8,0.5],[11,1.5],
+          [16,0.25],[15,0.25],[16,0.25],[15,0.25],[16,0.25],[15,0.25],[16,0.25],[15,0.25],[16,0.5],[11,0.5],[14,0.5],[12,0.5],
+          [9,0.5],[4,0.5],[9,0.5],[12,0.5],[11,0.5],[8,0.5],[11,0.5],[14,0.5],
+          [16,0.5],[15,0.5],[16,0.5],[11,0.5],[14,0.5],[12,0.5],[11,0.5],[8,0.5],
+          [9,1],[4,0.5],[9,0.5],[21,2]]
       };
       function pc(n) { return ((n % 12) + 12) % 12; } /* CHG-119 */
+      /* CHG-120: optional per-song settings (the song arrays keep the [semitone, beats] format).
+         bass = root per 4-beat bar, played as pulsing octave eighths under the melody in Play only. */
+      var SONG_OPTS = {
+        elise_synth: { sound: "synth", bpm: 130,
+          bass: [-15,-15, -15,-20, -15,-20, -15,-15, -19,-17,-15,-20, -15,-15, -15,-20, -15,-15,-20,-15] }
+      };
+      function showSound() {
+        Array.prototype.forEach.call(document.querySelectorAll("#pno-sound [data-sound]"), function (x) { press(x, x.getAttribute("data-sound") === sound); });
+      }
       var songSel = $("pno-song"), songPlay = $("pno-song-play"), songFollow = $("pno-song-follow");
+      var bassG = null;
+      function bassBus() { if (!bassG) { bassG = ctx.createGain(); bassG.gain.value = 0.55; bassG.connect(master); } return bassG; } /* CHG-120 */
       var song = {
-        mode: "", idx: 0, timers: [], notes: null,
+        mode: "", idx: 0, timers: [], notes: null, prior: null, bassV: [],
         list: function () { return SONGS[songSel ? songSel.value : "mary"] || SONGS.mary; },
         name: function () { return songSel && songSel.selectedIndex >= 0 ? songSel.options[songSel.selectedIndex].text : ""; },
         mark: function () {
@@ -3910,12 +3941,27 @@
         stop: function () {
           song.timers.forEach(clearTimeout); song.timers = [];
           if (song.mode === "play") for (var m in held) nOff(Number(m), "song");
+          song.bassV.forEach(function (v) { release(v, false); }); song.bassV = []; /* CHG-120 */
+          if (song.prior) { if (sound === song.prior.used) sound = song.prior.was; song.prior = null; showSound(); } /* CHG-120: restore */
           song.mode = ""; song.notes = null; song.mark(); press(songPlay, false); press(songFollow, false);
         },
         play: function () {
           stopPlay(); song.stop(); if (!audio()) return;
           song.mode = "play"; song.notes = song.list(); press(songPlay, true);
-          var beat = 60000 / bpm(), t = 0;
+          var key = songSel ? songSel.value : "", o = SONG_OPTS[key] || {}; /* CHG-120 */
+          if (o.sound && o.sound !== sound) { song.prior = { was: sound, used: o.sound }; sound = o.sound; showSound(); }
+          var beat = 60000 / (o.bpm || bpm()), t = 0;
+          if (o.bass) o.bass.forEach(function (root, bar) {
+            for (var e = 0; e < 8; e++) (function (m, at) {
+              song.timers.push(setTimeout(function () {
+                if (!ctx) return;
+                var v = voice(ctx, bassBus(), mfreq(m)); song.bassV.push(v);
+                song.timers.push(setTimeout(function () {
+                  release(v, false); var k = song.bassV.indexOf(v); if (k >= 0) song.bassV.splice(k, 1);
+                }, beat * 0.4));
+              }, at));
+            })(base() + root + (e % 2 ? 12 : 0), (bar * 4 + e * 0.5) * beat);
+          });
           song.notes.forEach(function (n) {
             var at = t, len = n[1] * beat;
             song.timers.push(setTimeout(function () {
@@ -3927,6 +3973,7 @@
           song.timers.push(setTimeout(function () { song.stop(); say(song.name() + ": done"); }, t + 50));
           say("Playing " + song.name());
         },
+        /* Follow uses the melody only (no bass, no sound switch, visitor's own pace). */
         follow: function () {
           stopPlay(); song.stop();
           song.mode = "follow"; song.notes = song.list(); song.idx = 0; press(songFollow, true);

@@ -851,6 +851,14 @@
     .pno-status:empty { display: none; }
     .pno-key.next { box-shadow: inset 0 0 0 3px #f4c430; }
     .pno-key.next.on { box-shadow: none; }
+    /* CHG-124: Published recording panel under the keys (mirrors .art-pub) */
+    .pno-pub {
+      box-sizing: border-box; max-width: 420px; margin: 12px 0 0; padding: 10px; border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.22); font-size: 12px;
+    }
+    .pno-pub h3 { margin: 0 0 8px; font-size: 13px; font-weight: 700; color: #f4f7ff; }
+    .pno-pub-cap { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: rgba(244, 247, 255, 0.75); }
+    .pno-pub-msg { margin: 4px 0 0; min-height: 1em; color: #f4c430; }
 
     /* CHG-090: Music drawer (placeholder) between Literature and Collaborators */
     .music-wrap {
@@ -1803,10 +1811,10 @@
       </button>
       <div class="drawer-body" id="how-panel">
         <p class="how-lede">Public system map: what a visitor can see and use. Tap the map to open it full size.</p>
-        <a class="how-map" href="/images/architecture-public.png?v=115" target="_blank" rel="noopener">
+        <a class="how-map" href="/images/architecture-public.png?v=124" target="_blank" rel="noopener">
           <picture>
-            <source srcset="/images/architecture-public.webp?v=115" type="image/webp">
-            <img src="/images/architecture-public.png?v=115" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags (rev 17). The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit and bot counts, collaborators, flag stats, the click speed record, art publish, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, BTC address lookup, and a link safety check, and stores no private keys. Each registered chat member also has a read-only public profile page on the chat (chat.afirstflag.com/u/name) that shows only the username, the Member tier, and the join date. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, an AI model provider for Neagle replies inside chat, Google Safe Browsing for the link safety check, and YouTube, Twitch, and Rumble as live stream players (they load only after you press play). Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat. The homepage also has a literature search: the visitor's browser asks Open Library, an outside book catalog, for books matching a title. The homepage also has a music keyboard that plays notes in the visitor's browser, with no outside requests. The homepage also has an art canvas: visitors draw in their browser, and can publish one drawing that replaces the previous one. The homepage also has a Live Stream drawer: visitors can play a YouTube, Twitch, or Rumble stream, each loading only after they press play.">
+            <source srcset="/images/architecture-public.webp?v=124" type="image/webp">
+            <img src="/images/architecture-public.png?v=124" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags (rev 18). The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit and bot counts, collaborators, flag stats, the click speed record, art publish, music publish, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, BTC address lookup, and a link safety check, and stores no private keys. Each registered chat member also has a read-only public profile page on the chat (chat.afirstflag.com/u/name) that shows only the username, the Member tier, and the join date. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, an AI model provider for Neagle replies inside chat, Google Safe Browsing for the link safety check, and YouTube, Twitch, and Rumble as live stream players (they load only after you press play). Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat. The homepage also has a literature search: the visitor's browser asks Open Library, an outside book catalog, for books matching a title. The homepage also has a music keyboard that plays notes in the visitor's browser, with no outside requests. The homepage also has an art canvas: visitors draw in their browser, and can publish one drawing that replaces the previous one. Visitors can also publish one music recording that replaces the previous one. The homepage also has a Live Stream drawer: visitors can play a YouTube, Twitch, or Rumble stream, each loading only after they press play.">
           </picture>
         </a>
       </div>
@@ -2326,11 +2334,17 @@
           </div>
           <div class="pno-bar pno-bar2">
             <span class="pno-grp" role="group" aria-label="Recording"><button type="button" class="pno-pill pno-rec" id="pno-rec" aria-pressed="false">Record</button><button type="button" class="pno-pill" id="pno-play" aria-pressed="false" aria-label="Play recording" disabled>Play</button><button type="button" class="pno-pill" id="pno-clear" disabled>Clear</button></span>
-            <span class="pno-grp" role="group" aria-label="Save recording"><button type="button" class="pno-pill" id="pno-save-mid" aria-label="Save recording as MIDI file" disabled>Save .mid</button><button type="button" class="pno-pill" id="pno-save-wav" aria-label="Save recording as WAV audio" disabled>Save .wav</button></span><!-- CHG-123: exports made in the browser -->
+            <span class="pno-grp" role="group" aria-label="Save recording"><button type="button" class="pno-pill" id="pno-save-mid" aria-label="Save recording as MIDI file" disabled>Save .mid</button><button type="button" class="pno-pill" id="pno-save-wav" aria-label="Save recording as WAV audio" disabled>Save .wav</button><button type="button" class="pno-pill" id="pno-pub" aria-label="Publish recording for everyone" disabled>Publish</button></span><!-- CHG-123: exports made in the browser; CHG-124: Publish -->
             <span class="pno-grp" role="group" aria-label="Song"><select id="pno-song" class="pno-sel" aria-label="Song"><option value="grace" selected>Amazing Grace</option><option value="america">America the Beautiful</option><option value="green">Greensleeves</option><option value="elise">Für Elise</option><option value="elise_synth">Für Elise (Synth)</option></select><button type="button" class="pno-pill" id="pno-song-play" aria-pressed="false" aria-label="Play song">Play</button><button type="button" class="pno-pill" id="pno-song-follow" aria-pressed="false">Follow</button></span>
             <span class="pno-status" id="pno-status" aria-live="polite"></span>
           </div>
           <div class="pno" id="pno" role="group" aria-label="Piano"></div>
+          <!-- CHG-124: the one public recording (no autoplay; Play fetches and plays it through the synth above) -->
+          <aside class="pno-pub" id="pno-pub-panel" aria-label="Published recording">
+            <h3>Published</h3>
+            <p class="pno-pub-cap"><span id="pno-pub-cap">Nothing published yet</span> <button type="button" class="pno-pill" id="pno-pub-play" aria-pressed="false" aria-label="Play published recording" disabled>Play</button></p>
+            <p class="pno-pub-msg" id="pno-pub-msg" role="status" aria-live="polite"></p>
+          </aside>
         </div>
       </section>
     </div>
@@ -3557,7 +3571,7 @@
       /* CHG-118: notes are tracked by MIDI pitch (held[m] = sources holding it), so recordings,
          playback and songs keep their real pitch when the octave changes. */
       var octave = 4, ctx = null, master = null, keys = [], voices = {}, held = {}, ptr = {};
-      var sound = "piano", susBtn = false, susSpace = false, susPedal = false, sustained = {}; /* CHG-122: susPedal = MIDI CC64 */
+      var sound = "piano", susBtn = false, susSpace = false, susPedal = false, susPub = false, sustained = {}; /* CHG-122: susPedal = MIDI CC64 */
 
       function audio() {
         if (!AC) return null;
@@ -3619,7 +3633,7 @@
         p.setTargetAtTime(0.0001, t, tc);
         v.osc.forEach(function (o) { try { o.stop(t + end); } catch (e) {} });
       }
-      function sustainOn() { return susBtn || susSpace || susPedal; }
+      function sustainOn() { return susBtn || susSpace || susPedal || susPub; } /* CHG-124: susPub = CC64 in the published file */
 
       function paint(m) {
         var i = m - base();
@@ -3796,9 +3810,11 @@
         if (clearBtn) clearBtn.disabled = recOn || !take.length;
         if (midSave) midSave.disabled = recOn || !take.length; /* CHG-123 */
         if (wavSave) wavSave.disabled = recOn || !take.length || rendering || !OAC;
+        if (pubBtn) pubBtn.disabled = recOn || !take.length || pubBusy || !window.fetch; /* CHG-124 */
+        if (pubPlayBtn) pubPlayBtn.disabled = recOn || !pubV || pubLoading || !window.fetch;
       }
       function rec(kind, m, src, vel) {
-        if (!recOn || src === "play" || src === "song") return;
+        if (!recOn || src === "play" || src === "song" || src === "pub") return; /* CHG-124: not the published take */
         var ev = { t: Math.round(now() - recT0), m: m, on: kind === "on" };
         if (vel != null) ev.v = Math.max(0, Math.min(1, vel)); /* CHG-123: velocity 0..1 for Save .mid / .wav */
         take.push(ev);
@@ -3825,6 +3841,7 @@
         recUI();
       }
       function stopPlay() {
+        pubStopPlay(); /* CHG-124 */
         playTimers.forEach(clearTimeout); playTimers = [];
         if (playing) { for (var m in held) nOff(Number(m), "play"); playing = false; if (take.length) say("Recorded " + secs(takeLen()) + " s"); }
         recUI();
@@ -3929,6 +3946,149 @@
           });
         } catch (e) { rendering = false; recUI(); say("Could not render .wav"); }
       });
+
+      /* ---- CHG-124: Publish + Published panel (mirrors CHG-098 Art Publish). Publish sends the same .mid
+         Save .mid builds (midiFile()) to /api/music-publish.php, replacing the one public recording.
+         Play fetches it, parses it here and plays it through this synth. Nothing plays on its own. */
+      var PUB_API = "/api/music-publish.php", PUB_MAX = 65536;
+      var pubBtn = $("pno-pub"), pubPlayBtn = $("pno-pub-play"), pubCap = $("pno-pub-cap"), pubMsg = $("pno-pub-msg");
+      var pubV = null, pubAt = 0, pubBusy = false, pubLoading = false, pubTimer = null, pubTimers = [], pubPlaying = false, pubPrior = null;
+      function pubSay(t) { if (pubMsg) pubMsg.textContent = t || ""; }
+      function pubCaption() {
+        if (!pubCap) return;
+        if (!pubV) { pubCap.textContent = "Nothing published yet"; return; }
+        var m = Math.max(0, Math.floor((Date.now() - pubAt) / 60000));
+        pubCap.textContent = m < 60 ? "Published " + m + " min ago"
+          : m < 2880 ? "Published " + Math.floor(m / 60) + " h ago" : "Published " + Math.floor(m / 1440) + " days ago";
+      }
+      function pubShow(meta) {
+        if (!meta || typeof meta !== "object") return;
+        if (!meta.exists || typeof meta.v !== "string" || !/^[0-9a-f]{16}$/.test(meta.v)) {
+          if (pubV) pubStopPlay();
+          pubV = null;
+        } else {
+          var t = Date.parse(meta.updatedAt);
+          pubAt = isNaN(t) ? Date.now() : t;
+          pubV = meta.v;
+        }
+        pubCaption(); recUI();
+      }
+      function pubLoad() {
+        if (!window.fetch) return;
+        fetch(PUB_API + "?meta", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
+          .then(pubShow, function () {}).catch(function () {}); /* API down: keep what is shown, no noise */
+      }
+      function pubOpen() { return drawer.classList.contains("open"); }
+      function pubTick() { if (pubOpen() && !document.hidden) pubLoad(); }
+      if (window.MutationObserver) {
+        new MutationObserver(function () {
+          if (pubOpen()) { if (!pubTimer) pubTimer = setInterval(pubTick, 30000); pubLoad(); }
+          else if (pubTimer) { clearInterval(pubTimer); pubTimer = null; }
+        }).observe(drawer, { attributes: true, attributeFilter: ["class"] });
+      }
+      document.addEventListener("visibilitychange", function () { if (!document.hidden && pubOpen()) pubLoad(); });
+      if (pubBtn) pubBtn.addEventListener("click", function () {
+        if (pubBusy || recOn || !take.length || !window.fetch) return;
+        if (!window.confirm("Replace the published recording for everyone?")) return;
+        pubBusy = true; recUI(); pubSay("Publishing\u2026");
+        function done(t) { pubBusy = false; recUI(); pubSay(t); }
+        var bytes = midiFile();
+        if (bytes.length > PUB_MAX) { done("Too big to publish. Try a shorter recording."); return; }
+        fetch(PUB_API, { method: "POST", headers: { "Content-Type": "audio/midi" }, body: new Blob([bytes], { type: "audio/midi" }), credentials: "same-origin", cache: "no-store" })
+          .then(function (r) {
+            return r.json().catch(function () { return null; }).then(function (j) {
+              if (r.ok && j && j.ok) { pubShow(j); done("Published."); return; }
+              if (r.status === 429) {
+                var s = parseInt(r.headers.get("Retry-After"), 10);
+                done(s > 0 && s <= 120 ? "Busy. Try again in " + s + " s." : "Publish limit reached. Try later.");
+              } else if (r.status === 413) done("Too big to publish. Try a shorter recording.");
+              else if (r.status === 422) done("Could not publish this recording.");
+              else done("Could not publish. Try later.");
+            });
+          }).catch(function () { done("Could not publish. Try later."); });
+      });
+
+      /* Parse a format 0 Standard MIDI File: notes (ms, pitch, on, velocity), CC64 sustain, first program. */
+      function pubParse(buf) {
+        var d = new Uint8Array(buf), p = 0, n = d.length;
+        function u32(i) { return ((d[i] << 24) >>> 0) + (d[i + 1] << 16) + (d[i + 2] << 8) + d[i + 3]; }
+        function vlq() { var v = 0, c, k = 0; do { if (p >= n || k++ > 3) throw 0; c = d[p++]; v = (v << 7) | (c & 0x7f); } while (c & 0x80); return v; }
+        if (n < 22 || String.fromCharCode(d[0], d[1], d[2], d[3]) !== "MThd" || u32(4) !== 6) return null;
+        var ppq = (d[12] << 8) | d[13];
+        if (((d[8] << 8) | d[9]) !== 0 || (ppq & 0x8000) || !ppq || String.fromCharCode(d[14], d[15], d[16], d[17]) !== "MTrk") return null;
+        p = 22; n = Math.min(n, 22 + u32(18));
+        var tempo = 500000, ms = 0, st = 0, ev = [], prog = null;
+        try {
+          while (p < n) {
+            ms += vlq() * tempo / ppq / 1000;
+            if (ms > 300000) break;
+            var b = d[p];
+            if (b === 0xff) {
+              var ty = d[p + 1]; p += 2; var len = vlq();
+              if (ty === 0x51 && len === 3) tempo = (d[p] << 16) | (d[p + 1] << 8) | d[p + 2] || 500000;
+              p += len; st = 0;
+              if (ty === 0x2f) break;
+              continue;
+            }
+            if (b === 0xf0 || b === 0xf7) { p++; p += vlq(); continue; }
+            if (b & 0x80) { st = b; p++; } else if (!st) return null;
+            var hi = st & 0xf0, a = d[p], c2 = (hi === 0xc0 || hi === 0xd0) ? 0 : d[p + 1];
+            p += (hi === 0xc0 || hi === 0xd0) ? 1 : 2;
+            var t = Math.round(ms);
+            if (hi === 0x90 && c2 > 0) ev.push({ t: t, m: a, on: true, v: c2 / 127 });
+            else if (hi === 0x80 || hi === 0x90) ev.push({ t: t, m: a, on: false });
+            else if (hi === 0xb0 && a === 64) ev.push({ t: t, sus: c2 >= 64 });
+            else if (hi === 0xc0 && prog === null) prog = a;
+          }
+        } catch (e) { if (!ev.length) return null; }
+        return { ev: ev, prog: prog, len: Math.round(ms) };
+      }
+      function pubSound(prog) {
+        for (var k in GM) if (GM[k] === prog) return k;
+        if (prog == null) return "piano";
+        return prog >= 16 && prog <= 23 ? "organ" : prog >= 80 && prog <= 95 ? "synth" : prog >= 8 && prog <= 15 ? "chime" : "piano";
+      }
+      function pubStopPlay() {
+        if (!pubPlaying && !pubTimers.length) return;
+        pubTimers.forEach(clearTimeout); pubTimers = [];
+        for (var m in held) if (held[m].pub) nOff(Number(m), "pub");
+        pubPlaying = false; susPub = false; if (!sustainOn()) damp(); susUI();
+        if (pubPrior) { if (sound === pubPrior.used) sound = pubPrior.was; pubPrior = null; showSound(); }
+        press(pubPlayBtn, false); pubSay("");
+      }
+      function pubStart(song0) {
+        stopPlay(); song.stop(); audio();
+        var snd = pubSound(song0.prog);
+        if (snd !== sound) { pubPrior = { was: sound, used: snd }; sound = snd; showSound(); }
+        pubPlaying = true; press(pubPlayBtn, true); pubSay("Playing published recording");
+        song0.ev.forEach(function (e) {
+          pubTimers.push(setTimeout(function () {
+            if (e.sus != null) { susPub = e.sus; if (!sustainOn()) damp(); susUI(); }
+            else (e.on ? nOn : nOff)(e.m, "pub", e.on ? e.v : undefined);
+          }, e.t));
+        });
+        pubTimers.push(setTimeout(pubStopPlay, song0.len + 30));
+      }
+      if (pubPlayBtn) pubPlayBtn.addEventListener("click", function () {
+        if (pubPlaying) { pubStopPlay(); return; }
+        if (!pubV || pubLoading || recOn || !window.fetch) return;
+        pubLoading = true; recUI(); pubSay("Loading\u2026");
+        var v = pubV;
+        fetch(PUB_API + "?mid&v=" + v, { cache: "no-cache" })
+          .then(function (r) { if (!r.ok) throw r.status; return r.arrayBuffer(); })
+          .then(function (buf) {
+            pubLoading = false; recUI();
+            var sg = pubParse(buf);
+            if (!sg || !sg.ev.length) { pubSay("Could not play the published recording."); return; }
+            if (!pubOpen() || recOn) { pubSay(""); return; }
+            pubStart(sg);
+          })
+          .catch(function (st) {
+            pubLoading = false; recUI();
+            if (st === 404) { pubShow({ exists: false }); pubSay(""); } else pubSay("Could not load. Try later.");
+          });
+      });
+      setInterval(pubCaption, 30000);
       recUI();
 
       /* Metronome: Web Audio clicks scheduled ~0.12 s ahead; beat 1 of 4 accented; through master volume. */
@@ -4147,7 +4307,7 @@
       }
 
       function stopAll() {
-        stopPlay(); recStop(); song.stop(); metStop(); susSpace = false; susUI(); stopNotes();
+        stopPlay(); recStop(); song.stop(); metStop(); susSpace = false; susUI(); stopNotes(); /* stopPlay also stops the published take (CHG-124) */
       }
       if (window.MutationObserver) {
         new MutationObserver(function () { if (!drawer.classList.contains("open")) stopAll(); })

@@ -47,3 +47,12 @@ data/art-latest.png.*.tmp
 data/art-latest.json.*.tmp
 data/art-publish.lock
 data/art-publish-hits.json
+
+# CHG-124: Music drawer Publish store, created on the server by api/music-publish.php (never commit; delete
+# data/music-latest.mid and data/music-latest.json to clear the published recording)
+data/music-latest.mid
+data/music-latest.json
+data/music-latest.mid.*.tmp
+data/music-latest.json.*.tmp
+data/music-publish.lock
+data/music-publish-hits.json

@@ -781,6 +781,25 @@
     .qsc-x { margin-top: 0; font-size: 18px; padding: 8px 16px; }
     .qsc-dialog :focus-visible, .qsc-open:focus-visible { outline: 3px solid #ffbf00; outline-offset: 2px; }
 
+    /* CHG-128: Need to talk? (button directly above SPEECHROOM in the chat window; modal <dialog> built like the
+       Quick Safety Check one: Close, Esc, focus return, large text, no inline handlers). */
+    .ntt-dialog .qsc-card { font-size: 20px; }
+    .ntt-lead { font-size: 24px; font-weight: 800; line-height: 1.35; margin: 0 0 14px; }
+    .ntt-actions { display: flex; flex-direction: column; gap: 12px; margin: 0 0 14px; }
+    .ntt-action {
+      display: block; text-align: center; text-decoration: none; font-size: 24px; font-weight: 800;
+      padding: 16px 18px; border-radius: 12px; border: 2px solid #0b3d91; background: #0b3d91; color: #ffffff;
+    }
+    .ntt-action:hover { background: #082c69; }
+    .ntt-911 { font-size: 21px; font-weight: 700; margin: 0 0 6px; }
+    .ntt-community { border-top: 2px solid #d9d9d9; margin-top: 18px; padding-top: 4px; }
+    .ntt-community p { margin: 0 0 12px; }
+    .ntt-join {
+      display: inline-block; text-decoration: none; font-size: 20px; font-weight: 700; padding: 10px 18px;
+      border-radius: 10px; border: 2px solid #111111; background: #ffffff; color: #111111;
+    }
+    .ntt-dialog :focus-visible { outline: 3px solid #ffbf00; outline-offset: 2px; }
+
     /* CHG-088: Literature drawer (book search, Open Library, from the browser) */
     .lit-wrap {
       flex-shrink: 0;
@@ -1848,10 +1867,10 @@
       </button>
       <div class="drawer-body" id="how-panel">
         <p class="how-lede">Public system map: what a visitor can see and use. Tap the map to open it full size.</p>
-        <a class="how-map" href="/images/architecture-public.png?v=125" target="_blank" rel="noopener">
+        <a class="how-map" href="/images/architecture-public.png?v=128" target="_blank" rel="noopener">
           <picture>
-            <source srcset="/images/architecture-public.webp?v=125" type="image/webp">
-            <img src="/images/architecture-public.png?v=125" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags (rev 19). The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit and bot counts, collaborators, flag stats, the click speed record, art publish, music publish, stream viewers, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, BTC address lookup, and a link safety check, and stores no private keys. Each registered chat member also has a read-only public profile page on the chat (chat.afirstflag.com/u/name) that shows only the username, the Member tier, and the join date. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, an AI model provider for Neagle replies inside chat, Google Safe Browsing for the link safety check, and YouTube, Twitch, and Rumble as live stream players (they load only after you press play). Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat. The homepage also has a literature search: the visitor's browser asks Open Library, an outside book catalog, for books matching a title. The homepage also has a music keyboard that plays notes in the visitor's browser, with no outside requests. The homepage also has an art canvas: visitors draw in their browser, and can publish one drawing that replaces the previous one. Visitors can also publish one music recording that replaces the previous one. The homepage also has a Live Stream drawer: visitors can play a YouTube, Twitch, or Rumble stream, each loading only after they press play. The Live Stream drawer shows how many site visitors are watching each stream, counted on the site only.">
+            <source srcset="/images/architecture-public.webp?v=128" type="image/webp">
+            <img src="/images/architecture-public.png?v=128" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags (rev 20). The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit and bot counts, collaborators, flag stats, the click speed record, art publish, music publish, stream viewers, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, BTC address lookup, and a link safety check, and stores no private keys. Each registered chat member also has a read-only public profile page on the chat (chat.afirstflag.com/u/name) that shows only the username, the Member tier, and the join date. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, an AI model provider for Neagle replies inside chat, Google Safe Browsing for the link safety check, and YouTube, Twitch, and Rumble as live stream players (they load only after you press play). Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat. The homepage also has a literature search: the visitor's browser asks Open Library, an outside book catalog, for books matching a title. The homepage also has a music keyboard that plays notes in the visitor's browser, with no outside requests. The homepage also has an art canvas: visitors draw in their browser, and can publish one drawing that replaces the previous one. Visitors can also publish one music recording that replaces the previous one. The homepage also has a Live Stream drawer: visitors can play a YouTube, Twitch, or Rumble stream, each loading only after they press play. The Live Stream drawer shows how many site visitors are watching each stream, counted on the site only. The homepage also has a Need to talk? button that links to the 988 Suicide &amp; Crisis Lifeline, an outside service, to call, text, or chat, and can open the public Milliway chat, where Neagle greets the visitor publicly.">
           </picture>
         </a>
       </div>
@@ -1920,6 +1939,14 @@
           </ul>
         </div>
         <div class="window-cta">
+          <button type="button" class="btn" id="ntt-toggle" aria-haspopup="dialog" aria-controls="ntt-dialog">Need to talk?</button>
+          <dialog class="qsc-dialog ntt-dialog" id="ntt-dialog" aria-labelledby="ntt-title">
+            <div class="qsc-head">
+              <h2 id="ntt-title">Need to talk?</h2>
+              <button type="button" class="qsc-x" id="ntt-x">Close</button>
+            </div>
+            <div class="qsc-card" id="ntt-body"></div>
+          </dialog>
           <a class="btn" id="speechroom-btn" href="https://chat.afirstflag.com/" target="_blank" rel="noopener">SPEECHROOM</a>
         </div>
       </section>
@@ -5634,6 +5661,55 @@
       if (xbtn) xbtn.addEventListener("click", closeDlg);
       dlg.addEventListener("close", function () { btn.focus(); });
       if (again) again.addEventListener("click", run);
+    })();
+  </script>
+  <script>
+    /* CHG-128: Need to talk? (free suicide-prevention support entry). Button above SPEECHROOM opens a modal <dialog>;
+       988 links go to the national 988 Suicide & Crisis Lifeline; Join Milliway opens the public chat with ?support=1
+       (same new-tab link as SPEECHROOM) so Neagle greets the visitor publicly. No requests, no storage, textContent only. */
+    (function () {
+      var dlg = document.getElementById("ntt-dialog");
+      var btn = document.getElementById("ntt-toggle");
+      var xbtn = document.getElementById("ntt-x");
+      var body = document.getElementById("ntt-body");
+      if (!dlg || !btn || !body) return;
+      function el(tag, cls, text) {
+        var e = document.createElement(tag);
+        if (cls) e.className = cls;
+        if (text != null) e.textContent = text;
+        return e;
+      }
+      function link(cls, id, href, text, newTab) {
+        var a = el("a", cls, text);
+        a.id = id;
+        a.href = href;
+        if (newTab) { a.target = "_blank"; a.rel = "noopener"; }
+        return a;
+      }
+      var frag = document.createDocumentFragment();
+      frag.appendChild(el("p", "ntt-lead", "If you are thinking about suicide or are in crisis, you are not alone."));
+      var acts = el("div", "ntt-actions");
+      acts.appendChild(link("ntt-action", "ntt-call", "tel:988", "Call 988"));
+      acts.appendChild(link("ntt-action", "ntt-text", "sms:988", "Text 988"));
+      acts.appendChild(link("ntt-action", "ntt-chat", "https://988lifeline.org/chat/", "Chat with 988", true));
+      frag.appendChild(acts);
+      frag.appendChild(el("p", "ntt-911", "If you are in immediate danger, call 911."));
+      var com = el("section", "ntt-community");
+      com.setAttribute("aria-labelledby", "ntt-community-title");
+      var h = el("h3", null, "Talk with our community");
+      h.id = "ntt-community-title";
+      com.appendChild(h);
+      com.appendChild(el("p", null, "Milliway is a public chat room. Everyone in the room, including Neagle, our AI helper, will see what you write. Neagle is not a counselor."));
+      com.appendChild(link("ntt-join", "ntt-join", "https://chat.afirstflag.com/?support=1", "Join Milliway", true));
+      frag.appendChild(com);
+      body.appendChild(frag);
+      function closeDlg() { if (dlg.open) dlg.close(); }
+      btn.addEventListener("click", function () {
+        if (dlg.open) { closeDlg(); return; }
+        if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
+      });
+      if (xbtn) xbtn.addEventListener("click", closeDlg);
+      dlg.addEventListener("close", function () { btn.focus(); });
     })();
   </script>
 </body>

@@ -27,6 +27,18 @@
  * (homeVisits, since, updatedAt only) is read as is and gains botHits, limited and botSince on the next counting
  * request; homeVisits, since and updatedAt are kept exactly. A damaged file keeps every number it still holds (a copy
  * of it is saved as live-stats.json.bad first); a file that exists but cannot be read is never overwritten.
+ * CHG-130 total eye's time (same endpoint, same lock, no new API):
+ * GET ?eyes=1[&sid=<32 hex>][&leave=1] - heartbeat / read for the site-wide "total eye's time". Under the lock it first
+ *              accrues (now - last_update) * active sessions (the sessions alive for that interval, before this request
+ *              joins; the gap is capped at AF_LS_EYES_GAP_CAP seconds so downtime with stale sessions cannot inflate it),
+ *              then registers or refreshes sid (or removes it with leave=1). Answer:
+ *              { total_seconds, active_sessions, active_bots, server_time }. active_sessions counts every open tab that
+ *              sent a heartbeat in the last AF_LS_EYES_TTL seconds, bots and machines included (a bot is a session whose
+ *              user agent matches af_is_bot_ua, the same test as botHits). Without a sid it only accrues and reads.
+ *              sid: a random value the page makes in memory per page load (no cookie, no storage).
+ *   data/eyes-time.json  { total_seconds, last_update, since, sessions: { sid: [last_seen, is_bot, key] } } where key is
+ *                        the same salted address hash as live-stats-hits.json (caps sessions per address); no raw IPs,
+ *                        no user agents. Gitignored; delete it to reset the total.
  * PHP 7.0+.
  */
 header('Content-Type: application/json; charset=utf-8');
@@ -36,6 +48,10 @@ header('X-LiteSpeed-Cache-Control: no-cache'); // LiteSpeed (Namecheap): never c
 const AF_LS_RL_WINDOW_SEC = 1800; // an address counts at most one visit (and one bot hit) per 30 minutes
 const AF_LS_RL_MAX_KEYS = 2000;   // keeps the hits file small (about 100 KB at most)
 const AF_LS_MAX_READ = 262144;    // bytes; the stats file is about 200 bytes, the hits file at most about 100 KB
+const AF_LS_EYES_TTL = 75;         // CHG-130: a session with no heartbeat for 75 s stops counting (pages beat every 30 s)
+const AF_LS_EYES_GAP_CAP = 120;    // CHG-130: at most 120 s of accrual per update (downtime cannot inflate the total)
+const AF_LS_EYES_MAX = 2000;       // CHG-130: sessions in total (flood cap)
+const AF_LS_EYES_PER_KEY = 10;     // CHG-130: sessions per hashed address
 
 $method = isset($_SERVER['REQUEST_METHOD']) ? (string) $_SERVER['REQUEST_METHOD'] : 'GET';
 if ($method !== 'GET' && $method !== 'HEAD') {
@@ -218,6 +234,112 @@ function af_live_addr($ip) {
         return '6:' . bin2hex(substr($bin, 0, 8));
     }
     return '4:' . inet_ntop($bin);
+}
+
+// ---------- CHG-130 GET ?eyes=1: total eye's time heartbeat / read (own store file, same lock)
+if ($method === 'GET' && isset($_GET['eyes']) && $_GET['eyes'] === '1') {
+    $eyesPath = $dataDir . '/eyes-time.json';
+    $sid = isset($_GET['sid']) && is_string($_GET['sid']) && preg_match('/^[0-9a-f]{32}$/', $_GET['sid']) ? $_GET['sid'] : null;
+    $leave = isset($_GET['leave']) && $_GET['leave'] === '1';
+    if (!af_live_ensure_dir($dataDir)) {
+        http_response_code(503);
+        echo json_encode(['error' => 'Live-stats store unavailable']);
+        exit;
+    }
+    $lf = @fopen($lockPath, 'c');
+    if ($lf === false || !flock($lf, LOCK_EX)) {
+        http_response_code(503);
+        echo json_encode(['error' => 'Cannot lock live-stats store']);
+        exit;
+    }
+    $now = microtime(true);
+    $rawE = af_live_read($eyesPath);
+    $e = is_string($rawE) && trim($rawE) !== '' ? json_decode($rawE, true) : null;
+    if ($rawE === null) {
+        flock($lf, LOCK_UN);
+        fclose($lf);
+        http_response_code(503);
+        echo json_encode(['error' => 'Cannot read eyes store']);
+        exit;
+    }
+    if (!is_array($e)) {
+        $e = [];
+    }
+    $total = isset($e['total_seconds']) && is_numeric($e['total_seconds']) && $e['total_seconds'] >= 0 ? (float) $e['total_seconds'] : 0.0;
+    $last = isset($e['last_update']) && is_numeric($e['last_update']) ? (float) $e['last_update'] : $now;
+    $since = isset($e['since']) ? af_live_stamp($e['since']) : null;
+    $sessions = [];
+    if (isset($e['sessions']) && is_array($e['sessions'])) {
+        foreach ($e['sessions'] as $k => $v) {
+            if (is_string($k) && preg_match('/^[0-9a-f]{32}$/', $k) && is_array($v) && isset($v[0], $v[1], $v[2])
+                && is_numeric($v[0]) && is_string($v[2]) && preg_match('/^[0-9a-f]{32}$/', $v[2])) {
+                $sessions[$k] = [(float) $v[0], $v[1] ? 1 : 0, $v[2]];
+            }
+        }
+    }
+    // Accrue the interval [last, now]: each session counts for the part of it in which it was still alive.
+    $start = $last;
+    $end = $now;
+    if ($end - $start > AF_LS_EYES_GAP_CAP) {
+        $start = $end - AF_LS_EYES_GAP_CAP;
+    }
+    if ($end > $start) {
+        foreach ($sessions as $v) {
+            // A session is joined (and refreshed) only by a request, which accrues first, so it is alive from the
+            // interval's start until last_seen + TTL.
+            $alive = min($end, $v[0] + AF_LS_EYES_TTL) - $start;
+            if ($alive > 0) {
+                $total += $alive;
+            }
+        }
+    }
+    foreach ($sessions as $k => $v) {
+        if ($now - $v[0] >= AF_LS_EYES_TTL || $v[0] > $now + 5) {
+            unset($sessions[$k]);
+        }
+    }
+    if ($sid !== null) {
+        if ($leave) {
+            unset($sessions[$sid]);
+        } else {
+            $salt = af_live_salt($saltPath);
+            if ($salt !== null) {
+                $ip = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+                $key = substr(hash_hmac('sha256', af_live_addr($ip), $salt), 0, 32);
+                unset($ip);
+                $ua = isset($_SERVER['HTTP_USER_AGENT']) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
+                $isBot = af_is_bot_ua($ua) ? 1 : 0;
+                unset($ua);
+                $mine = 0;
+                foreach ($sessions as $k => $v) {
+                    if ($v[2] === $key && $k !== $sid) {
+                        $mine++;
+                    }
+                }
+                if (isset($sessions[$sid]) || ($mine < AF_LS_EYES_PER_KEY && count($sessions) < AF_LS_EYES_MAX)) {
+                    $sessions[$sid] = [$now, $isBot, $key];
+                }
+            }
+        }
+    }
+    if ($since === null) {
+        $since = af_live_now();
+    }
+    $out = ['total_seconds' => round($total, 3), 'last_update' => round($now, 3), 'since' => $since, 'sessions' => (object) $sessions];
+    af_live_write($eyesPath, json_encode($out, JSON_UNESCAPED_SLASHES) . "\n");
+    flock($lf, LOCK_UN);
+    fclose($lf);
+    $bots = 0;
+    foreach ($sessions as $v) {
+        $bots += $v[1];
+    }
+    echo json_encode([
+        'total_seconds' => round($total, 3),
+        'active_sessions' => count($sessions),
+        'active_bots' => $bots,
+        'server_time' => round($now, 3),
+    ]);
+    exit;
 }
 
 // ---------- plain GET / HEAD: read-only, no lock, no write

@@ -64,3 +64,8 @@ data/stream-viewers.json.*.tmp
 data/stream-viewers.lock
 data/stream-viewers-hits.json
 data/stream-viewers-hits.json.*.tmp
+
+# CHG-130: total eye's time store, created on the server by api/live-stats.php?eyes=1 (never commit; delete
+# data/eyes-time.json to reset the total)
+data/eyes-time.json
+data/eyes-time.json.tmp

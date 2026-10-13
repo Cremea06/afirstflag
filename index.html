@@ -627,6 +627,14 @@
       font-variant-numeric: tabular-nums;
     }
 
+    /* CHG-130: total eye's time pill right after Human visitors (same .online-chip chrome; ticks at the active-session rate) */
+    .live-visits-row #live-eyes-time.online-chip {
+      display: inline-block;
+      margin: 0;
+      flex: 0 0 auto;
+      font-variant-numeric: tabular-nums;
+    }
+
     .live-visits-row .live-visits-note {
       display: inline;
       margin: 0;
@@ -1810,6 +1818,7 @@
               <div id="live-geo" class="online-chip" title="From your IP address, looked up on this site only">Country: unknown</div>
               <div id="live-bots" class="online-chip" title="Bot hits skipped from visits">Machine visitors: …</div>
               <div id="live-home-visits" class="online-chip" aria-live="polite">Human visitors: …</div>
+              <div id="live-eyes-time" class="online-chip" title="All visitors' open pages added up, machines included; runs faster with more visitors">total eye's time …</div>
               <p class="live-visits-note">Welcome</p>
             </div>
             </div>
@@ -2741,6 +2750,89 @@
           paintError();
           /* do not set af_home_counted — failed hit can retry next load */
         });
+    })();
+
+    /* CHG-130: total eye's time. Every open tab (machines included) beats GET /api/live-stats.php?eyes=1 every 30 s with
+       an in-memory random sid; the server accrues seconds x active sessions. Here the pill syncs to the server value
+       and ticks at active_sessions per second, easing out drift without going backward. Paused while the tab is hidden. */
+    (function () {
+      var el = document.getElementById("live-eyes-time");
+      if (!el || !window.fetch) return;
+      var SYNC_MS = 30000;
+      var sid = "";
+      try {
+        var b = new Uint8Array(16);
+        crypto.getRandomValues(b);
+        for (var i = 0; i < 16; i++) sid += (b[i] < 16 ? "0" : "") + b[i].toString(16);
+      } catch (e) {
+        sid = "";
+      }
+      var base = null, rate = 0, baseAt = 0, shown = null, lastFrame = 0, raf = 0, timer = 0, gen = 0;
+
+      function pad(n) { return (n < 10 ? "0" : "") + n; }
+      function fmt(sec) {
+        sec = Math.max(0, Math.floor(sec));
+        var d = Math.floor(sec / 86400), h = Math.floor(sec / 3600) % 24, m = Math.floor(sec / 60) % 60, s = sec % 60;
+        return (d > 0 ? d + "d " + pad(h) : String(h)) + ":" + pad(m) + ":" + pad(s);
+      }
+      function paint() { el.textContent = "total eye's time " + (shown === null ? "…" : fmt(shown)); }
+
+      function frame(t) {
+        raf = 0;
+        if (document.hidden || base === null) return;
+        var dt = lastFrame ? Math.min((t - lastFrame) / 1000, 1) : 0;
+        lastFrame = t;
+        var target = base + rate * (t - baseAt) / 1000;
+        if (shown === null || target - shown > 60) {
+          shown = Math.max(shown === null ? 0 : shown, target);
+        } else {
+          var err = target - shown;
+          /* tick at the session rate, close 1/2 of the error per second; never step backward */
+          shown += Math.max(0, rate * dt + err * Math.min(1, dt * 0.5));
+        }
+        paint();
+        raf = requestAnimationFrame(frame);
+      }
+      function startTick() {
+        if (!raf && !document.hidden) { lastFrame = 0; raf = requestAnimationFrame(frame); }
+      }
+
+      function sync() {
+        var my = ++gen;
+        var url = "/api/live-stats.php?eyes=1" + (sid ? "&sid=" + sid : "");
+        fetch(url, { cache: "no-store" })
+          .then(function (res) { if (!res.ok) throw new Error("bad status"); return res.json(); })
+          .then(function (d) {
+            if (my !== gen || !d || typeof d.total_seconds !== "number" || !isFinite(d.total_seconds)) return;
+            var r = d.active_sessions;
+            base = d.total_seconds;
+            rate = typeof r === "number" && isFinite(r) && r >= 0 ? r : 0;
+            baseAt = performance.now();
+            el.setAttribute("data-rate", String(rate));
+            startTick();
+          })
+          .catch(function () { if (shown === null) paint(); });
+      }
+      function schedule() {
+        clearInterval(timer);
+        timer = setInterval(function () { if (!document.hidden) sync(); }, SYNC_MS);
+      }
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+          if (raf) { cancelAnimationFrame(raf); raf = 0; }
+          clearInterval(timer);
+        } else {
+          sync();
+          schedule();
+        }
+      });
+      window.addEventListener("pagehide", function () {
+        if (!sid) return;
+        try { fetch("/api/live-stats.php?eyes=1&leave=1&sid=" + sid, { keepalive: true, cache: "no-store" }); } catch (e) {}
+      });
+      window.addEventListener("pageshow", function (ev) { if (ev.persisted && !document.hidden) { sync(); schedule(); } });
+      paint();
+      if (!document.hidden) { sync(); schedule(); }
     })();
 
     (function () {

@@ -90,6 +90,7 @@
 
 <div><h3>Live stream viewer count</h3></div>
 <p>The Live Stream drawer shows how many visitors to this site are watching each stream (YouTube, Twitch or Rumble). Only visitors to our site are counted, never the platforms' own audiences. Nothing is sent to us until you press play on a stream.</p>
+<p>The Live-state &quot;total eye's time&quot; adds up how long pages of this site are open: while a page is open it tells our server every 30 seconds that it is still open, using a random number made for that page only (no cookie), a salted hash of your IP address (never the address itself) to limit abuse, and whether your browser looks like a bot; the entry is deleted about 75 seconds after the page closes, and only the running total is kept.</p>
 <p>When you press play, your browser makes a random session id for that page only (it is kept in memory, not in a cookie or browser storage, and is new on every page load) and tells our server every 30 seconds which stream you are watching. The id is not linked to you or to anything else. When you close the stream or leave the page, your browser says so and your entry is removed; otherwise it is dropped about 75 seconds after the last update. Nothing is sent to YouTube, Twitch or Rumble by this feature.</p>
 <p>To limit abuse, your IP address is used only as a salted, hashed key for rate limiting and to cap how many sessions one network can add. The raw IP address is not stored, and these hashed entries are discarded within 24 hours.</p>
 

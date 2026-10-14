@@ -635,6 +635,14 @@
       font-variant-numeric: tabular-nums;
     }
 
+    /* CHG-132: Members pill right after total eye's time (same .online-chip chrome) */
+    .live-visits-row #live-members.online-chip {
+      display: inline-block;
+      margin: 0;
+      flex: 0 0 auto;
+      font-variant-numeric: tabular-nums;
+    }
+
     .live-visits-row .live-visits-note {
       display: inline;
       margin: 0;
@@ -1825,6 +1833,7 @@
               <div id="live-bots" class="online-chip" title="Bot hits skipped from visits">Machine visitors: …</div>
               <div id="live-home-visits" class="online-chip" aria-live="polite">Human visitors: …</div>
               <div id="live-eyes-time" class="online-chip" title="All visitors' open pages added up, machines included; runs faster with more visitors">total eye's time …</div>
+              <div id="live-members" class="online-chip" title="Registered Eagles Nest chat accounts (count only)">Members: …</div>
               <p class="live-visits-note">Welcome</p>
             </div>
             </div>
@@ -1882,10 +1891,10 @@
       </button>
       <div class="drawer-body" id="how-panel">
         <p class="how-lede">Public system map: what a visitor can see and use. Tap the map to open it full size.</p>
-        <a class="how-map" href="/images/architecture-public.png?v=128" target="_blank" rel="noopener">
+        <a class="how-map" href="/images/architecture-public.png?v=132" target="_blank" rel="noopener">
           <picture>
-            <source srcset="/images/architecture-public.webp?v=128" type="image/webp">
-            <img src="/images/architecture-public.png?v=128" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags (rev 20). The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit and bot counts, collaborators, flag stats, the click speed record, art publish, music publish, stream viewers, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, BTC address lookup, and a link safety check, and stores no private keys. Each registered chat member also has a read-only public profile page on the chat (chat.afirstflag.com/u/name) that shows only the username, the Member tier, and the join date. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, an AI model provider for Neagle replies inside chat, Google Safe Browsing for the link safety check, and YouTube, Twitch, and Rumble as live stream players (they load only after you press play). Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat. The homepage also has a literature search: the visitor's browser asks Open Library, an outside book catalog, for books matching a title. The homepage also has a music keyboard that plays notes in the visitor's browser, with no outside requests. The homepage also has an art canvas: visitors draw in their browser, and can publish one drawing that replaces the previous one. Visitors can also publish one music recording that replaces the previous one. The homepage also has a Live Stream drawer: visitors can play a YouTube, Twitch, or Rumble stream, each loading only after they press play. The Live Stream drawer shows how many site visitors are watching each stream, counted on the site only. The homepage also has a Need to talk? button that links to the 988 Suicide &amp; Crisis Lifeline, an outside service, to call, text, or chat, and can open the public Milliway chat, where Neagle greets the visitor publicly.">
+            <source srcset="/images/architecture-public.webp?v=132" type="image/webp">
+            <img src="/images/architecture-public.png?v=132" width="1600" height="930" loading="lazy" decoding="async" alt="Public system map of America First Flags (rev 21). The website, afirstflag.com, serves the homepage sections (welcome, gallery, role, collaborators, and Buy Flag, plus a public BTC balance chip) and site APIs for visit and bot counts, collaborators, flag stats, the click speed record, art publish, music publish, stream viewers, and the visitor country (looked up on the site, no outside lookup). The chat, chat.afirstflag.com, is the Milliway public chat room with realtime presence, video signaling, AI replies, BTC address lookup, and a link safety check, and stores no private keys. Each registered chat member also has a read-only public profile page on the chat (chat.afirstflag.com/u/name) that shows only the username, the Member tier, and the join date. Outside services: Stripe for Buy Flag checkout and card payments, mempool.space as the public Bitcoin explorer for balances only, an AI model provider for Neagle replies inside chat, Google Safe Browsing for the link safety check, and YouTube, Twitch, and Rumble as live stream players (they load only after you press play). Both sites are published from a workstation through public GitHub repos. Visitor promise: no private keys, payments stay at Stripe, chain data is public, chat is opt-in. The homepage Live-state panel has a /login command that opens chat sign-in. The chat publishes a public tail of the last 5 public chat lines (last5.txt), and an offline chatroom on the owner's machine pulls that tail with /sync. The Live-state panel also shows a signed-in pill, and signed-in chat members can add a state tag with /rep. The Live-state panel also has an Engine row (Run page in JavaScript, Rust, or C); the Rust and C pages check Bitcoin addresses in the visitor's browser with WebAssembly before any lookup is sent, so typos and private keys are caught there on those pages. The Live-state panel also has a click counter that stays in the visitor's browser (browser-local storage); its best click speed runs can set a site-wide click speed record kept by the site APIs, and the Buy Flag window rotates its cards while open. The Live-state panel also shows a visitor country pill with a flag, found from the visitor's IP address in a database kept on the site, so the address is not sent to any outside service. A remaining countries pill shows how many countries no visitor has come from yet. The Live-state panel also shows the chat server load, read from a public read-only feed on the chat. It also shows how many members the chat has, a number only, read from the chat. The homepage also has a literature search: the visitor's browser asks Open Library, an outside book catalog, for books matching a title. The homepage also has a music keyboard that plays notes in the visitor's browser, with no outside requests. The homepage also has an art canvas: visitors draw in their browser, and can publish one drawing that replaces the previous one. Visitors can also publish one music recording that replaces the previous one. The homepage also has a Live Stream drawer: visitors can play a YouTube, Twitch, or Rumble stream, each loading only after they press play. The Live Stream drawer shows how many site visitors are watching each stream, counted on the site only. The homepage also has a Need to talk? button that links to the 988 Suicide &amp; Crisis Lifeline, an outside service, to call, text, or chat, and can open the public Milliway chat, where Neagle greets the visitor publicly.">
           </picture>
         </a>
       </div>
@@ -2848,6 +2857,26 @@
       window.addEventListener("pageshow", function (ev) { if (ev.persisted && !document.hidden) { sync(); schedule(); } });
       paint();
       if (!document.hidden) { sync(); schedule(); }
+    })();
+
+    /* CHG-132: Members pill. One GET https://chat.afirstflag.com/api/member-count on page load ({"members": N}; count only,
+       CORS allows only afirstflag.com and www, no cookies). textContent only; shows an em dash on any failure. */
+    (function () {
+      var el = document.getElementById("live-members");
+      if (!el) return;
+      function show(v) { el.textContent = "Members: " + v; }
+      if (!window.fetch) { show("\u2014"); return; }
+      var ctl = window.AbortController ? new AbortController() : null;
+      var t = ctl ? setTimeout(function () { ctl.abort(); }, 8000) : 0;
+      fetch("https://chat.afirstflag.com/api/member-count", { cache: "no-store", credentials: "omit", signal: ctl ? ctl.signal : undefined })
+        .then(function (res) { if (!res.ok) throw new Error("bad status"); return res.json(); })
+        .then(function (d) {
+          var n = d && d.members;
+          if (typeof n !== "number" || !isFinite(n) || n < 0 || Math.floor(n) !== n) throw new Error("bad body");
+          show(String(n));
+        })
+        .catch(function () { show("\u2014"); })
+        .then(function () { if (t) clearTimeout(t); });
     })();
 
     (function () {

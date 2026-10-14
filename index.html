@@ -979,6 +979,12 @@
     .ls-cols.ls-side .ls-col-ru { grid-column: 1 / -1; }
     .ls-cols.ls-three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .ls-cols.ls-three .ls-col-ru { grid-column: auto; }
+    /* CHG-131: 4th frame (Rumble, America First Ep. 1762) first. 816-1231px: 2 x 2; >=1232px: 3 across, the 4th
+       (Ep. 1754) centered below. */
+    @container lsgrid (min-width: 816px) { .ls-cols .ls-col-ru { grid-column: auto; } }
+    @container lsgrid (min-width: 1232px) { .ls-cols .ls-col-ru { grid-column: 1 / -1; } }
+    .ls-cols.ls-side .ls-col-ru { grid-column: auto; }
+    .ls-cols.ls-three .ls-col-ru { grid-column: 1 / -1; }
     /* Twitch minimum embed size is 400x300: keep 16:9 but never under 300px tall (narrower than 400px -> fallback link, see script) */
     .ls-frame.ls-tw { min-height: 300px; }
     .ls-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 14px; text-align: center; color: #e8edf5; font-size: 14px; }
@@ -2337,7 +2343,7 @@
                   <dt>Maintainer</dt><dd><a href="https://rumble.com" target="_blank" rel="noopener">Rumble</a></dd>
                   <dt>License</dt><dd><a href="https://rumble.com/s/terms" target="_blank" rel="noopener">Rumble Terms and Conditions</a></dd>
                 </dl>
-                <p class="thanks">Thank you to the Rumble embedded player and to <a href="https://rumble.com/c/nickjfuentes" target="_blank" rel="noopener">Nicholas J. Fuentes</a> for “<a href="https://rumble.com/v7g4gow-america-first-ep.-1754.html" target="_blank" rel="noopener">FUENTES VS JIANG DEBATE RECAP??? Federal Agent And Chinese Spy COLLIDE | America First Ep. 1754</a>”.</p>
+                <p class="thanks">Thank you to the Rumble embedded player and to <a href="https://rumble.com/c/nickjfuentes" target="_blank" rel="noopener">Nicholas J. Fuentes</a> for “<a href="https://rumble.com/v7g4gow-america-first-ep.-1754.html" target="_blank" rel="noopener">FUENTES VS JIANG DEBATE RECAP??? Federal Agent And Chinese Spy COLLIDE | America First Ep. 1754</a>” and “<a href="https://rumble.com/v7gtqw4-america-first-ep.-1762.html" target="_blank" rel="noopener">America First Ep. 1762</a>”.</p>
               </article>
             </div>
           </section>
@@ -2463,6 +2469,15 @@
         <div class="drawer-body" id="ls-panel">
           <div class="ls-player ls-grid">
             <div class="ls-cols" id="ls-cols">
+              <!-- CHG-131: Rumble, America First Ep. 1762, first in the drawer -->
+              <div class="ls-col ls-col-ru2" id="ls-col-ru2">
+                <div class="ls-frame ls-ru" id="ls-frame-ru2"></div>
+                <p class="ls-viewers" id="ls-viewers-ru2" aria-live="polite"></p>
+                <div class="ls-credits" id="ls-credits-ru2">
+                  <p class="ls-credit">“<a href="https://rumble.com/v7gtqw4-america-first-ep.-1762.html" target="_blank" rel="noopener">America First Ep. 1762</a>” by <a href="https://rumble.com/c/nickjfuentes" target="_blank" rel="noopener">Nicholas J. Fuentes</a> on Rumble</p>
+                  <p class="ls-watch"><a href="https://rumble.com/v7gtqw4-america-first-ep.-1762.html" target="_blank" rel="noopener">Watch on Rumble</a></p>
+                </div>
+              </div>
               <div class="ls-col" id="ls-col-yt">
                 <div class="ls-frame" id="ls-frame"></div>
                 <p class="ls-viewers" id="ls-viewers-yt" aria-live="polite"></p>
@@ -4835,10 +4850,14 @@
       var twBox = document.getElementById("ls-frame-tw");
       var cols = document.getElementById("ls-cols");
       var ruBox = document.getElementById("ls-frame-ru");
+      var ru2Box = document.getElementById("ls-frame-ru2");
       if (!drawer || !btn || !box || !twBox) return;
       /* CHG-113: Rumble, official oEmbed iframe src for the watch page v7g4gow (no autoplay param: none is officially documented) */
       var RU_TITLE = "FUENTES VS JIANG DEBATE RECAP??? Federal Agent And Chinese Spy COLLIDE | America First Ep. 1754";
       var RU_SRC = "https://rumble.com/embed/v7dy3re/";
+      /* CHG-131: Rumble, official oEmbed iframe src for the watch page v7gtqw4 (America First Ep. 1762) */
+      var RU2_TITLE = "America First Ep. 1762";
+      var RU2_SRC = "https://rumble.com/embed/v7endym/";
       var TITLE = "1990s Raining in Tokyo at Midnight | Lofi Rain Ambience for Relaxation & Quiet Focus";
       var SRC = "https://www.youtube-nocookie.com/embed/J6G-B1DoDAU?autoplay=1&rel=0&modestbranding=1&playsinline=1";
       var TW_CHANNEL = "zackrawrr";
@@ -4854,16 +4873,16 @@
         return "https://player.twitch.tv/?channel=" + TW_CHANNEL +
           twitchParents(host).map(function (d) { return "&parent=" + d; }).join("") + "&autoplay=true&muted=false";
       }
-      window.AFF_LS = { twitchParents: twitchParents, twitchSrc: twitchSrc, minSideBySide: TW_MIN_W * 2 + GAP, minThreeAcross: TW_MIN_W * 3 + GAP * 2, rumbleSrc: RU_SRC };
+      window.AFF_LS = { twitchParents: twitchParents, twitchSrc: twitchSrc, minSideBySide: TW_MIN_W * 2 + GAP, minThreeAcross: TW_MIN_W * 3 + GAP * 2, rumbleSrc: RU_SRC, rumble2Src: RU2_SRC };
       /* CHG-125: viewer counts for OUR site only. A random 128-bit sid lives in memory for this page load (no cookie,
          no storage). Heartbeats start only after Play (an embed is loaded): one now, then every 30 s, paused while the
          tab is hidden; "none" goes by sendBeacon when the stream is closed or the page is left. The counts are polled
          only while the drawer is open. One sid counts for one stream: the one played last that is still loaded. */
       var sv = (function () {
         var API = "/api/stream-viewers.php", BEAT_MS = 30000, POLL_MS = 30000;
-        var frames = { youtube: box, twitch: twBox, rumble: ruBox };
+        var frames = { youtube: box, twitch: twBox, rumble: ruBox, rumble2: ru2Box };
         var outs = { youtube: document.getElementById("ls-viewers-yt"), twitch: document.getElementById("ls-viewers-tw"),
-          rumble: document.getElementById("ls-viewers-ru") };
+          rumble: document.getElementById("ls-viewers-ru"), rumble2: document.getElementById("ls-viewers-ru2") };
         var sid = null, cur = null, order = [], beatT = null, pollT = null, isOpen = false;
         function newSid() {
           var a = new Uint8Array(16);
@@ -4972,6 +4991,31 @@
         b.addEventListener("click", playRumble);
         ruBox.appendChild(b);
       }
+      function ru2Facade() {
+        if (!ru2Box) return;
+        ru2Box.textContent = "";
+        var b = el("button", "ls-facade");
+        b.type = "button";
+        b.id = "ls-play-ru2";
+        b.setAttribute("aria-label", "Play " + RU2_TITLE + " (loads from Rumble)");
+        b.appendChild(el("span", "ls-play")).setAttribute("aria-hidden", "true");
+        b.appendChild(el("span", "ls-title", RU2_TITLE));
+        b.appendChild(el("span", "ls-note", "Loads from Rumble when you press play"));
+        b.addEventListener("click", playRumble2);
+        ru2Box.appendChild(b);
+      }
+      function playRumble2() {
+        var f = document.createElement("iframe");
+        f.src = RU2_SRC;
+        f.title = RU2_TITLE;
+        f.setAttribute("allow", "autoplay; fullscreen; picture-in-picture");
+        f.setAttribute("allowfullscreen", "");
+        f.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+        ru2Box.textContent = "";
+        ru2Box.appendChild(f);
+        try { f.focus(); } catch (e) {}
+        sv.watch("rumble2");
+      }
       function playRumble() {
         var f = document.createElement("iframe");
         f.src = RU_SRC;
@@ -5034,13 +5078,13 @@
       }
       if (window.ResizeObserver && cols) new ResizeObserver(layout).observe(cols);
       window.addEventListener("resize", layout);
-      ytFacade(); twFacade(); ruFacade(); layout();
+      ru2Facade(); ytFacade(); twFacade(); ruFacade(); layout();
       btn.addEventListener("click", function () {
         var open = drawer.classList.toggle("open");
         btn.setAttribute("aria-expanded", open ? "true" : "false");
         var state = btn.querySelector(".label-state");
         if (state) state.textContent = open ? "collapse" : "expand";
-        if (!open) { ytFacade(); twFacade(); ruFacade(); sv.check(); }
+        if (!open) { ru2Facade(); ytFacade(); twFacade(); ruFacade(); sv.check(); }
         else layout();
         sv.drawer(open);
       });

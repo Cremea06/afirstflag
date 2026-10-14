@@ -3,10 +3,10 @@
  * Live Stream drawer viewer counts: how many sessions ON THIS SITE are watching each embed (afirstflag.com shop,
  * CHG-125, conventions of CHG-098 art-publish / CHG-124 music-publish). Only our own visitors are counted; nothing
  * is asked of or sent to YouTube, Twitch or Rumble.
- * GET   - { youtube:n, twitch:n, rumble:n }   (Cache-Control: public, max-age=5)
+ * GET   - { youtube:n, twitch:n, rumble:n, rumble2:n }   (Cache-Control: public, max-age=5)
  * POST  - JSON { sid, stream } heartbeat (Content-Type application/json or text/plain, for sendBeacon).
  *         sid: 32 lowercase hex chars (a random 128-bit value the browser makes in memory per page load; no cookie,
- *         no storage). stream: youtube | twitch | rumble, or none to leave (removes the sid).
+ *         no storage). stream: youtube | twitch | rumble | rumble2 (CHG-131), or none to leave (removes the sid).
  *         Same-origin only (Origin, or Referer when Origin is missing; Sec-Fetch-Site must be same-origin).
  *         Body max 256 bytes (413). Bad JSON / sid / stream: 400.
  *         Entries older than 75 s are pruned. Caps: 2000 sids in total and 10 sids per hashed IP (429 when full).
@@ -29,7 +29,7 @@ const AF_SV_MAX_SIDS_PER_IP = 10;   // entries per hashed IP
 const AF_SV_RL_WINDOW_SEC = 60;     // 40 POSTs per 60 s per IP
 const AF_SV_RL_MAX = 40;
 const AF_SV_RL_MAX_KEYS = 5000;
-const AF_SV_STREAMS = ['youtube', 'twitch', 'rumble'];
+const AF_SV_STREAMS = ['youtube', 'twitch', 'rumble', 'rumble2']; // CHG-131: rumble2 = America First Ep. 1762
 
 $dataDir = dirname(__DIR__) . '/data';
 $storePath = $dataDir . '/stream-viewers.json';
@@ -134,7 +134,7 @@ function af_sv_prune($raw, $now, $ttl) {
 }
 
 function af_sv_counts($entries) {
-    $c = ['youtube' => 0, 'twitch' => 0, 'rumble' => 0];
+    $c = ['youtube' => 0, 'twitch' => 0, 'rumble' => 0, 'rumble2' => 0];
     foreach ($entries as $e) {
         $c[$e['s']]++;
     }

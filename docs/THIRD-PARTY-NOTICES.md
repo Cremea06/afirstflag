@@ -1,7 +1,7 @@
 # Third-party notices
 
 This project uses third-party software and services. Their licenses and terms still apply.
-Last reviewed: 2026-10-02 (CHG-059).
+Last reviewed: 2026-10-22 (CHG-137), against Shop `main` 3ee3706 (CHG-136) and Nest `main` 2b4cead (CHG-135).
 
 | Name | Role | Terms |
 | --- | --- | --- |
@@ -114,6 +114,12 @@ Do not copy this file into a product that implies those vendors endorse afirstfl
   No Rumble logo or thumbnail is copied or hotlinked (the oEmbed thumbnail on rumble.cloud is deliberately not used).
 - Privacy: click-to-load. Nothing loads from rumble.com or its CDNs (rumble.cloud etc.) until play; closing the drawer removes the
   iframe. Referrer sent via strict-origin-when-cross-origin. Privacy Policy https://rumble.com/s/privacy.
+- Server-side live-status check (CHG-133, credited CHG-137): separate from the embed above, the chat server (Nest repo, `lib/tailgate.js`) makes
+  its own requests to Rumble, not the visitor's browser, to detect when the public channel https://rumble.com/c/nickjfuentes is live for Tailgate Party mode.
+  It fetches the channel page (https://rumble.com/c/nickjfuentes) and, only when that page shows a live video, Rumble's public oEmbed API
+  (https://rumble.com/api/Media/oembed.json) to get the embed id. It checks about every 2 minutes, but only Mon-Fri 21:00-22:00 America/New_York
+  (the default window), plus carryover after the window ends while a check inside the window found the channel live (at most 3 hours past the window end).
+  Outside that, no request is made. The requests identify themselves with a User-Agent naming Eagles Nest and send no visitor information. Nothing is copied or stored from the channel page beyond live or not live and the embed id.
 
 ## resvg-js and resvg (CHG-134, credited CHG-136)
 

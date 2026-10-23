@@ -2,7 +2,7 @@
 
 Public thank-you list for the stack under afirstflag.com and Eagles Nest.
 The homepage drawer “Built With Gratitude” is the short version of this file.
-Last reviewed: 2026-10-02 (CHG-059), against Shop `main` d3ea766 and Nest `main` 46eeca9.
+Last reviewed: 2026-10-22 (CHG-137), against Shop `main` 3ee3706 (CHG-136) and Nest `main` 2b4cead (CHG-135).
 
 ## Foundational
 
@@ -55,7 +55,7 @@ Last reviewed: 2026-10-02 (CHG-059), against Shop `main` d3ea766 and Nest `main`
   Catalog data CC0 / public domain; covers from covers.openlibrary.org under their cover guidelines.
 - YouTube (embedded player, privacy-enhanced mode youtube-nocookie.com): Live Stream drawer, loaded only after the visitor presses play (CHG-108). Stream by The Last Cassette (https://www.youtube.com/@thelastcassette-on).
 - Twitch (embedded player, player.twitch.tv; Twitch Interactive, an Amazon company): second source in the Live Stream drawer, loaded only after the visitor picks Twitch and presses play (CHG-109). Channel zackrawrr (https://www.twitch.tv/zackrawrr).
-- Rumble (embedded player, rumble.com/embed): third frame in the Live Stream drawer, loaded only after the visitor presses play (CHG-113). Video by Nicholas J. Fuentes (https://rumble.com/c/nickjfuentes).
+- Rumble (embedded player, rumble.com/embed): third frame in the Live Stream drawer, loaded only after the visitor presses play (CHG-113). Video by Nicholas J. Fuentes (https://rumble.com/c/nickjfuentes). Also asked by the chat server (not the visitor's browser) for live status during the Tailgate Party window: it fetches that public channel page and Rumble's oEmbed API, only Mon-Fri 21:00-22:00 America/New_York (plus carryover while the channel is live) (CHG-133).
 - GitHub: source hosting
 - Namecheap: domain, DNS, mail forwarding, and shared web hosting for afirstflag.com
 - Let's Encrypt (ISRG): TLS certificate for the chat site

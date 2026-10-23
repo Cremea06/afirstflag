@@ -17,6 +17,8 @@ Last reviewed: 2026-10-02 (CHG-059).
 | three.js | 3D renderer (vendored r170) | MIT |
 | PM2 | Process manager | AGPL-3.0 |
 | nginx | HTTPS front for chat | BSD-2-Clause |
+| resvg-js (`@resvg/resvg-js` 2.6.2, with the resvg engine) | Draws the clip share-card PNG on the chat server (unmodified, from npm) | MPL-2.0 (see below) |
+| DejaVu Sans, DejaVu Sans Bold (2.37) | Lettering on the clip share-card PNG, bundled unmodified in the chat server repo | Bitstream Vera license; DejaVu changes public domain (see below) |
 | Rust `core` + `compiler_builtins` | Compiled into `engine/aff-addr-rust.wasm` (Rust engine) | MIT or Apache-2.0 |
 | Clang / LLVM / LLD | Build tool for both .wasm files (nothing from LLVM runtime libraries is linked) | Apache-2.0 WITH LLVM-exception |
 | Binaryen (wasm-opt) | Build tool, .wasm size optimizer | Apache-2.0 |
@@ -112,3 +114,137 @@ Do not copy this file into a product that implies those vendors endorse afirstfl
   No Rumble logo or thumbnail is copied or hotlinked (the oEmbed thumbnail on rumble.cloud is deliberately not used).
 - Privacy: click-to-load. Nothing loads from rumble.com or its CDNs (rumble.cloud etc.) until play; closing the drawer removes the
   iframe. Referrer sent via strict-origin-when-cross-origin. Privacy Policy https://rumble.com/s/privacy.
+
+## resvg-js and resvg (CHG-134, credited CHG-136)
+
+- Software: `@resvg/resvg-js` 2.6.2 by yisibl (https://github.com/yisibl/resvg-js, https://www.npmjs.com/package/@resvg/resvg-js),
+  a Node.js binding of the resvg SVG renderer (resvg 0.34.x by Yevhenii Reizner / RazrFalcon and contributors,
+  https://github.com/RazrFalcon/resvg, now hosted at https://github.com/linebender/resvg). Copyright (c) 2021-present, yisibl.
+  Used by the chat server (Nest repo) only, to draw the 1200x630 share-card picture for chat clips. Not loaded in the visitor's browser.
+- License: Mozilla Public License, version 2.0 (MPL-2.0), https://www.mozilla.org/en-US/MPL/2.0/. The full license text ships with the
+  package as `node_modules/@resvg/resvg-js/LICENSE` and is at https://github.com/yisibl/resvg-js/blob/main/LICENSE.
+  Newer resvg releases are licensed Apache-2.0 OR MIT upstream; the resvg engine built into resvg-js 2.6.2 is the older MPL-2.0 version.
+- Unmodified: we install the published npm package as is (`npm ci`) and do not modify or redistribute its source. We have made no changes to
+  any MPL-covered file. The source code of resvg-js and resvg is available at the repositories above.
+- Notice (MPL-2.0 Exhibit A): This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was
+  not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+- Neither the resvg-js authors nor the resvg authors endorse this site. The software is provided "as is" (MPL-2.0 sections 6 and 7).
+
+## DejaVu Sans and DejaVu Sans Bold (CHG-134, credited CHG-136)
+
+- Fonts: `DejaVuSans.ttf` and `DejaVuSans-Bold.ttf` (version 2.37) from the DejaVu fonts project, https://dejavu-fonts.github.io/.
+  Bundled unmodified in the chat server repo (Nest) at `assets/fonts/` with its license file `assets/fonts/LICENSE-DejaVu.txt`.
+  Used only by the chat server (through resvg-js) for the text on the clip share-card PNG. Not served to the visitor's browser.
+- Origin: derived from Bitstream Vera (Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved; Bitstream Vera is a trademark of Bitstream, Inc.).
+  DejaVu changes are in the public domain. Upstream author of the DejaVu fonts (per the license file): Stepan Roh (original author), with the
+  DejaVu fonts team and contributors. The font files also carry glyphs imported from Arev Fonts, Copyright (c) 2006 by Tavmjong Bah, under the
+  same kind of permission notice (shown below, as embedded in the font files).
+- License (copied from `assets/fonts/LICENSE-DejaVu.txt` in the chat server repo, the part that covers the fonts; the Debian packaging
+  GPL-2+ block in that file covers only Debian's `debian/*` packaging files, not the fonts, and is not repeated here):
+
+```
+Upstream-Name: DejaVu fonts
+Upstream-Author: Stepan Roh <src@users.sourceforge.net> (original author),
+                  see /usr/share/doc/fonts-dejavu-core/AUTHORS for full list
+Source: https://dejavu-fonts.github.io/
+
+Copyright: Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved.
+ Bitstream Vera is a trademark of Bitstream, Inc.
+ DejaVu changes are in public domain.
+License: bitstream-vera
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of the fonts accompanying this license ("Fonts") and associated
+documentation files (the "Font Software"), to reproduce and distribute the
+Font Software, including without limitation the rights to use, copy, merge,
+publish, distribute, and/or sell copies of the Font Software, and to permit
+persons to whom the Font Software is furnished to do so, subject to the
+following conditions:
+
+The above copyright and trademark notices and this permission notice shall
+be included in all copies of one or more of the Font Software typefaces.
+
+The Font Software may be modified, altered, or added to, and in particular
+the designs of glyphs or characters in the Fonts may be modified and
+additional glyphs or characters may be added to the Fonts, only if the fonts
+are renamed to names not containing either the words "Bitstream" or the word
+"Vera".
+
+This License becomes null and void to the extent applicable to Fonts or Font
+Software that has been modified and is distributed under the "Bitstream
+Vera" names.
+
+The Font Software may be sold as part of a larger software package but no
+copy of one or more of the Font Software typefaces may be sold by itself.
+
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF COPYRIGHT, PATENT,
+TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL BITSTREAM OR THE GNOME
+FOUNDATION BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, INCLUDING
+ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
+THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM OTHER DEALINGS IN THE
+FONT SOFTWARE.
+
+Except as contained in this notice, the names of Gnome, the Gnome
+Foundation, and Bitstream Inc., shall not be used in advertising or
+otherwise to promote the sale, use or other dealings in this Font Software
+without prior written authorization from the Gnome Foundation or Bitstream
+Inc., respectively. For further information, contact: fonts at gnome dot
+org.
+```
+
+- Arev Fonts notice (embedded in the DejaVu font files themselves, and in the upstream DejaVu LICENSE file):
+
+```
+Arev Fonts Copyright
+------------------------------
+
+Copyright (c) 2006 by Tavmjong Bah. All Rights Reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the fonts accompanying this license ("Fonts") and
+associated documentation files (the "Font Software"), to reproduce
+and distribute the modifications to the Bitstream Vera Font Software,
+including without limitation the rights to use, copy, merge, publish,
+distribute, and/or sell copies of the Font Software, and to permit
+persons to whom the Font Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright and trademark notices and this permission notice
+shall be included in all copies of one or more of the Font Software
+typefaces.
+
+The Font Software may be modified, altered, or added to, and in
+particular the designs of glyphs or characters in the Fonts may be
+modified and additional glyphs or characters may be added to the
+Fonts, only if the fonts are renamed to names not containing either
+the words "Tavmjong Bah" or the word "Arev".
+
+This License becomes null and void to the extent applicable to Fonts
+or Font Software that has been modified and is distributed under the
+"Tavmjong Bah Arev" names.
+
+The Font Software may be sold as part of a larger software package but
+no copy of one or more of the Font Software typefaces may be sold by
+itself.
+
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL
+TAVMJONG BAH BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+
+Except as contained in this notice, the name of Tavmjong Bah shall not
+be used in advertising or otherwise to promote the sale, use or other
+dealings in this Font Software without prior written authorization
+from Tavmjong Bah. For further information, contact: tavmjong @ free
+. fr.
+```
+
+Do not sell the fonts by themselves, and do not rename-and-modify them under the Bitstream/Vera or Arev names.

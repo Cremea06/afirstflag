@@ -26,6 +26,8 @@ Last reviewed: 2026-10-02 (CHG-059), against Shop `main` d3ea766 and Nest `main`
 - three.js: MIT (r170, vendored as `public/world/three.min.js` for the Nest World courtyard)
 - PM2: AGPL-3.0 (ops; keeps the chat server running)
 - nginx: BSD-2-Clause (HTTPS front for the chat server)
+- resvg-js (`@resvg/resvg-js` 2.6.2): MPL-2.0 (yisibl; Node.js binding of the resvg SVG renderer; draws the 1200x630 clip share-card PNG on the chat server, CHG-134). Used unmodified from npm. The resvg engine inside it (0.34.x, by Yevhenii Reizner / RazrFalcon + contributors; now hosted by Linebender) is MPL-2.0 at that version
+- DejaVu Sans and DejaVu Sans Bold (version 2.37): Bitstream Vera license (Copyright Bitstream, Inc.; Arev glyphs Copyright Tavmjong Bah; DejaVu changes public domain; DejaVu fonts team). Bundled unmodified in the chat server repo (`assets/fonts/`) for the lettering on the clip share-card PNG (CHG-134)
 
 ## Build tools (shop WebAssembly engines, run on the build box only)
 

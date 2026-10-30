@@ -935,6 +935,28 @@
       margin: 0 16px 8px;
     }
 
+    /* CHG-145: Weather Radio drawer (alerts read aloud; reuses .drawer chrome) below Live Stream */
+    .wx-wrap { flex-shrink: 0; margin: 0 16px 8px; }
+    .wx-card { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+    .wx-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .wx-switch { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.08); color: inherit; font: inherit; font-weight: 700; cursor: pointer; min-height: 36px; }
+    .wx-switch .wx-dot { width: 10px; height: 10px; border-radius: 50%; background: #64748b; }
+    .wx-switch[aria-checked="true"] { background: rgba(251,191,36,0.22); border-color: #fbbf24; color: #fbbf24; }
+    .wx-switch[aria-checked="true"] .wx-dot { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+    .wx-zip { width: 7.5em; padding: 7px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.25); background: rgba(0,0,0,0.25);
+      color: inherit; font: inherit; font-size: 16px; letter-spacing: 0.06em; }
+    .wx-zip.wx-suggest { color: #9ca3af; font-style: italic; }
+    .wx-hint { font-size: 12px; opacity: 0.75; }
+    .wx-status { font-size: 13px; opacity: 0.85; min-height: 1.2em; }
+    .wx-alerts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .wx-alerts li { padding: 8px 12px; border-radius: 10px; background: rgba(239,68,68,0.14); border-left: 3px solid #ef4444; font-size: 14px; }
+    .wx-alerts li strong { display: block; margin-bottom: 2px; }
+    .wx-alerts li.wx-none { background: rgba(34,197,94,0.12); border-left-color: #22c55e; }
+    .wx-fc { font-size: 14px; opacity: 0.9; }
+    .wx-attr { font-size: 12px; opacity: 0.7; }
+    .wx-attr a { color: inherit; }
+
     /* CHG-108: Live Stream drawer (YouTube, click-to-load facade) below Art */
     .ls-wrap {
       flex-shrink: 0;
@@ -2345,6 +2367,15 @@
                 </dl>
                 <p class="thanks"><a href="https://developers.google.com/safe-browsing/v4/advisory" target="_blank" rel="noopener">Advisory provided by Google</a>. Google works to provide the most accurate and up-to-date information about unsafe web resources. However, Google cannot guarantee that its information is comprehensive and error-free: some risky sites may not be identified, and some safe sites may be identified in error.</p>
               </article>
+              <article class="tcard" style="border-top-color:#38bdf8">
+                <h4>weatherUSA</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Weather alerts and forecast in the Weather Radio drawer, asked by our chat server for a ZIP code (nothing saved)</dd>
+                  <dt>Maintainer</dt><dd><a href="https://www.weatherusa.net" target="_blank" rel="noopener">weatherUSA</a></dd>
+                  <dt>License</dt><dd>Weather API (free plan; attribution required)</dd>
+                </dl>
+                <p class="thanks">Weather data: <a href="https://www.weatherusa.net" target="_blank" rel="noopener">weatherUSA</a>. Area estimate from <a href="https://db-ip.com" target="_blank" rel="noopener">IP Geolocation by DB-IP</a> (CC BY 4.0) and U.S. Census Bureau ZIP Code Tabulation Areas.</p>
+              </article>
               <article class="tcard" style="border-top-color:#fbbf24">
                 <h4>YouTube</h4>
                 <dl>
@@ -2530,6 +2561,30 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- CHG-145: Weather Radio (alerts-first; live audio streams in a later change). Data via chat.afirstflag.com/api/wx. -->
+    <div class="wx-wrap">
+      <section class="drawer glass" id="wx-drawer" aria-label="Weather Radio">
+        <button type="button" class="drawer-toggle" id="wx-toggle" aria-expanded="false" aria-controls="wx-panel">
+          <span>Weather Radio <span style="opacity:0.6;font-weight:600;font-size:12px">· click to <span class="label-state">expand</span></span></span>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="drawer-body" id="wx-panel">
+          <div class="wx-card">
+            <div class="wx-row">
+              <button type="button" class="wx-switch" id="wx-power" role="switch" aria-checked="false"><span class="wx-dot" aria-hidden="true"></span><span id="wx-power-label">Off</span></button>
+              <label for="wx-zip" class="wx-hint" style="opacity:1">ZIP</label>
+              <input type="text" id="wx-zip" class="wx-zip" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" autocomplete="postal-code" placeholder="Enter your ZIP" aria-describedby="wx-hint">
+              <span class="wx-hint" id="wx-hint"></span>
+            </div>
+            <div class="wx-status" id="wx-status" aria-live="polite">Off. Turn on to hear active weather alerts and a short forecast read aloud.</div>
+            <ul class="wx-alerts" id="wx-alerts" aria-live="polite"></ul>
+            <div class="wx-fc" id="wx-fc"></div>
+            <div class="wx-attr">Weather data: <a href="https://www.weatherusa.net" target="_blank" rel="noopener">weatherUSA</a></div>
           </div>
         </div>
       </section>
@@ -5893,6 +5948,130 @@
       });
       if (xbtn) xbtn.addEventListener("click", closeDlg);
       dlg.addEventListener("close", function () { btn.focus(); });
+    })();
+  </script>
+  <script>
+    /* CHG-145: Weather Radio. One click on the switch turns it on: GET https://chat.afirstflag.com/api/wx (no zip; the chat
+       server estimates the area from the IP once, offline, and discards it) fills the ZIP box as a gray suggestion. A typed
+       5-digit ZIP overrides it and is remembered in localStorage only (key afs-wx-zip). While on: alerts + brief forecast are
+       read with speechSynthesis (if the browser has it), shown as text, and re-checked every 5 min; a new alert plays a short
+       WebAudio tone first. Off cancels speech and polling. No cookies (credentials: omit). API text goes in via textContent. */
+    (function () {
+      var drawer = document.getElementById("wx-drawer"), tog = document.getElementById("wx-toggle");
+      var power = document.getElementById("wx-power"), plabel = document.getElementById("wx-power-label");
+      var zipEl = document.getElementById("wx-zip"), hint = document.getElementById("wx-hint");
+      var statusEl = document.getElementById("wx-status"), list = document.getElementById("wx-alerts"), fcEl = document.getElementById("wx-fc");
+      if (!drawer || !tog || !power || !zipEl) return;
+      tog.addEventListener("click", function () {
+        var open = drawer.classList.toggle("open");
+        tog.setAttribute("aria-expanded", open ? "true" : "false");
+        var st = tog.querySelector(".label-state"); if (st) st.textContent = open ? "collapse" : "expand";
+      });
+      var API = "https://chat.afirstflag.com/api/wx", KEY = "afs-wx-zip", POLL_MS = 5 * 60 * 1000;
+      var on = false, timer = null, seen = {}, firstLoad = true, reqId = 0, actx = null;
+      var synth = ("speechSynthesis" in window) ? window.speechSynthesis : null;
+      function saved() { try { var z = localStorage.getItem(KEY); return /^\d{5}$/.test(z || "") ? z : null; } catch (e) { return null; } }
+      function save(z) { try { localStorage.setItem(KEY, z); } catch (e) {} }
+      function setStatus(t) { statusEl.textContent = t; }
+      function suggest(z) {
+        zipEl.value = z || ""; zipEl.classList.toggle("wx-suggest", !!z);
+        hint.textContent = z ? "\u2248 your area \u2014 change it?" : "";
+      }
+      function tone() {
+        try {
+          var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return Promise.resolve();
+          actx = actx || new AC(); if (actx.state === "suspended") actx.resume();
+          var t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
+          o.type = "sine"; o.frequency.setValueAtTime(853, t); o.frequency.setValueAtTime(960, t + 0.35);
+          g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.25, t + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+          o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + 0.72);
+          return new Promise(function (r) { setTimeout(r, 750); });
+        } catch (e) { return Promise.resolve(); }
+      }
+      function speak(parts) {
+        if (!synth || !on || !parts.length) return;
+        parts.forEach(function (p) { var u = new SpeechSynthesisUtterance(p); u.rate = 1; u.lang = "en-US"; synth.speak(u); });
+      }
+      function fcText(fc) {
+        return (fc || []).map(function (d) {
+          return d.day + ": " + (d.text || "") + (d.hi != null ? ", high " + d.hi : "") + (d.lo != null ? ", low " + d.lo : "") + ".";
+        }).join(" ");
+      }
+      function render(j) {
+        list.textContent = ""; fcEl.textContent = "";
+        var where = j.place ? j.place.name + ", " + j.place.state : j.zip;
+        if (j.found === false) { setStatus("ZIP " + j.zip + " not found. Check it and try again."); return; }
+        var al = j.alerts || [];
+        if (!al.length) { var li0 = document.createElement("li"); li0.className = "wx-none"; li0.textContent = "No active alerts for " + where + "."; list.appendChild(li0); }
+        al.forEach(function (a) {
+          var li = document.createElement("li"), b = document.createElement("strong");
+          b.textContent = a.name; li.appendChild(b); li.appendChild(document.createTextNode(a.summary || "")); list.appendChild(li);
+        });
+        var f = fcText(j.forecast); if (f) fcEl.textContent = "Forecast: " + f;
+        setStatus("On \u00b7 " + where + " \u00b7 checked " + new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) + (synth ? "" : " \u00b7 this browser can't read aloud; alerts are shown as text"));
+      }
+      function announce(j) {
+        if (!on || j.found === false || !j.zip) return;
+        var al = j.alerts || [], fresh = al.filter(function (a) { return a.id && !seen[a.id]; });
+        al.forEach(function (a) { if (a.id) seen[a.id] = 1; });
+        var where = j.place ? j.place.name + ", " + j.place.state : "ZIP " + j.zip.split("").join(" ");
+        if (firstLoad) {
+          firstLoad = false;
+          var parts = ["Weather radio for " + where + "."];
+          if (!al.length) parts.push("No active alerts.");
+          al.forEach(function (a) { parts.push(a.name + ". " + (a.summary || "")); });
+          var f = fcText(j.forecast); if (f) parts.push("Forecast. " + f);
+          (al.length ? tone() : Promise.resolve()).then(function () { speak(parts); });
+        } else if (fresh.length) {
+          tone().then(function () { speak(fresh.map(function (a) { return "New alert. " + a.name + ". " + (a.summary || ""); })); });
+        }
+      }
+      function load(zip) {
+        var my = ++reqId;
+        setStatus("Checking weather\u2026");
+        var u = zip ? API + "?zip=" + zip : API;
+        return fetch(u, { credentials: "omit", cache: "no-store" }).then(function (r) {
+          return r.json().catch(function () { return {}; }).then(function (j) { j._status = r.status; return j; });
+        }).then(function (j) {
+          if (my !== reqId || !on) return;
+          if (j._status === 429 || j.error === "busy") { setStatus("Busy \u2014 will try again shortly."); return; }
+          if (j._status >= 400 && j._status !== 400) { setStatus("Weather data unavailable right now. Will retry in 5 minutes."); return; }
+          if (j._status === 400) { setStatus("Enter a 5-digit ZIP."); return; }
+          if (!zip) {
+            if (!j.zip) { suggest(""); zipEl.placeholder = "Enter your ZIP"; list.textContent = ""; fcEl.textContent = ""; setStatus("Couldn't estimate your area. Enter your ZIP to start."); return; }
+            if (!/^\d{5}$/.test(zipEl.value) || zipEl.classList.contains("wx-suggest")) suggest(j.zip);
+          }
+          render(j); announce(j);
+        }).catch(function () { if (my === reqId && on) setStatus("Weather data unavailable right now. Will retry in 5 minutes."); });
+      }
+      function currentZip() { var v = zipEl.value.trim(); return /^\d{5}$/.test(v) && !zipEl.classList.contains("wx-suggest") ? v : null; }
+      function tick() { var z = currentZip(); if (z) return load(z); return load(zipEl.classList.contains("wx-suggest") ? zipEl.value : null); }
+      function start() {
+        on = true; seen = {}; firstLoad = true;
+        power.setAttribute("aria-checked", "true"); plabel.textContent = "On";
+                try { var AC = window.AudioContext || window.webkitAudioContext; if (AC && !actx) actx = new AC(); } catch (e) {}
+        var z = saved();
+        if (z && !currentZip()) { zipEl.value = z; zipEl.classList.remove("wx-suggest"); hint.textContent = ""; }
+        currentZip() ? load(currentZip()) : load(null);
+        clearInterval(timer); timer = setInterval(tick, POLL_MS);
+      }
+      function stop() {
+        on = false; reqId++; clearInterval(timer); timer = null;
+        if (synth) synth.cancel();
+        power.setAttribute("aria-checked", "false"); plabel.textContent = "Off";
+        setStatus("Off.");
+      }
+      power.addEventListener("click", function () { on ? stop() : start(); });
+      zipEl.addEventListener("focus", function () { if (zipEl.classList.contains("wx-suggest")) zipEl.select(); });
+      zipEl.addEventListener("input", function () {
+        zipEl.classList.remove("wx-suggest"); hint.textContent = "";
+        var v = zipEl.value.replace(/\D/g, "").slice(0, 5); if (v !== zipEl.value) zipEl.value = v;
+        if (/^\d{5}$/.test(v)) {
+          save(v);
+          if (on) { if (synth) synth.cancel(); seen = {}; firstLoad = true; load(v); }
+        }
+      });
+      var z0 = saved(); if (z0) zipEl.value = z0;
     })();
   </script>
 </body>

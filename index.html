@@ -939,11 +939,21 @@
     .wx-wrap { flex-shrink: 0; margin: 0 16px 8px; }
     .wx-card { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; color: #e6ecf8; } /* CHG-146: light text like the other drawers (body color is #111) */
     .wx-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-    .wx-switch { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.25);
-      background: rgba(255,255,255,0.08); color: inherit; font: inherit; font-weight: 700; cursor: pointer; min-height: 36px; }
-    .wx-switch .wx-dot { width: 10px; height: 10px; border-radius: 50%; background: #64748b; }
-    .wx-switch[aria-checked="true"] { background: rgba(251,191,36,0.22); border-color: #fbbf24; color: #fbbf24; }
-    .wx-switch[aria-checked="true"] .wx-dot { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+    /* CHG-148: slide switch per Andy's sketch: "Off" [track with gold-ring knob] "On"; knob slides left (Off) -> right (On). */
+    .wx-switch { display: inline-flex; align-items: center; gap: 10px; padding: 4px 8px; border: 0; border-radius: 999px; background: none;
+      color: #e6ecf8; font: inherit; font-weight: 700; cursor: pointer; min-height: 40px; }
+    .wx-switch:focus-visible { outline: 3px solid #f4c430; outline-offset: 3px; }
+    .wx-sw-lbl { color: #a9b6d0; transition: color .2s ease; }
+    .wx-switch[aria-checked="false"] .wx-sw-off, .wx-switch[aria-checked="true"] .wx-sw-on { color: #f4f7ff; }
+    .wx-switch[aria-checked="true"] .wx-sw-on { color: #f4c430; }
+    .wx-track { position: relative; width: 64px; height: 30px; border-radius: 999px; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.3);
+      transition: background-color .25s ease, border-color .25s ease; flex: none; }
+    .wx-knob { position: absolute; top: 2px; left: 2px; width: 26px; height: 26px; box-sizing: border-box; border-radius: 50%;
+      border: 3px solid #f4c430; background: rgba(0,20,51,0.6); transition: transform .25s ease, background-color .25s ease, box-shadow .25s ease; }
+    .wx-switch[aria-checked="true"] .wx-track { background: rgba(244,196,48,0.25); border-color: #f4c430; }
+    .wx-switch[aria-checked="true"] .wx-knob { transform: translateX(34px); background: #f4c430; box-shadow: 0 0 8px rgba(244,196,48,0.7); }
+    .wx-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    @media (prefers-reduced-motion: reduce) { .wx-knob, .wx-track, .wx-sw-lbl { transition: none; } }
     .wx-zip { width: 7.5em; padding: 7px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.25); background: rgba(0,0,0,0.25);
       color: #f4f7ff; font: inherit; font-size: 16px; letter-spacing: 0.06em; }
     .wx-zip::placeholder { color: #a9b6d0; opacity: 1; }
@@ -2577,7 +2587,7 @@
         <div class="drawer-body" id="wx-panel">
           <div class="wx-card">
             <div class="wx-row">
-              <button type="button" class="wx-switch" id="wx-power" role="switch" aria-checked="false"><span class="wx-dot" aria-hidden="true"></span><span id="wx-power-label">Off</span></button>
+              <button type="button" class="wx-switch" id="wx-power" role="switch" aria-checked="false" aria-label="Weather Radio"><span class="wx-sw-lbl wx-sw-off" aria-hidden="true">Off</span><span class="wx-track" aria-hidden="true"><span class="wx-knob"></span></span><span class="wx-sw-lbl wx-sw-on" aria-hidden="true">On</span><span id="wx-power-label" class="wx-sr">Off</span></button>
               <label for="wx-zip" class="wx-hint">ZIP</label>
               <input type="text" id="wx-zip" class="wx-zip" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" autocomplete="postal-code" placeholder="Enter your ZIP" aria-describedby="wx-hint">
               <span class="wx-hint" id="wx-hint"></span>

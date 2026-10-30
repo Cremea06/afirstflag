@@ -5993,9 +5993,15 @@
         if (!synth || !on || !parts.length) return;
         parts.forEach(function (p) { var u = new SpeechSynthesisUtterance(p); u.rate = 1; u.lang = "en-US"; synth.speak(u); });
       }
+      // CHG-147: a missing or no-data temperature (null, -9999, 9999, NaN...) is left out of text and speech.
+      function temp(v) { var n = (typeof v === "number" || (typeof v === "string" && v.trim())) ? Number(v) : NaN; return isFinite(n) && n >= -100 && n <= 140 ? Math.round(n) : null; }
       function fcText(fc) {
         return (fc || []).map(function (d) {
-          return d.day + ": " + (d.text || "") + (d.hi != null ? ", high " + d.hi : "") + (d.lo != null ? ", low " + d.lo : "") + ".";
+          var hi = temp(d.hi), lo = temp(d.lo), bits = [];
+          if (d.text) bits.push(d.text);
+          if (hi != null) bits.push("high " + hi);
+          if (lo != null) bits.push("low " + lo);
+          return (d.day || "") + ": " + (bits.join(", ") || "no details") + ".";
         }).join(" ");
       }
       function render(j) {

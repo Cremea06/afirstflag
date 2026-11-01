@@ -1,3 +1,7 @@
+# CHG-156: Built With Gratitude Twitch card mentions zackrawrr in Tailgate Party (manual switch)
+
+Prepared 2026-11-01, committed locally, not pushed, not deployed. Base `c81e501` (CHG-155). `index.html` only: Twitch card Purpose text. Pairs with Nest CHG-156. Architecture drawing update staged as a note (/workspace/chg-156/drawings-note.md), drawings not edited.
+
 # CHG-050 — Shop homepage: Live-state role chip shows the signed-in member name
 
 Surface: Shop only (afirstflag.com, repo Cremea06/afirstflag). No Nest changes.

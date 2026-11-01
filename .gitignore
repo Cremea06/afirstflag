@@ -69,3 +69,9 @@ data/stream-viewers-hits.json.*.tmp
 # data/eyes-time.json to reset the total)
 data/eyes-time.json
 data/eyes-time.json.tmp
+
+# CHG-150: mug inventory, created on the server by api/stripe-webhook-mug.php on the first mug sale
+# (never commit; api/mug-stats.php defaults to 12 left when absent). Secrets are never committed either.
+data/mug-inventory.json
+data/mug-processed-events.json
+data/stripe-secrets.php

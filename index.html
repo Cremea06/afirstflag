@@ -175,6 +175,14 @@
     .window.red .mug-maker { margin: 0; font-size: 12px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.45); }
     .window.red .mug-maker a { color: #fff; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
     .window.red.show-mug .mug-card { opacity: 1; pointer-events: auto; }
+    /* CHG-150: mug run counter chip (hidden until api/mug-stats.php answers) + sold-out button */
+    .window.red .mugs-left[hidden] { display: none; }
+    @media (max-width: 480px) {
+      .window.red .mug-meta:has(.mugs-left:not([hidden])) { flex-wrap: nowrap; gap: 8px; }
+      .window.red .mug-meta:has(.mugs-left:not([hidden])) .flags-left-chip { flex: none; white-space: nowrap; }
+      .window.red .mug-meta:has(.mugs-left:not([hidden])) .mug-maker { min-width: 0; font-size: 11px; line-height: 1.25; }
+    }
+    .window.red .mug-card .btn.sold-out { opacity: 0.55; cursor: not-allowed; pointer-events: none; }
     .window.red.show-mug .flag-live { opacity: 0; pointer-events: none; }
     .prod-dots {
       position: absolute;
@@ -1923,6 +1931,7 @@
           <div class="window-cta">
             <div class="mug-meta">
               <div class="flags-left-chip mug-price">$40</div>
+              <div id="mugs-left" class="flags-left-chip mugs-left" aria-live="polite" hidden></div>
               <p class="mug-maker">Handmade by <a href="https://www.facebook.com/profile.php?id=100086671137808" target="_blank" rel="noopener noreferrer">Knicely Made Pottery</a></p>
             </div>
             <a class="btn primary" id="buymug-btn" href="https://buy.stripe.com/6oUdR8gCS0Tx1MecfV2sM02" target="_blank" rel="noopener">BUY MUG NOW</a>
@@ -3599,6 +3608,41 @@
         if (!red.classList.contains("open")) return;
         showCard((idx + 1) % 2);
       }, 10000);
+    })();
+
+    /* CHG-150: mug run counter ("N of 12 left") from api/mug-stats.php; chip stays hidden if the fetch fails.
+       Sold out disables BUY MUG NOW. */
+    (function () {
+      var chip = document.getElementById("mugs-left");
+      var btn = document.getElementById("buymug-btn");
+      if (!chip || !btn) return;
+      fetch("/api/mug-stats.php", { cache: "no-store" })
+        .then(function (res) {
+          if (!res.ok) throw new Error("bad status");
+          return res.json();
+        })
+        .then(function (data) {
+          var n = data && data.remaining, run = data && data.run;
+          if (typeof n !== "number" || !isFinite(n) || n < 0 || typeof run !== "number" || !isFinite(run) || run <= 0) {
+            chip.hidden = true;
+            return;
+          }
+          n = Math.floor(n);
+          if (n === 0) {
+            chip.textContent = "Sold out";
+            btn.textContent = "SOLD OUT";
+            btn.classList.add("sold-out");
+            btn.setAttribute("aria-disabled", "true");
+            btn.setAttribute("tabindex", "-1");
+            btn.removeAttribute("href");
+          } else {
+            chip.textContent = n + " of " + Math.floor(run) + " left";
+          }
+          chip.hidden = false;
+        })
+        .catch(function () {
+          chip.hidden = true;
+        });
     })();
 
     (function () {

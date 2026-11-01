@@ -137,8 +137,7 @@
     .window.red {
       position: relative;
     }
-    .window.red .flag-standin,
-    .window.red .flag-card3,
+    .window.red .mug-card,
     .window.red .flag-live {
       transition: opacity 0.8s ease;
     }
@@ -149,86 +148,59 @@
       gap: 16px;
       flex: 1 1 auto;
       min-height: 0;
-      opacity: 0;
-      pointer-events: none;
+      opacity: 1;
+      pointer-events: auto;
     }
-    .window.red .flag-card3,
-    .window.red .flag-standin {
+    /* CHG-149: mug card overlays the flag card (same footprint); hidden unless .show-mug */
+    .window.red .mug-card {
       position: absolute;
       inset: 0;
       z-index: 2;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 16px;
+      gap: 10px;
       padding: 18px 18px 16px;
       border-radius: 18px;
       box-sizing: border-box;
-      opacity: 1;
-      pointer-events: auto;
+      opacity: 0;
+      pointer-events: none;
+      overflow: hidden;
     }
-    /* Quiet placeholder frame — same footprint as .flag-teaser; no blue fill */
-    .window.red .flag-standin-pic {
-      width: 100%;
-      height: 110px;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      background: rgba(255, 255, 255, 0.06);
-      color: #fff;
+    .window.red .mug-card .window-body { gap: 6px; min-height: 0; }
+    .window.red .mug-teaser { object-position: 50% 64%; }
+    .window.red .mug-card .window-lines li + li { font-size: 12.5px; line-height: 1.35; font-weight: 500; }
+    .window.red .mug-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .window.red .mug-card .window-cta .btn { margin-top: 10px; }
+    .window.red .mug-maker { margin: 0; font-size: 12px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.45); }
+    .window.red .mug-maker a { color: #fff; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+    .window.red.show-mug .mug-card { opacity: 1; pointer-events: auto; }
+    .window.red.show-mug .flag-live { opacity: 0; pointer-events: none; }
+    .prod-dots {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      z-index: 3;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1.3;
-      padding: 8px;
-      box-sizing: border-box;
-      margin-bottom: 8px;
+      gap: 6px;
     }
-    /* Inert buy control: reuse .btn.primary glass under .window.red; long label size only */
-    .window.red .flag-standin-buy {
-      pointer-events: none;
-      cursor: default;
-      user-select: none;
-      font-size: clamp(11px, 1.15vw, 14px);
-      letter-spacing: 0.02em;
-      line-height: 1.25;
-      text-align: center;
+    .prod-dot {
+      width: 12px;
+      height: 12px;
+      padding: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.15);
+      cursor: pointer;
     }
-    .window.red.is-live .flag-standin {
-      opacity: 0;
-      pointer-events: none;
+    .prod-dot[aria-pressed="true"] { background: #fff; }
+    .prod-dot:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) {
+      .window.red .mug-card, .window.red .flag-live { transition: none; }
     }
-    .window.red.is-live .flag-live {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    /* CHG-066 — after live, alternate pottery/flag every 10s while .open */
-    .window.red.is-live.show-standin .flag-standin {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .window.red.is-live.show-standin .flag-live {
-      opacity: 0;
-      pointer-events: none;
-    }
-    /* CHG-067: card 3 overlay (shares stand-in chrome); hidden unless .show-card3 */
-    .window.red .flag-card3 {
-      opacity: 0;
-      pointer-events: none;
-    }
-    .window.red.is-live.show-card3 .flag-card3 {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .window.red.is-live.show-card3 .flag-live {
-      opacity: 0;
-      pointer-events: none;
-    }
-    /* Collapsed: keep existing first-line live label; hide stand-in overlay */
-    .windows .window.red:not(.open) .flag-card3,
-    .windows .window.red:not(.open) .flag-standin {
+    /* Collapsed: flag first-line label only; no mug overlay, no dots */
+    .windows .window.red:not(.open) .mug-card,
+    .windows .window.red:not(.open) .prod-dots {
       display: none !important;
     }
     .windows .window.red:not(.open) .flag-live {
@@ -1935,18 +1907,25 @@
 
     <main class="windows" id="home" aria-label="Main site components">
       <section class="window red" aria-labelledby="win-flag">
-        <div class="flag-standin" aria-hidden="true">
+        <!-- CHG-149: mug card (rotates with the flag card: flag, then mug). Replaces the CHG-038 pottery stand-in. -->
+        <div class="mug-card" id="mug-card" aria-hidden="true" inert>
           <div class="window-body">
-            <div class="flag-standin-pic">Coming soon new product (pottery)</div>
+            <h2 class="visually-hidden" style="position:absolute;left:-9999px;">Buy Mug</h2>
+            <picture>
+              <source srcset="/images/af-mug-800.webp" type="image/webp">
+              <img class="flag-teaser mug-teaser" src="/images/af-mug-800.jpg" width="800" height="1067" loading="lazy" decoding="async" alt="Handmade AF mug with speckled glaze, maroon dip and stamped AF seal">
+            </picture>
             <ul class="window-lines">
-              <li>Handmade coffee mug</li>
-              <li>Comes with unique member tag (mugger)</li>
-              <li>Bitcoin Wallet address</li>
+              <li>Handmade AF stoneware mug</li>
+              <li>Speckled glaze, maroon dip, stamped AF seal. Each one handmade, so slight variations. Made in the USA by an American maker</li>
             </ul>
           </div>
           <div class="window-cta">
-            <div class="flags-left-chip">Live state API call</div>
-            <button type="button" class="btn primary flag-standin-buy" tabindex="-1" aria-disabled="true">Buy now-1-click-and-done-don't-make-me-do-extra</button>
+            <div class="mug-meta">
+              <div class="flags-left-chip mug-price">$40</div>
+              <p class="mug-maker">Handmade by <a href="https://www.facebook.com/profile.php?id=100086671137808" target="_blank" rel="noopener noreferrer">Knicely Made Pottery</a></p>
+            </div>
+            <a class="btn primary" id="buymug-btn" href="https://buy.stripe.com/6oUdR8gCS0Tx1MecfV2sM02" target="_blank" rel="noopener">BUY MUG NOW</a>
           </div>
         </div>
         <div class="flag-live">
@@ -1966,22 +1945,10 @@
             <a class="btn primary" id="buyflag-btn" href="https://buy.stripe.com/3cI3cu9aq45JbmO2Fl2sM01" target="_blank" rel="noopener">BUY FLAG NOW</a>
           </div>
         </div>
-        <!-- CHG-067: card 3 (rotation: pottery, flag, card 3). Copy of stand-in for now; edit this block to reword. No IDs; buy button stays inert. -->
-        <div class="flag-card3" aria-hidden="true">
-          <div class="window-body">
-            <div class="flag-standin-pic">Coming soon new product (pottery)</div>
-            <ul class="window-lines">
-              <li>Handmade coffee mug</li>
-              <li>Comes with unique member tag (mugger)</li>
-              <li>Bitcoin Wallet address</li>
-            </ul>
-          </div>
-          <div class="window-cta">
-            <div class="flags-left-chip">Live state API call</div>
-            <button type="button" class="btn primary flag-standin-buy" tabindex="-1" aria-disabled="true">Buy now-1-click-and-done-don't-make-me-do-extra</button>
-          </div>
+        <div class="prod-dots" role="group" aria-label="Products">
+          <button type="button" class="prod-dot" data-card="0" aria-label="Show flag" aria-pressed="true"></button>
+          <button type="button" class="prod-dot" data-card="1" aria-label="Show mug" aria-pressed="false"></button>
         </div>
-        <!-- /CHG-067 card 3 -->
       </section>
 
       <section class="window white" aria-labelledby="win-chat">
@@ -2413,6 +2380,20 @@
                   <dt>License</dt><dd><a href="https://rumble.com/s/terms" target="_blank" rel="noopener">Rumble Terms and Conditions</a></dd>
                 </dl>
                 <p class="thanks">Thank you to the Rumble embedded player and oEmbed API, and to <a href="https://rumble.com/c/nickjfuentes" target="_blank" rel="noopener">Nicholas J. Fuentes</a> for “<a href="https://rumble.com/v7g4gow-america-first-ep.-1754.html" target="_blank" rel="noopener">FUENTES VS JIANG DEBATE RECAP??? Federal Agent And Chinese Spy COLLIDE | America First Ep. 1754</a>” and “<a href="https://rumble.com/v7gtqw4-america-first-ep.-1762.html" target="_blank" rel="noopener">America First Ep. 1762</a>”.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="grat-sec">
+            <h3><span class="grat-dot" style="background:#f472b6"></span> Makers</h3>
+            <div class="grat-cards">
+              <article class="tcard" style="border-top-color:#f472b6">
+                <h4>Knicely Made Pottery</h4>
+                <dl>
+                  <dt>Purpose</dt><dd>Handmade AF mugs (stoneware, speckled glaze, maroon dip, stamped AF seal), sold in the Buy window</dd>
+                  <dt>Maker</dt><dd><a href="https://www.facebook.com/profile.php?id=100086671137808" target="_blank" rel="noopener noreferrer">Knicely Made Pottery</a>, an American maker</dd>
+                </dl>
+                <p class="thanks">Thank you to <a href="https://www.facebook.com/profile.php?id=100086671137808" target="_blank" rel="noopener noreferrer">Knicely Made Pottery</a> for handmaking every AF mug.</p>
               </article>
             </div>
           </section>
@@ -3582,23 +3563,42 @@
     (function () {
       var red = document.querySelector("section.window.red");
       if (!red) return;
-      /* CHG-067: index cycle 0 pottery, 1 flag (live), 2 card 3; one step per 10s while .open */
-      var CARD_CLASS = ["show-standin", "", "show-card3"];
-      var idx = 0;
+      /* CHG-149: two products, 0 flag, 1 mug. Auto-advance every 10s while .open; pauses on hover/focus;
+         no auto-advance under prefers-reduced-motion. Dots switch manually. */
+      var mug = document.getElementById("mug-card");
+      var flag = red.querySelector(".flag-live");
+      var dots = red.querySelectorAll(".prod-dot");
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var idx = 0, hover = false, focus = false;
+      function setInert(el, off) {
+        if (!el) return;
+        if (off) { el.setAttribute("aria-hidden", "true"); el.setAttribute("inert", ""); }
+        else { el.removeAttribute("aria-hidden"); el.removeAttribute("inert"); }
+      }
       function showCard(i) {
         idx = i;
-        for (var k = 0; k < CARD_CLASS.length; k++) {
-          if (CARD_CLASS[k]) red.classList.toggle(CARD_CLASS[k], k === idx);
-        }
+        red.classList.toggle("show-mug", idx === 1);
+        setInert(mug, idx !== 1);
+        setInert(flag, idx === 1);
+        for (var k = 0; k < dots.length; k++) dots[k].setAttribute("aria-pressed", String(k === idx));
       }
-      setTimeout(function () {
-        red.classList.add("is-live");
-        showCard(1);
-        setInterval(function () {
-          if (!red.classList.contains("open")) return;
-          showCard((idx + 1) % CARD_CLASS.length);
-        }, 10000);
-      }, 5000);
+      for (var d = 0; d < dots.length; d++) {
+        dots[d].addEventListener("click", function (e) {
+          e.stopPropagation();
+          showCard(parseInt(this.getAttribute("data-card"), 10) || 0);
+        });
+      }
+      red.addEventListener("mouseenter", function () { hover = true; });
+      red.addEventListener("mouseleave", function () { hover = false; });
+      red.addEventListener("focusin", function () { focus = true; });
+      red.addEventListener("focusout", function () { focus = red.contains(document.activeElement); });
+      red.classList.add("is-live");
+      showCard(0);
+      setInterval(function () {
+        if (reduce || hover || focus || document.hidden) return;
+        if (!red.classList.contains("open")) return;
+        showCard((idx + 1) % 2);
+      }, 10000);
     })();
 
     (function () {
@@ -5698,12 +5698,12 @@
       }
       var speech = document.getElementById("speechroom-btn");
       /* CHG-101: also green over BUY FLAG NOW, but only while the flag card is the one showing
-         (not the pottery stand-in or card 3, and not mid-collapse). */
+         (not the mug card, and not mid-collapse). */
       var red = document.querySelector(".window.red");
       function flagCardShowing() {
         if (!red) return false;
         var c = red.classList;
-        return c.contains("is-live") && c.contains("open") && !c.contains("show-standin") && !c.contains("show-card3");
+        return c.contains("is-live") && c.contains("open") && !c.contains("show-mug");
       }
       function isGreen(t) {
         if (!t || !t.closest) return false;

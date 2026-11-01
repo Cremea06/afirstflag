@@ -171,7 +171,8 @@
     .window.red .mug-teaser { object-position: 50% 64%; }
     .window.red .mug-card .window-lines li + li { font-size: 12.5px; line-height: 1.35; font-weight: 500; }
     .window.red .mug-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .window.red .mug-card .window-cta .btn { margin-top: 10px; }
+    .window.red .mug-card .window-cta .btn,
+    .window.red .flag-live .window-cta .btn { margin-top: 10px; }
     .window.red .mug-maker { margin: 0; font-size: 12px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.45); }
     .window.red .mug-maker a { color: #fff; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
     .window.red.show-mug .mug-card { opacity: 1; pointer-events: auto; }
@@ -181,6 +182,10 @@
       .window.red .mug-meta:has(.mugs-left:not([hidden])) { flex-wrap: nowrap; gap: 8px; }
       .window.red .mug-meta:has(.mugs-left:not([hidden])) .flags-left-chip { flex: none; white-space: nowrap; }
       .window.red .mug-meta:has(.mugs-left:not([hidden])) .mug-maker { min-width: 0; font-size: 11px; line-height: 1.25; }
+      /* CHG-152: flag card mirrors the mug meta row */
+      .window.red .flag-meta { flex-wrap: nowrap; gap: 8px; }
+      .window.red .flag-meta .flags-left-chip { flex: none; white-space: nowrap; }
+      .window.red .flag-meta .mug-maker { min-width: 0; font-size: 11px; line-height: 1.25; }
     }
     .window.red .mug-card .btn.sold-out { opacity: 0.55; cursor: not-allowed; pointer-events: none; }
     .window.red.show-mug .flag-live { opacity: 0; pointer-events: none; }
@@ -1945,11 +1950,14 @@
             <ul class="window-lines">
               <li>Support the movement</li>
               <li>Claim your flag and Bitcoin wallet</li>
-              <li>Become a Member</li>
             </ul>
           </div>
           <div class="window-cta">
-            <div id="flags-left" class="flags-left-chip" aria-live="polite">Flags available</div>
+            <div class="mug-meta flag-meta">
+              <div class="flags-left-chip mug-price">$30</div>
+              <div id="flags-left" class="flags-left-chip" aria-live="polite">Flags available</div>
+              <p class="mug-maker">Printed by <a href="https://www.sirspeedy.com/parkersburgwv540" target="_blank" rel="noopener noreferrer">Sir Speedy Parkersburg</a></p>
+            </div>
             <a class="btn primary" id="buyflag-btn" href="https://buy.stripe.com/3cI3cu9aq45JbmO2Fl2sM01" target="_blank" rel="noopener">BUY FLAG NOW</a>
           </div>
         </div>
@@ -3660,7 +3668,9 @@
               el.textContent = fallback;
               return;
             }
-            el.textContent = Math.floor(n) + " flags left";
+            var ed = data && data.edition;
+            ed = (typeof ed === "number" && isFinite(ed) && ed > 0) ? Math.floor(ed) : 200;
+            el.textContent = Math.floor(n) + " of " + ed + " left";
           })
           .catch(function () {
             el.textContent = fallback;

@@ -1,3 +1,7 @@
+# CHG-157: Literature drawer pins (up to 3, browser-only)
+
+Prepared 2026-11-01, committed locally, not pushed, not deployed. Base `00221e9` (CHG-156). `index.html` only: pin button top-right of each Literature card (grey, green #22c55e when pinned; aria-pressed, title Pin/Unpin). Up to 3 pins in this browser's localStorage (`aff-lit-pins`, newest first); a 4th pin drops the oldest. With an empty search box the drawer shows `Pinned (n/3)` cards; clearing the search shows them again. No server, no new outside requests. Drawing update staged as a note (/workspace/chg-157/drawings-note.md), drawings not edited.
+
 # CHG-156: Built With Gratitude Twitch card mentions zackrawrr in Tailgate Party (manual switch)
 
 Prepared 2026-11-01, committed locally, not pushed, not deployed. Base `c81e501` (CHG-155). `index.html` only: Twitch card Purpose text. Pairs with Nest CHG-156. Architecture drawing update staged as a note (/workspace/chg-156/drawings-note.md), drawings not edited.

@@ -1152,6 +1152,22 @@
       color: #fff;
     }
 
+    /* CHG-157: Literature pins (top-right of each card; grey until pinned, green when pinned) */
+    .lit-item { position: relative; padding-right: 40px; }
+    .lit-pin {
+      position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.25);
+      color: rgba(244, 247, 255, 0.4); font: inherit; font-size: 14px; line-height: 1; cursor: pointer;
+      filter: grayscale(1);
+    }
+    .lit-pin:hover { color: rgba(244, 247, 255, 0.7); }
+    .lit-pin[aria-pressed="true"] {
+      filter: none; color: #fff; background: #22c55e; border-color: #22c55e;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.55);
+    }
+    .lit-pin:focus-visible { outline: 2px solid #f4c430; outline-offset: 2px; }
+
     /* Collaborators — drawer between Gratitude and Gallery */
     .collab-wrap {
       flex-shrink: 0;
@@ -3831,17 +3847,22 @@
     })();
 
     /* CHG-088: Literature search. Runs only when the visitor searches; the browser asks Open Library
-       directly (title search). Nothing is stored. API text goes in with textContent only. */
+       directly (title search). API text goes in with textContent only.
+       CHG-157: pins. Up to 3 cards are kept in this browser's localStorage only (aff-lit-pins, newest
+       first); pinning a 4th drops the oldest. Pinned cards show when the search box is empty. */
     (function () {
       var form = document.getElementById("lit-form");
       var input = document.getElementById("lit-q");
       var go = document.getElementById("lit-go");
       var statusEl = document.getElementById("lit-status");
       var list = document.getElementById("lit-results");
+      var drawer = document.getElementById("lit-drawer");
+      var toggle = document.getElementById("lit-toggle");
       if (!form || !input || !go || !statusEl || !list) return;
       var API = "https://openlibrary.org/search.json";
       var FIELDS = "key,title,author_name,first_publish_year,cover_i";
-      var busy = false;
+      var PIN_KEY = "aff-lit-pins", MAX_PINS = 3;
+      var busy = false, mode = "pins";
 
       function el(tag, cls, text) {
         var e = document.createElement(tag);
@@ -3850,44 +3871,98 @@
         return e;
       }
 
-      function item(d) {
+      /* One clean record per book, from an API doc or a stored pin. */
+      function norm(d) {
+        d = d || {};
+        var cover = d.cover != null ? d.cover : d.cover_i;
+        var authors = Array.isArray(d.authors) ? d.authors : Array.isArray(d.author_name) ? d.author_name : [];
+        var year = d.year != null ? d.year : d.first_publish_year;
+        return {
+          key: typeof d.key === "string" && /^\/works\/OL\d+W$/.test(d.key) ? d.key : null,
+          title: typeof d.title === "string" && d.title ? d.title.slice(0, 300) : "Untitled",
+          authors: authors.filter(function (x) { return typeof x === "string"; }).slice(0, 10),
+          year: typeof year === "number" && Math.floor(year) === year ? year : null,
+          cover: typeof cover === "number" && cover > 0 && Math.floor(cover) === cover ? cover : null
+        };
+      }
+      function pinId(r) { return r.key || ("t:" + r.title + "|" + r.authors.join(",") + "|" + r.year); }
+      function loadPins() {
+        try {
+          var a = JSON.parse(localStorage.getItem(PIN_KEY) || "[]");
+          return Array.isArray(a) ? a.map(norm).slice(0, MAX_PINS) : [];
+        } catch (e) { return []; }
+      }
+      function savePins(a) { try { localStorage.setItem(PIN_KEY, JSON.stringify(a)); } catch (e) {} }
+      function isPinned(r) { var id = pinId(r); return loadPins().some(function (p) { return pinId(p) === id; }); }
+      function setPin(btn, on) {
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+        btn.title = on ? "Unpin" : "Pin";
+        btn.setAttribute("aria-label", (on ? "Unpin " : "Pin ") + btn.getAttribute("data-title"));
+      }
+      function togglePin(r, btn) {
+        var id = pinId(r), pins = loadPins();
+        var had = pins.some(function (p) { return pinId(p) === id; });
+        pins = pins.filter(function (p) { return pinId(p) !== id; });
+        if (!had) { pins.unshift(r); pins = pins.slice(0, MAX_PINS); }
+        savePins(pins);
+        if (mode === "pins") { showPins(); return; }
+        var on = {}; pins.forEach(function (p) { on[pinId(p)] = true; });
+        var all = list.querySelectorAll(".lit-pin");
+        for (var i = 0; i < all.length; i++) setPin(all[i], !!on[all[i].getAttribute("data-pin")]);
+        if (btn) btn.focus();
+      }
+
+      function item(r) {
         var li = el("li", "lit-item");
-        var cover = d.cover_i;
-        if (typeof cover === "number" && cover > 0 && Math.floor(cover) === cover) {
+        if (r.cover) {
           var img = el("img", "lit-cover");
           img.loading = "lazy";
           img.decoding = "async";
           img.alt = "";
           img.width = 44;
           img.height = 66;
-          img.src = "https://covers.openlibrary.org/b/id/" + cover + "-S.jpg";
+          img.src = "https://covers.openlibrary.org/b/id/" + r.cover + "-S.jpg";
           li.appendChild(img);
         } else {
           li.appendChild(el("span", "lit-cover ph"));
         }
         var meta = el("div", "lit-meta");
-        var title = typeof d.title === "string" && d.title ? d.title : "Untitled";
-        var key = typeof d.key === "string" && /^\/works\/OL\d+W$/.test(d.key) ? d.key : null;
-        if (key) {
-          var a = el("a", null, title);
-          a.href = "https://openlibrary.org" + key;
+        if (r.key) {
+          var a = el("a", null, r.title);
+          a.href = "https://openlibrary.org" + r.key;
           a.target = "_blank";
           a.rel = "noopener";
           meta.appendChild(a);
         } else {
-          meta.appendChild(el("strong", null, title));
+          meta.appendChild(el("strong", null, r.title));
         }
-        var authors = Array.isArray(d.author_name) ? d.author_name.filter(function (x) { return typeof x === "string"; }) : [];
-        meta.appendChild(el("div", null, authors.length ? authors.join(", ") : "Unknown author"));
-        if (typeof d.first_publish_year === "number") meta.appendChild(el("div", null, String(d.first_publish_year)));
+        meta.appendChild(el("div", null, r.authors.length ? r.authors.join(", ") : "Unknown author"));
+        if (r.year != null) meta.appendChild(el("div", null, String(r.year)));
         li.appendChild(meta);
+        var pin = el("button", "lit-pin", "\uD83D\uDCCC");
+        pin.type = "button";
+        pin.setAttribute("data-pin", pinId(r));
+        pin.setAttribute("data-title", r.title);
+        setPin(pin, isPinned(r));
+        pin.addEventListener("click", function () { togglePin(r, pin); });
+        li.appendChild(pin);
         return li;
+      }
+
+      function showPins() {
+        mode = "pins";
+        list.textContent = "";
+        var pins = loadPins();
+        statusEl.textContent = pins.length ? "Pinned (" + pins.length + "/" + MAX_PINS + ")" : "";
+        for (var i = 0; i < pins.length; i++) list.appendChild(item(pins[i]));
       }
 
       function run() {
         var q = input.value.trim().slice(0, 100);
-        if (!q || busy) return;
+        if (!q) { if (!busy) showPins(); return; }
+        if (busy) return;
         busy = true;
+        mode = "search";
         go.disabled = true;
         list.textContent = "";
         statusEl.textContent = "Searching...";
@@ -3897,17 +3972,24 @@
         fetch(url, ctl ? { signal: ctl.signal, credentials: "omit" } : { credentials: "omit" })
           .then(function (r) { if (!r.ok) throw new Error("http"); return r.json(); })
           .then(function (j) {
+            if (mode !== "search") return;
             var docs = j && Array.isArray(j.docs) ? j.docs.slice(0, 20) : [];
             var n = j && typeof j.numFound === "number" ? j.numFound : docs.length;
             if (!docs.length) { statusEl.textContent = "No matches."; return; }
-            for (var i = 0; i < docs.length; i++) list.appendChild(item(docs[i] || {}));
+            for (var i = 0; i < docs.length; i++) list.appendChild(item(norm(docs[i])));
             statusEl.textContent = n.toLocaleString("en-US") + (n === 1 ? " match" : " matches") + (n > docs.length ? ", showing " + docs.length + "." : ".");
           })
-          .catch(function () { list.textContent = ""; statusEl.textContent = "Search unavailable. Try again later."; })
+          .catch(function () { if (mode !== "search") return; list.textContent = ""; statusEl.textContent = "Search unavailable. Try again later."; })
           .then(function () { clearTimeout(timer); busy = false; go.disabled = false; });
       }
 
       form.addEventListener("submit", function (e) { e.preventDefault(); run(); });
+      /* Clearing the box (the x, or deleting the text) shows the pins again. */
+      input.addEventListener("input", function () { if (!input.value.trim() && mode !== "pins") showPins(); });
+      if (toggle && drawer) toggle.addEventListener("click", function () {
+        if (drawer.classList.contains("open") && !input.value.trim()) showPins();
+      });
+      showPins();
     })();
   </script>
   <script>

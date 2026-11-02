@@ -75,3 +75,11 @@ data/eyes-time.json.tmp
 data/mug-inventory.json
 data/mug-processed-events.json
 data/stripe-secrets.php
+
+# CHG-157: Literature site-wide pins, created on the server by api/lit-pins.php on the first pin
+# (never commit; delete data/lit-pins.json to clear the pins)
+data/lit-pins.json
+data/lit-pins.json.*.tmp
+data/lit-pins.lock
+data/lit-pins-hits.json
+data/lit-pins-hits.json.*.tmp

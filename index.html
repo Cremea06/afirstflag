@@ -3848,8 +3848,8 @@
 
     /* CHG-088: Literature search. Runs only when the visitor searches; the browser asks Open Library
        directly (title search). API text goes in with textContent only.
-       CHG-157: pins. Up to 3 cards are kept in this browser's localStorage only (aff-lit-pins, newest
-       first); pinning a 4th drops the oldest. Pinned cards show when the search box is empty. */
+       CHG-157: site-wide pins. Up to 3 books are pinned for everyone via /api/lit-pins.php (any visitor may
+       pin/unpin; newest first; pinning a 4th drops the oldest). Pinned cards show when the search box is empty. */
     (function () {
       var form = document.getElementById("lit-form");
       var input = document.getElementById("lit-q");
@@ -3861,8 +3861,8 @@
       if (!form || !input || !go || !statusEl || !list) return;
       var API = "https://openlibrary.org/search.json";
       var FIELDS = "key,title,author_name,first_publish_year,cover_i";
-      var PIN_KEY = "aff-lit-pins", MAX_PINS = 3;
-      var busy = false, mode = "pins";
+      var PIN_API = "/api/lit-pins.php", MAX_PINS = 3;
+      var busy = false, mode = "pins", pins = [], pinBusy = false;
 
       function el(tag, cls, text) {
         var e = document.createElement(tag);
@@ -3874,7 +3874,7 @@
       /* One clean record per book, from an API doc or a stored pin. */
       function norm(d) {
         d = d || {};
-        var cover = d.cover != null ? d.cover : d.cover_i;
+        var cover = d.cover_id != null ? d.cover_id : d.cover_i;
         var authors = Array.isArray(d.authors) ? d.authors : Array.isArray(d.author_name) ? d.author_name : [];
         var year = d.year != null ? d.year : d.first_publish_year;
         return {
@@ -3885,31 +3885,42 @@
           cover: typeof cover === "number" && cover > 0 && Math.floor(cover) === cover ? cover : null
         };
       }
-      function pinId(r) { return r.key || ("t:" + r.title + "|" + r.authors.join(",") + "|" + r.year); }
-      function loadPins() {
-        try {
-          var a = JSON.parse(localStorage.getItem(PIN_KEY) || "[]");
-          return Array.isArray(a) ? a.map(norm).slice(0, MAX_PINS) : [];
-        } catch (e) { return []; }
-      }
-      function savePins(a) { try { localStorage.setItem(PIN_KEY, JSON.stringify(a)); } catch (e) {} }
-      function isPinned(r) { var id = pinId(r); return loadPins().some(function (p) { return pinId(p) === id; }); }
+      function pinId(r) { return r.key || ""; }
+      function isPinned(r) { return !!r.key && pins.some(function (p) { return p.key === r.key; }); }
       function setPin(btn, on) {
         btn.setAttribute("aria-pressed", on ? "true" : "false");
-        btn.title = on ? "Unpin" : "Pin";
-        btn.setAttribute("aria-label", (on ? "Unpin " : "Pin ") + btn.getAttribute("data-title"));
+        btn.title = on ? "Unpin (for everyone)" : "Pin (for everyone)";
+        btn.setAttribute("aria-label", (on ? "Unpin " : "Pin ") + btn.getAttribute("data-title") + " for everyone");
       }
-      function togglePin(r, btn) {
-        var id = pinId(r), pins = loadPins();
-        var had = pins.some(function (p) { return pinId(p) === id; });
-        pins = pins.filter(function (p) { return pinId(p) !== id; });
-        if (!had) { pins.unshift(r); pins = pins.slice(0, MAX_PINS); }
-        savePins(pins);
+      function setPins(a) {
+        pins = (Array.isArray(a) ? a : []).map(norm).filter(function (p) { return p.key; }).slice(0, MAX_PINS);
+      }
+      function render() {
         if (mode === "pins") { showPins(); return; }
-        var on = {}; pins.forEach(function (p) { on[pinId(p)] = true; });
+        var on = {}; pins.forEach(function (p) { on[p.key] = true; });
         var all = list.querySelectorAll(".lit-pin");
         for (var i = 0; i < all.length; i++) setPin(all[i], !!on[all[i].getAttribute("data-pin")]);
-        if (btn) btn.focus();
+      }
+      function refreshPins() {
+        return fetch(PIN_API, { credentials: "same-origin", cache: "no-store" })
+          .then(function (r) { if (!r.ok) throw new Error("http"); return r.json(); })
+          .then(function (j) { setPins(j && j.pins); render(); })
+          .catch(function () {});
+      }
+      function togglePin(r, btn) {
+        if (!r.key || pinBusy) return;
+        pinBusy = true;
+        var body = isPinned(r) ? { action: "unpin", key: r.key }
+          : { action: "pin", key: r.key, title: r.title, authors: r.authors, year: r.year, cover_id: r.cover };
+        fetch(PIN_API, { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+          .then(function (res) {
+            return res.json().catch(function () { return {}; }).then(function (j) {
+              if (!res.ok) throw new Error(res.status === 429 ? "Too many pin changes. Try again in a few minutes." : "Pin change failed. Try again later.");
+              setPins(j && j.pins); render();
+            });
+          })
+          .catch(function (e) { statusEl.textContent = e && e.message ? e.message : "Pin change failed."; refreshPins(); })
+          .then(function () { pinBusy = false; if (btn && document.body.contains(btn)) btn.focus(); });
       }
 
       function item(r) {
@@ -3944,6 +3955,7 @@
         pin.setAttribute("data-pin", pinId(r));
         pin.setAttribute("data-title", r.title);
         setPin(pin, isPinned(r));
+        if (!r.key) pin.disabled = true;
         pin.addEventListener("click", function () { togglePin(r, pin); });
         li.appendChild(pin);
         return li;
@@ -3952,7 +3964,6 @@
       function showPins() {
         mode = "pins";
         list.textContent = "";
-        var pins = loadPins();
         statusEl.textContent = pins.length ? "Pinned (" + pins.length + "/" + MAX_PINS + ")" : "";
         for (var i = 0; i < pins.length; i++) list.appendChild(item(pins[i]));
       }
@@ -3987,9 +3998,10 @@
       /* Clearing the box (the x, or deleting the text) shows the pins again. */
       input.addEventListener("input", function () { if (!input.value.trim() && mode !== "pins") showPins(); });
       if (toggle && drawer) toggle.addEventListener("click", function () {
-        if (drawer.classList.contains("open") && !input.value.trim()) showPins();
+        if (drawer.classList.contains("open")) refreshPins();
       });
       showPins();
+      refreshPins();
     })();
   </script>
   <script>

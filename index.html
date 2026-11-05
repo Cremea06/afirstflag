@@ -189,6 +189,11 @@
     }
     .window.red .mug-card .btn.sold-out { opacity: 0.55; cursor: not-allowed; pointer-events: none; }
     .window.red.show-mug .flag-live { opacity: 0; pointer-events: none; }
+    /* CHG-159: third card (RAK kit) reuses the mug card layout; shown only with .show-rak */
+    .window.red .rak-card .mug-teaser { object-fit: contain; object-position: 50% 50%; background: #fff; }
+    .window.red.show-mug .rak-card { opacity: 0; pointer-events: none; }
+    .window.red.show-rak .rak-card { opacity: 1; pointer-events: auto; }
+    .window.red.show-rak .flag-live { opacity: 0; pointer-events: none; }
     .prod-dots {
       position: absolute;
       top: 10px;
@@ -1959,6 +1964,27 @@
             <a class="btn primary" id="buymug-btn" href="https://buy.stripe.com/6oUdR8gCS0Tx1MecfV2sM02" target="_blank" rel="noopener">BUY MUG NOW</a>
           </div>
         </div>
+        <!-- CHG-159: third rotation product (after flag and mug). Placeholder link to the Rokland store page; static price/count text. -->
+        <div class="mug-card rak-card" id="rak-card" aria-hidden="true" inert>
+          <div class="window-body">
+            <h2 class="visually-hidden" style="position:absolute;left:-9999px;">Buy RAKwireless Mini Meshtastic Starter Kit</h2>
+            <picture>
+              <source srcset="/images/rak-mini-kit-700.webp" type="image/webp">
+              <img class="flag-teaser mug-teaser" src="/images/rak-mini-kit-700.jpg" width="700" height="700" loading="lazy" decoding="async" alt="RAKwireless Mini Meshtastic Starter Kit: RAK19003 base board with RAK4631 core module and antenna">
+            </picture>
+            <ul class="window-lines">
+              <li>RAKwireless Mini Meshtastic Starter Kit US915 (RAK19003 + RAK4631)</li>
+            </ul>
+          </div>
+          <div class="window-cta">
+            <div class="mug-meta">
+              <div class="flags-left-chip mug-price">$35~</div>
+              <div class="flags-left-chip">&#35; left unknown</div>
+              <p class="mug-maker">Made by <a href="https://www.rakwireless.com" target="_blank" rel="noopener noreferrer">RAKwireless</a></p>
+            </div>
+            <a class="btn primary" id="buyrak-btn" href="https://store.rokland.com/products/rakwireless-mini-meshtastic-starter-kit-us915-rak19003-4631-sku-115093" target="_blank" rel="noopener">BUY NOW</a>
+          </div>
+        </div>
         <div class="flag-live">
           <div class="window-body">
             <h2 id="win-flag" class="visually-hidden" style="position:absolute;left:-9999px;">Buy Flag</h2>
@@ -1982,6 +2008,7 @@
         <div class="prod-dots" role="group" aria-label="Products">
           <button type="button" class="prod-dot" data-card="0" aria-label="Show flag" aria-pressed="true"></button>
           <button type="button" class="prod-dot" data-card="1" aria-label="Show mug" aria-pressed="false"></button>
+          <button type="button" class="prod-dot" data-card="2" aria-label="Show RAK Meshtastic kit" aria-pressed="false"></button>
         </div>
       </section>
 
@@ -3608,6 +3635,7 @@
       /* CHG-149: two products, 0 flag, 1 mug. Auto-advance every 10s while .open; pauses on hover/focus;
          no auto-advance under prefers-reduced-motion. Dots switch manually. */
       var mug = document.getElementById("mug-card");
+      var rak = document.getElementById("rak-card"); /* CHG-159: 2 = RAK kit */
       var flag = red.querySelector(".flag-live");
       var dots = red.querySelectorAll(".prod-dot");
       var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -3620,8 +3648,10 @@
       function showCard(i) {
         idx = i;
         red.classList.toggle("show-mug", idx === 1);
+        red.classList.toggle("show-rak", idx === 2);
         setInert(mug, idx !== 1);
-        setInert(flag, idx === 1);
+        setInert(rak, idx !== 2);
+        setInert(flag, idx !== 0);
         for (var k = 0; k < dots.length; k++) dots[k].setAttribute("aria-pressed", String(k === idx));
       }
       for (var d = 0; d < dots.length; d++) {
@@ -3639,7 +3669,7 @@
       setInterval(function () {
         if (reduce || hover || focus || document.hidden) return;
         if (!red.classList.contains("open")) return;
-        showCard((idx + 1) % 2);
+        showCard((idx + 1) % dots.length);
       }, 10000);
     })();
 
@@ -5860,7 +5890,7 @@
       function flagCardShowing() {
         if (!red) return false;
         var c = red.classList;
-        return c.contains("is-live") && c.contains("open") && !c.contains("show-mug");
+        return c.contains("is-live") && c.contains("open") && !c.contains("show-mug") && !c.contains("show-rak");
       }
       function isGreen(t) {
         if (!t || !t.closest) return false;

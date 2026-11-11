@@ -1509,6 +1509,29 @@
     }
 
 
+
+    /* CHG-168: modest footer link to the public roadmap */
+    .site-foot {
+      flex-shrink: 0;
+      margin: 4px 16px 8px;
+      padding: 10px 16px;
+      text-align: center;
+    }
+    .site-foot a {
+      color: rgba(244, 247, 255, 0.9);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+    }
+    .site-foot a:hover,
+    .site-foot a:focus-visible {
+      color: #f4c430;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .site-foot a:focus-visible { outline: 2px solid #f4c430; outline-offset: 3px; }
+
     html { scroll-behavior: smooth; }
 
     .gallery-band.drawer {
@@ -2714,6 +2737,12 @@
       </div>
       </div>
     </section>
+
+
+    <!-- CHG-168: modest link to the public roadmap -->
+    <footer class="site-foot">
+      <a href="/roadmap/">Roadmap</a>
+    </footer>
 
     <div class="lightbox" id="lightbox" hidden>
       <img id="lightbox-img" alt="">

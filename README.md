@@ -19,6 +19,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 - `index.html` — homepage
 - `images/` — assets
+- `roadmap/` — public platform roadmap
 - `legal-notice/`, `privacy/` — legal pages
 - `docs/TECHNOLOGY-ATTRIBUTION.md` — stack we thank
 - `docs/THIRD-PARTY-NOTICES.md` — licenses / terms

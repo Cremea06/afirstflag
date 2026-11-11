@@ -1,3 +1,7 @@
+# CHG-168: public Roadmap page
+
+Prepared 2026-11-10, committed locally, not pushed, not deployed. Base `3ed7d2e` (CHG-159). New `roadmap/index.html` is a public, sanitized living draft of the platform roadmap (ten pieces, phases with no dates, ideas we are exploring, where we are different). It matches the shop look (Arial, navy and eagle background, glass header) and has no external scripts or tracking. `index.html` gains a modest footer link to `/roadmap/`. `sitemap.xml` and the README repo map include the new page. No shop behavior other than the footer link is changed.
+
 # CHG-159: RAK Mini Meshtastic kit as third Buy rotation product
 
 Prepared 2026-11-05, committed locally, not pushed, not deployed. Base `83d7e76` (CHG-158). `index.html`: third card in the Buy window rotation (flag, mug, then RAK kit; American-made products first per Andy's 2026-11-05 rule). Reuses the mug card layout: price pill "$35~", static "# left unknown" pill (no stats fetch), "Made by RAKwireless" credit, BUY NOW links to the Rokland store page (new tab, placeholder payment). Third dot added; rotation cycles over all dots. New images `images/rak-mini-kit-700.jpg/.webp` (from the Rokland product page). RAKwireless not added to Built With Gratitude. Drawing update staged as a note (/workspace/chg-159/drawings-note.md), drawings not edited.

@@ -1,3 +1,7 @@
+# CHG-169: light/dark theme toggle
+
+Prepared 2026-11-10, committed locally, not pushed, not deployed. Base `45e3ad1` (CHG-168). Adds a small Light/Dark switch in the header of `index.html` and `roadmap/index.html`. The site stays on the current dark navy theme until a visitor clicks the switch. The choice is stored only in that browser (`localStorage` key `aff-theme`) and is applied before the first paint so the page does not flash. The system `prefers-color-scheme` setting is ignored. Light mode keeps the patriotic navy, red, and gold identity, with darker gold and navy text so body copy meets WCAG AA contrast on the lighter background. `privacy/` and `legal-notice/` are unchanged: they use the older Webcard light layout and do not share the navy eagle theme. No shop behavior other than the new toggle is changed.
+
 # CHG-168: public Roadmap page
 
 Prepared 2026-11-10, committed locally, not pushed, not deployed. Base `3ed7d2e` (CHG-159). New `roadmap/index.html` is a public, sanitized living draft of the platform roadmap (ten pieces, phases with no dates, ideas we are exploring, where we are different). It matches the shop look (Arial, navy and eagle background, glass header) and has no external scripts or tracking. `index.html` gains a modest footer link to `/roadmap/`. `sitemap.xml` and the README repo map include the new page. No shop behavior other than the footer link is changed.

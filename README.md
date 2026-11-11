@@ -20,7 +20,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 - `index.html` — homepage
 - `images/` — assets
 - `roadmap/` — public platform roadmap
-- `legal-notice/`, `privacy/` — legal pages
+- `legal-notice/`, `privacy/` — legal pages (their own Webcard layout; the theme toggle is on the homepage and the Roadmap page)
 - `docs/TECHNOLOGY-ATTRIBUTION.md` — stack we thank
 - `docs/THIRD-PARTY-NOTICES.md` — licenses / terms
 
